@@ -1,12 +1,13 @@
 package SKUTask;
 
-import SKU.SKU;
+/* import SKU.SKU;
 import SKU.SKUList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Comparator;
+*/
 
 public class ViewSKUTask {
     private String skuFilter;
