@@ -1,4 +1,4 @@
-package SKUTask;
+package skutask;
 
 public enum Priority {
     HIGH, MEDIUM, LOW

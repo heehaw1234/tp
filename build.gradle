@@ -1,4 +1,4 @@
-plugins {
+gig tplugins {
     id 'java'
     id 'application'
     id 'checkstyle'

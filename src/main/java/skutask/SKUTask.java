@@ -1,4 +1,4 @@
-package SKUTask;
+package skutask;
 
 public class SKUTask {
     private String skuTaskID;

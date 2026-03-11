@@ -1,4 +1,4 @@
-package SKUTask;
+package skutask;
 
 import java.util.ArrayList;
 

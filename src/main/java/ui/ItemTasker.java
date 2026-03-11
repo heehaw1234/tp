@@ -1,10 +1,10 @@
-package seedu.duke;
+package ui;
 
 import java.util.Scanner;
 
-public class Duke {
+public class ItemTasker {
     /**
-     * Main entry-point for the java.duke.Duke application.
+     * Main entry-point for the java.duke.ItemTasker application.
      */
     public static void main(String[] args) {
         String logo = " ____        _        \n"
