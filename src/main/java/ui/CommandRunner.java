@@ -1,11 +1,13 @@
-package seedu.duke;
+package ui;
 
-import SKU.Location;
-import SKU.SKU;
-import SKU.SKUList;
-import SKUTask.Priority;
-import SKUTask.SKUTask;
-import SKUTask.SKUTaskList;
+import sku.Location;
+import sku.SKU;
+import sku.SKUList;
+
+import skutask.Priority;
+import skutask.SKUTask;
+import skutask.SKUTaskList;
+import skutask.ViewSKUTask;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -1,4 +1,4 @@
-package seedu.duke;
+package ui;
 
 import java.util.HashMap;
 import java.util.Map;
