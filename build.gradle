@@ -1,4 +1,4 @@
-gig tplugins {
+plugins {
     id 'java'
     id 'application'
     id 'checkstyle'
@@ -29,11 +29,11 @@ test {
 }
 
 application {
-    mainClass.set("seedu.duke.Duke")
+    mainClass.set("ui.ItemTasker")
 }
 
 shadowJar {
-    archiveBaseName.set("duke")
+    archiveBaseName.set("itemtasker")
     archiveClassifier.set("")
 }
 
