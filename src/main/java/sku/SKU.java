@@ -22,6 +22,9 @@ public class SKU {
         this.skuID = skuID;
         this.skuLocation = skuLocation;
         this.skuTaskList = new SKUTaskList();
+
+        assert this.skuID != null && !this.skuID.trim().isEmpty() : "SKU ID cannot be null or empty";
+        assert this.skuLocation != null : "SKU Location cannot be null";
     }
 
     /**

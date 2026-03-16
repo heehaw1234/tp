@@ -43,6 +43,8 @@ public class SKUList {
     public void addSKU(String skuID, Location skuLocation) {
         SKU sku = new SKU(skuID, skuLocation);
         skuList.add(sku);
+
+        assert skuList.size() > 0 : "SKUList should have size > 0 after adding an SKU";
     }
 
     /**
