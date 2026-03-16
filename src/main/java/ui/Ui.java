@@ -8,21 +8,19 @@ import java.util.Scanner;
  */
 public class Ui {
 
-    private static final String DIVIDER = "____________________________________________________________";
+    private static final String DIVIDER = "__________________________________________________________________________";
     private static final String LOGO =
-            "  ___  _                 _____         _\n"
-                    + " |_ _|| |_  ___  _ __  |_   _|  __ _ | | __ ___  _ __\n"
-                    + "  | | | __|/ _ \\| '_ \\   | |   / _` || |/ // _ \\| '__|\n"
-                    + "  | | | |_|  __/| | | |  | |  | (_| ||   <|  __/| |\n"
-                    + " |___| \\__|\\___||_| |_|  |_|   \\__,_||_|\\_\\\\___||_|\n";
+            "  ___  _                   _____            _                 \n"
+                    + " |_ _|| |_  ___  _ __ ___  |_   _|__ _  ___ | | __ ___  _ __  \n"
+                    + "  | | | __|/ _ \\| '_ ` _ \\   | | / _` |/ __|| |/ // _ \\| '__| \n"
+                    + "  | | | |_|  __/| | | | | |  | || (_| |\\__ \\|   <|  __/| |    \n"
+                    + " |___| \\__|\\___||_| |_| |_|  |_| \\__,_||___/|_|\\_\\\\___||_|    \n";
 
     private final Scanner scanner;
 
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
-
-    // =================== Input ===================
 
     /**
      * Reads and returns the next line of user input, trimmed.
@@ -33,8 +31,6 @@ public class Ui {
         System.out.print("> ");
         return scanner.nextLine().trim();
     }
-
-    // =================== Startup / Shutdown ===================
 
     /** Prints the welcome banner on application startup. */
     public static void printWelcome() {
@@ -51,8 +47,6 @@ public class Ui {
         System.out.println(" Goodbye! All tasks have been saved.");
         System.out.println(DIVIDER);
     }
-
-    // =================== Feedback Messages ===================
 
     /**
      * Prints a success message prefixed with [OK].
