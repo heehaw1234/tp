@@ -5,11 +5,11 @@ __________________________________________________________________________
   | | | |_|  __/| | | | | |  | || (_| |\__ \|   <|  __/| |    
  |___| \__|\___||_| |_| |_|  |_| \__,_||___/|_|\_\\___||_|    
 
- ItemTasker â€” CLI SKU Ticketing System
+ ItemTasker â€? CLI SKU Ticketing System
  Type a command to get started. Type 'help' for a list of commands.
 __________________________________________________________________________
 > __________________________________________________________________________
- ITEMTASKER â€” COMMAND REFERENCE
+ ITEMTASKER â€? COMMAND REFERENCE
 __________________________________________________________________________
  SKU MANAGEMENT
    addsku n/SKU_ID l/LOCATION          Add a SKU to the warehouse.
@@ -37,6 +37,7 @@ __________________________________________________________________________
 > >  [OK] Added SKU [PALLET-A] at location A1
 >  [OK] Added SKU [PALLET-B] at location B2
 >  [OK] Added SKU [PALLET-C] at location C3
+>  [OK] Added SKU [PALLET-D] at location A2
 > >  [ERROR] SKU already exists: PALLET-A
 >  [ERROR] Invalid location 'Z9'. Must be one of: A1 A2 A3 B1 B2 B3 C1 C2 C3
 >  [ERROR] Usage: addsku n/SKU_ID l/LOCATION  (e.g. addsku n/WIDGET-A1 l/B2)
@@ -57,6 +58,8 @@ __________________________________________________________________________
 __________________________________________________________________________
  SKU [PALLET-C]:
 1. [ ] ID: PALLET-C | Priority: LOW | Due: 2026-04-15
+ SKU [PALLET-D]:
+   No tasks for this SKU.
  SKU [PALLET-A]:
 1. [ ] ID: PALLET-A | Priority: HIGH | Due: 2026-04-01
 2. [ ] ID: PALLET-A | Priority: MEDIUM | Due: 2026-04-05
@@ -102,6 +105,8 @@ __________________________________________________________________________
 __________________________________________________________________________
  SKU [PALLET-C]:
 1. [ ] ID: PALLET-C | Priority: LOW | Due: 2026-04-15
+ SKU [PALLET-D]:
+   No tasks for this SKU.
  SKU [PALLET-A]:
 1. [ ] ID: PALLET-A | Priority: HIGH | Due: 2026-04-01
 __________________________________________________________________________
