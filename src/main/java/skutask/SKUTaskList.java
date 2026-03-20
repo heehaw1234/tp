@@ -88,6 +88,15 @@ public class SKUTaskList {
     }
 
     /**
+     * Deletes the task at the given 1-based index from the list.
+     *
+     * @param taskIndex The 1-based index of the task to delete.
+     */
+    public void deleteSKUTaskByIndex(int taskIndex) {
+        skuTaskList.remove(taskIndex - 1);
+    }
+
+    /**
      * Returns the underlying list of SKU tasks.
      *
      * @return The ArrayList of SKUTask objects.

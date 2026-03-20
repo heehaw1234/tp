@@ -3,6 +3,7 @@ help
 addsku n/PALLET-A l/A1
 addsku n/PALLET-B l/B2
 addsku n/PALLET-C l/C3
+addsku n/PALLET-D l/A2
 
 addsku n/PALLET-A l/C1
 addsku n/PALLET-D l/Z9

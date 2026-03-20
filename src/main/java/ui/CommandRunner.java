@@ -23,10 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Receives parsed commands from the user input and routes them to specific handler methods to perform the requested
- * operations, such as creating new SKUs, adding or modifying tasks, and generating sorted or filtered views of the
- * warehouse inventory. Additionally, it manages the running state of the application loop and currently maintains a
- * temporary mapping between SKU identifiers and their respective task lists during execution.
+ * Receives parsed commands from the user input and routes them to specific
+ * handler methods to perform the requested
+ * operations, such as creating new SKUs, adding or modifying tasks, and
+ * generating sorted or filtered views of the
+ * warehouse inventory. Additionally, it manages the running state of the
+ * application loop and currently maintains a
+ * temporary mapping between SKU identifiers and their respective task lists
+ * during execution.
  *
  */
 public class CommandRunner {
@@ -64,10 +68,13 @@ public class CommandRunner {
     }
 
     /**
-     * Dispatches a parsed command to the appropriate specific handler based on its command word.
+     * Dispatches a parsed command to the appropriate specific handler based on its
+     * command word.
      *
-     * @param cmd The parsed command object containing the command word and extracted arguments.
-     * @throws ItemTaskerException If a domain-specific error occurs during the execution of the command.
+     * @param cmd The parsed command object containing the command word and
+     *            extracted arguments.
+     * @throws ItemTaskerException If a domain-specific error occurs during the
+     *                             execution of the command.
      */
     public void run(ParsedCommand cmd) throws ItemTaskerException {
         assert cmd != null : "ParsedCommand should not be null";
@@ -111,12 +118,15 @@ public class CommandRunner {
 
     /**
      * Handles the addition of a new SKU to the warehouse.
-     * Validates that the location is a legal 3x3 sector and that the SKU does not already exist.
+     * Validates that the location is a legal 3x3 sector and that the SKU does not
+     * already exist.
      *
      * @param cmd The parsed command containing the SKU ID and location arguments.
-     * @throws MissingArgumentException If the SKU ID or location arguments are missing.
+     * @throws MissingArgumentException If the SKU ID or location arguments are
+     *                                  missing.
      * @throws InvalidCommandException  If the provided location string is invalid.
-     * @throws DuplicateSKUException    If an SKU with the same ID already exists in the warehouse.
+     * @throws DuplicateSKUException    If an SKU with the same ID already exists in
+     *                                  the warehouse.
      */
     private void handleAddSku(ParsedCommand cmd) throws SKUNotFoundException {
         String skuId = cmd.getArg("n");
@@ -150,7 +160,8 @@ public class CommandRunner {
      *
      * @param cmd The parsed command containing the SKU ID argument.
      * @throws MissingArgumentException If the SKU ID argument is missing.
-     * @throws SKUNotFoundException     If the specified SKU does not exist in the warehouse.
+     * @throws SKUNotFoundException     If the specified SKU does not exist in the
+     *                                  warehouse.
      */
     private void handleDeleteSku(ParsedCommand cmd) throws MissingArgumentException, SKUNotFoundException {
         String skuId = cmd.getArg("n");
@@ -171,9 +182,12 @@ public class CommandRunner {
      * Handles the addition of a new task to a specific SKU.
      * Priority defaults to HIGH if the priority flag is omitted.
      *
-     * @param cmd The parsed command containing the SKU ID, due date, and optional priority arguments.
-     * @throws MissingArgumentException If the SKU ID or due date arguments are missing.
-     * @throws SKUNotFoundException     If the specified SKU does not exist in the warehouse.
+     * @param cmd The parsed command containing the SKU ID, due date, and optional
+     *            priority arguments.
+     * @throws MissingArgumentException If the SKU ID or due date arguments are
+     *                                  missing.
+     * @throws SKUNotFoundException     If the specified SKU does not exist in the
+     *                                  warehouse.
      * @throws InvalidCommandException  If the provided priority value is invalid.
      */
     private void handleAddSkuTask(ParsedCommand cmd) throws MissingArgumentException, SKUNotFoundException {
@@ -211,8 +225,10 @@ public class CommandRunner {
      * Handles the deletion of a specific task from an SKU using its 1-based index.
      *
      * @param cmd The parsed command containing the SKU ID and task index arguments.
-     * @throws MissingArgumentException If the SKU ID or index arguments are missing.
-     * @throws InvalidIndexException    If the provided index format is invalid or out of range.
+     * @throws MissingArgumentException If the SKU ID or index arguments are
+     *                                  missing.
+     * @throws InvalidIndexException    If the provided index format is invalid or
+     *                                  out of range.
      */
     private void handleDeleteTask(ParsedCommand cmd) throws MissingArgumentException, InvalidIndexException {
         String skuId = cmd.getArg("n");
@@ -234,7 +250,7 @@ public class CommandRunner {
             return;
         }
 
-        taskList.getSKUTaskList().remove(index - 1);
+        taskList.deleteSKUTaskByIndex(index);
         Ui.printSuccess("Deleted task #" + index + " from SKU [" + skuId.toUpperCase() + "].");
     }
 
@@ -242,8 +258,10 @@ public class CommandRunner {
      * Handles marking a specific task as completed using its 1-based index.
      *
      * @param cmd The parsed command containing the SKU ID and task index arguments.
-     * @throws MissingArgumentException If the SKU ID or index arguments are missing.
-     * @throws InvalidIndexException    If the provided index format is invalid or out of range.
+     * @throws MissingArgumentException If the SKU ID or index arguments are
+     *                                  missing.
+     * @throws InvalidIndexException    If the provided index format is invalid or
+     *                                  out of range.
      * @throws TaskStatusException      If the task is already marked as completed.
      */
     private void handleMarkTask(ParsedCommand cmd) throws MissingArgumentException, InvalidIndexException {
@@ -274,8 +292,10 @@ public class CommandRunner {
      * Handles unmarking a previously completed task using its 1-based index.
      *
      * @param cmd The parsed command containing the SKU ID and task index arguments.
-     * @throws MissingArgumentException If the SKU ID or index arguments are missing.
-     * @throws InvalidIndexException    If the provided index format is invalid or out of range.
+     * @throws MissingArgumentException If the SKU ID or index arguments are
+     *                                  missing.
+     * @throws InvalidIndexException    If the provided index format is invalid or
+     *                                  out of range.
      * @throws TaskStatusException      If the task is already marked as incomplete.
      */
     private void handleUnmarkTask(ParsedCommand cmd) throws MissingArgumentException, InvalidIndexException {
@@ -303,11 +323,13 @@ public class CommandRunner {
     }
 
     /**
-     * Dispatches the list view generation to the appropriate sub-handler based on the provided flags.
+     * Dispatches the list view generation to the appropriate sub-handler based on
+     * the provided flags.
      * If no flags are provided, it defaults to showing all tasks across all SKUs.
      *
      * @param cmd The parsed command containing the view filter arguments.
-     * @throws InvalidCommandException If the provided view filter arguments are invalid.
+     * @throws InvalidCommandException If the provided view filter arguments are
+     *                                 invalid.
      * @throws EmptyListException      If the resulting view contains no tasks.
      * @throws SKUNotFoundException    If a requested SKU filter cannot be found.
      */
@@ -381,8 +403,10 @@ public class CommandRunner {
             Ui.printDivider();
             boolean anyTasks = false;
             for (Map.Entry<String, SKUTaskList> entry : taskMap.entrySet()) {
-                if (!entry.getValue().isEmpty()) {
-                    System.out.println(" SKU [" + entry.getKey() + "]:");
+                System.out.println(" SKU [" + entry.getKey() + "]:");
+                if (entry.getValue().isEmpty()) {
+                    System.out.println("   No tasks for this SKU.");
+                } else {
                     entry.getValue().printSKUTaskList();
                     anyTasks = true;
                 }
@@ -395,11 +419,13 @@ public class CommandRunner {
     }
 
     /**
-     * Looks up an SKU by its ID from the main SKU list. Comparison is case-insensitive.
+     * Looks up an SKU by its ID from the main SKU list. Comparison is
+     * case-insensitive.
      *
      * @param skuId The ID of the SKU to search for.
      * @return The matching {@link SKU}, or null if the SKU is not found.
-     * @throws SKUNotFoundException If the SKU does not exist (Exception staged for future implementation).
+     * @throws SKUNotFoundException If the SKU does not exist (Exception staged for
+     *                              future implementation).
      */
     private SKU findSku(String skuId) throws SKUNotFoundException {
         for (SKU sku : skuList.getSKUList()) {
@@ -411,10 +437,12 @@ public class CommandRunner {
     }
 
     /**
-     * Retrieves the task list associated with a given SKU ID, creating a new one if it does not exist.
+     * Retrieves the task list associated with a given SKU ID, creating a new one if
+     * it does not exist.
      *
      * @param skuId The ID of the SKU acting as the key.
-     * @return The existing or newly created {@link SKUTaskList} for the specified SKU.
+     * @return The existing or newly created {@link SKUTaskList} for the specified
+     *         SKU.
      */
     private SKUTaskList getOrCreateTaskList(String skuId) {
         return taskMap.computeIfAbsent(skuId.toUpperCase(), k -> new SKUTaskList());
@@ -425,8 +453,10 @@ public class CommandRunner {
      * Prints an error to the UI if the parsing fails.
      *
      * @param indexStr The string representing the numeric index.
-     * @return The parsed integer, or -1 if the parsing failed due to an invalid format.
-     * @throws InvalidIndexException If the string format cannot be successfully parsed as an integer.
+     * @return The parsed integer, or -1 if the parsing failed due to an invalid
+     *         format.
+     * @throws InvalidIndexException If the string format cannot be successfully
+     *                               parsed as an integer.
      */
     private int parseIndex(String indexStr) throws InvalidIndexException {
         try {

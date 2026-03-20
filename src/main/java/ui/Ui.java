@@ -9,12 +9,11 @@ import java.util.Scanner;
 public class Ui {
 
     private static final String DIVIDER = "__________________________________________________________________________";
-    private static final String LOGO =
-            "  ___  _                   _____            _                 \n"
-                    + " |_ _|| |_  ___  _ __ ___  |_   _|__ _  ___ | | __ ___  _ __  \n"
-                    + "  | | | __|/ _ \\| '_ ` _ \\   | | / _` |/ __|| |/ // _ \\| '__| \n"
-                    + "  | | | |_|  __/| | | | | |  | || (_| |\\__ \\|   <|  __/| |    \n"
-                    + " |___| \\__|\\___||_| |_| |_|  |_| \\__,_||___/|_|\\_\\\\___||_|    \n";
+    private static final String LOGO = "  ___  _                   _____            _                 \n"
+            + " |_ _|| |_  ___  _ __ ___  |_   _|__ _  ___ | | __ ___  _ __  \n"
+            + "  | | | __|/ _ \\| '_ ` _ \\   | | / _` |/ __|| |/ // _ \\| '__| \n"
+            + "  | | | |_|  __/| | | | | |  | || (_| |\\__ \\|   <|  __/| |    \n"
+            + " |___| \\__|\\___||_| |_| |_|  |_| \\__,_||___/|_|\\_\\\\___||_|    \n";
 
     private final Scanner scanner;
 
@@ -36,7 +35,7 @@ public class Ui {
     public static void printWelcome() {
         System.out.println(DIVIDER);
         System.out.println(LOGO);
-        System.out.println(" ItemTasker — CLI SKU Ticketing System");
+        System.out.println(" ItemTasker - CLI SKU Ticketing System");
         System.out.println(" Type a command to get started. Type 'help' for a list of commands.");
         System.out.println(DIVIDER);
     }
@@ -87,7 +86,7 @@ public class Ui {
     /** Prints the help reference listing all valid commands and their formats. */
     public static void printHelp() {
         System.out.println(DIVIDER);
-        System.out.println(" ITEMTASKER — COMMAND REFERENCE");
+        System.out.println(" ITEMTASKER - COMMAND REFERENCE");
         System.out.println(DIVIDER);
         System.out.println(" SKU MANAGEMENT");
         System.out.println("   addsku n/SKU_ID l/LOCATION          Add a SKU to the warehouse.");
