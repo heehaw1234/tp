@@ -1,4 +1,4 @@
-package storageSystem;
+package storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,7 +13,7 @@ import java.io.IOException;
  * Handles persistent storage of the warehouse state by serializing and
  * deserializing the SKU list to and from a JSON file on disk.
  */
-public class storageSystem {
+public class Storage {
     private static final String FILE_PATH = "Data/storage.json";
 
     /**
@@ -25,9 +25,9 @@ public class storageSystem {
      * @throws IOException If an I/O error occurs while writing the file.
      */
     public static void saveState(SKUList skuList) throws IOException {
-        File DataDir = new File("Data");
-        if (!DataDir.exists()) {
-            DataDir.mkdirs();
+        File dataDir = new File("Data");
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
         }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -49,11 +49,12 @@ public class storageSystem {
      */
     public static void loadState(SKUList skuList) {
         File file = new File(FILE_PATH);
-        if (!file.exists()) return;
+        if (!file.exists()){
+            return;
+        }
 
         Gson gson = new Gson();
         try (FileReader reader = new FileReader(FILE_PATH)) {
-            // Gson reconstructs the SKUList and all nested objects directly
             SKUList loadedSkus = gson.fromJson(reader, SKUList.class);
 
             if (loadedSkus != null) {

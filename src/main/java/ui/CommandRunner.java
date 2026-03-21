@@ -1,13 +1,11 @@
 package ui;
 
-import exception.DuplicateSKUException;
 import exception.EmptyListException;
 import exception.InvalidCommandException;
 import exception.InvalidIndexException;
 import exception.ItemTaskerException;
 import exception.MissingArgumentException;
 import exception.SKUNotFoundException;
-import exception.TaskStatusException;
 
 import sku.Location;
 import sku.SKU;
@@ -21,7 +19,7 @@ import skutask.ViewSKUTask;
 import java.io.IOException;
 import java.util.List;
 
-import storageSystem.storageSystem;
+import storage.Storage;
 
 /**
  * Receives parsed commands from the user input and routes them to specific
@@ -46,7 +44,7 @@ public class CommandRunner {
     public CommandRunner(SKUList skuList) {
         this.skuList = skuList;
         this.isRunning = true;
-        storageSystem.loadState(skuList);
+        Storage.loadState(skuList);
     }
 
     /**
@@ -363,7 +361,7 @@ public class CommandRunner {
     }
 
     private void saveState() throws IOException {
-        storageSystem.saveState(this.skuList);
+        Storage.saveState(this.skuList);
     }
 
     private SKU findSku(String skuId) {
