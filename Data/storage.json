@@ -1,0 +1,18 @@
+{
+  "skuList": {
+    "skuList": [
+      {
+        "skuID": "10",
+        "skuLocation": "A1",
+        "skuTaskList": {
+          "skuTaskList": []
+        }
+      }
+    ]
+  },
+  "taskMap": {
+    "10": {
+      "skuTaskList": []
+    }
+  }
+}

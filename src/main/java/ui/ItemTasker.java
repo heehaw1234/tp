@@ -3,6 +3,8 @@ package ui;
 import exception.ItemTaskerException;
 import sku.SKUList;
 
+import java.io.IOException;
+
 /**
  * Main entry-point for the java.duke.ItemTasker application.
  */
@@ -13,7 +15,7 @@ public class ItemTasker {
      * @param args Command line arguments.
      * @throws ItemTaskerException If a top-level error occurs during execution.
      */
-    public static void main(String[] args) throws ItemTaskerException {
+    public static void main(String[] args) throws ItemTaskerException, IOException {
         SKUList skuList = new SKUList();
         Ui ui = new Ui();
         CommandRunner runner = new CommandRunner(skuList);

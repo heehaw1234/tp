@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SKUListTest {
 
-    private SKUList skuList;
+    private sku.SKUList skuList;
 
     @BeforeEach
     public void setUp() {

@@ -18,9 +18,12 @@ import skutask.SKUTask;
 import skutask.SKUTaskList;
 import skutask.ViewSKUTask;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import storageSystem.storageSystem;
 
 /**
  * Receives parsed commands from the user input and routes them to specific
@@ -56,6 +59,7 @@ public class CommandRunner {
         this.skuList = skuList;
         this.taskMap = new HashMap<>();
         this.isRunning = true;
+        storageSystem.loadState(skuList, taskMap);
     }
 
     /**
@@ -76,7 +80,7 @@ public class CommandRunner {
      * @throws ItemTaskerException If a domain-specific error occurs during the
      *                             execution of the command.
      */
-    public void run(ParsedCommand cmd) throws ItemTaskerException {
+    public void run(ParsedCommand cmd) throws ItemTaskerException, IOException {
         assert cmd != null : "ParsedCommand should not be null";
 
         switch (cmd.getCommandWord()) {
@@ -106,6 +110,11 @@ public class CommandRunner {
             break;
         case "bye":
         case "exit":
+            try {
+                saveState();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             Ui.printGoodbye();
             isRunning = false;
             break;
@@ -416,6 +425,10 @@ public class CommandRunner {
             }
             Ui.printDivider();
         }
+    }
+
+    private void saveState() throws IOException {
+        storageSystem.saveState(this.skuList, this.taskMap);
     }
 
     /**
