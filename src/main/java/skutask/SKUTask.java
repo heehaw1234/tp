@@ -72,6 +72,16 @@ public class SKUTask {
     }
 
     /**
+     * Sets the description of this task.
+     *
+     * @param taskDescription The new description to assign.
+     */
+    public void setSKUTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
+
+
+    /**
      * Returns the unique identifier of this task.
      *
      * @return The task ID.

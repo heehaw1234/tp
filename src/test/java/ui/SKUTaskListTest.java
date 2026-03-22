@@ -2,6 +2,7 @@ package ui;
 
 import org.junit.jupiter.api.Test;
 import skutask.Priority;
+import skutask.SKUTask;
 import skutask.SKUTaskList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,5 +88,22 @@ public class SKUTaskListTest {
 
         assertTrue(taskList.isEmpty());
         assertEquals(0, taskList.getSize());
+    }
+
+    @Test
+    public void setSKUTaskDescription_updatesDescription() {
+        SKUTask task = new SKUTask("SKU-X", Priority.LOW, "2026-05-01", "initial desc");
+        task.setSKUTaskDescription("updated desc");
+
+        assertEquals("updated desc", task.getSKUTaskDescription());
+    }
+
+    @Test
+    public void setSKUTaskDescription_overwritesPreviousValue() {
+        SKUTask task = new SKUTask("SKU-Y", Priority.MEDIUM, "2026-06-01", "first");
+        task.setSKUTaskDescription("second");
+        task.setSKUTaskDescription("third");
+
+        assertEquals("third", task.getSKUTaskDescription());
     }
 }
