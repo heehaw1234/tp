@@ -1,0 +1,39 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+
+class CommandRunner LOGIC_COLOR {
+  - isRunning: boolean
+  - handleMarkTask(cmd: ParsedCommand): void
+  - handleUnmarkTask(cmd: ParsedCommand): void
+}
+
+class SKUList MODEL_COLOR {
+}
+
+class SKU MODEL_COLOR_T1 {
+  - skuID: String
+  - skuLocation: Location
+}
+
+class SKUTaskList MODEL_COLOR_T2 {
+  + markTask(index: int): void
+  + unmarkTask(index: int): void
+}
+
+class SKUTask MODEL_COLOR_T3 {
+  - skuTaskID: String
+  - priority: Priority
+  - dueDate: String
+  - isDone: boolean
+  - taskDescription: String
+  + mark(): void
+  + unmark(): void
+  + isDone(): boolean
+}
+
+CommandRunner -down-> "1" SKUList : skuList
+SKUList -down-> "*" SKU : skuList
+SKU -down-> "1" SKUTaskList : skuTaskList
+SKUTaskList -down-> "*" SKUTask : skuTaskList
+@enduml
