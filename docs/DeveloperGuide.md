@@ -6,17 +6,18 @@
 
 ## Design
 
-
 ## Implementation
 
 ### Add / Delete SKU Feature
 
 #### Implementation Details
+
 The Add and Delete SKU mechanism is facilitated by the `CommandRunner` component, which manages the application's core state through a single primary data structure: the `SKUList`. Following strict Object-Oriented encapsulation, there are no external maps; each `SKU` inherently manages its own `SKUTaskList`.
 
 The operations are exposed and handled internally via the following methods:
-* `CommandRunner#handleAddSku(ParsedCommand)` — Validates constraints and delegates to `SKUList` to instantiate a new `SKU` (which automatically initializes its own internal task list).
-* `CommandRunner#handleDeleteSku(ParsedCommand)` — Removes the `SKU` from the inventory, which inherently purges all tasks associated with it.
+
+* `CommandRunner#handleAddSku(ParsedCommand)` — Validates constraints and delegates to `SKUList` to instantiate a new `SKU` (which automatically initializes its own internal task list).
+* `CommandRunner#handleDeleteSku(ParsedCommand)` — Removes the `SKU` from the inventory, which inherently purges all tasks associated with it.
 
 Given below is an example usage scenario demonstrating how the Add SKU mechanism behaves at each step.
 
@@ -39,15 +40,17 @@ Given below is an example usage scenario demonstrating how the Add SKU mechanism
 *Note: The `deletesku` command operates by simply calling `SKUList#deleteSKU()` to remove the object from the array. Due to encapsulation, dropping the `SKU` object automatically garbage-collects its associated `SKUTaskList`, preventing memory leaks.*
 
 The following sequence diagram shows the flow of adding a SKU:
+
 ![Add SKU Sequence Diagram](plantUML/add-delete-sku/add-sku-sequence.png)
 
-
 The following class diagram shows the architecture:
+
 ![Add SKU Class Diagram](plantUML/add-delete-sku/add-sku-architecture.png)
 
-#### Design considerations:
+#### Design Considerations
 
 **Aspect: How SKU tasks are stored and mapped to their parent SKU:**
+
 * **Current Implementation:** Require all task operations to access the `SKUTaskList` directly through the `SKU` object residing in the `SKUList`.
     * *Pros:* High cohesion and strict encapsulation. A SKU is solely responsible for its own tasks. Memory overhead is reduced, and state mutations are safer as there is no need to synchronize deletions across multiple data structures.
     * *Cons:* Slightly slower lookup times, as finding a task requires iterating through the `SKUList` to locate the parent SKU first (O(n) complexity).
@@ -58,11 +61,13 @@ The following class diagram shows the architecture:
 ### Add / Delete SKU Task Feature
 
 #### Implementation Details
+
 The Add and Delete SKU Task operations are facilitated by the `CommandRunner` component, which routes execution to the specific SKU identified by the user, and subsequently down to that SKU's `SKUTaskList`. The `SKUTaskList` internally manages an `ArrayList<SKUTask>` and delegates data updates to the underlying `SKUTask` instances. The properties for a task include its ID, due date, completion status, and importantly, its `Priority` (an enum of HIGH, MEDIUM, or LOW). Following strict access boundaries, `SKUTaskList` does not expose its raw collection but instead provides safe wrapper methods.
 
 The operations are exposed and handled internally via the following flow:
-* `CommandRunner#handleAddSkuTask(ParsedCommand)` — Extracts the targeted SKU ID and the task properties (including `Priority`). It validates the SKU's existence and delegates to `SKUTaskList#addSKUTask()` to instantiate a new `SKUTask`.
-* `CommandRunner#handleDeleteTask(ParsedCommand)` — Locates the SKU, validates the target task index, and instructs `SKUTaskList#deleteSKUTaskByIndex()` to remove the task from the internal array.
+
+* `CommandRunner#handleAddSkuTask(ParsedCommand)` — Extracts the targeted SKU ID and the task properties (including `Priority`). It validates the SKU's existence and delegates to `SKUTaskList#addSKUTask()` to instantiate a new `SKUTask`.
+* `CommandRunner#handleDeleteTask(ParsedCommand)` — Locates the SKU, validates the target task index, and instructs `SKUTaskList#deleteSKUTaskByIndex()` to remove the task from the internal array.
 
 Given below is an example usage scenario demonstrating how the Add SKU Task mechanism behaves step-by-step.
 
@@ -79,28 +84,35 @@ Given below is an example usage scenario demonstrating how the Add SKU Task mech
 *Note: The delete operation follows a nearly identical traversal, except `CommandRunner#handleDeleteTask()` parses the target index instead of properties, and delegates to `SKUTaskList#deleteSKUTaskByIndex()`.*
 
 The following sequence diagram shows the end-to-end flow of adding a SKU Task:
+
 ![Add SKU Task Sequence Diagram](plantUML/skutask-operations/addTaskSequence.png)
 
 The following sequence diagram shows the end-to-end flow of deleting a SKU Task:
+
 ![Delete SKU Task Sequence Diagram](plantUML/skutask-operations/deleteTaskSequence.png)
 
 ### Task Property Access (Setters & Getters)
 
 #### Implementation Details
+
 Updating or retrieving a task's state passes entirely through `CommandRunner`, down to `SKUTaskList`, and finally to individual `SKUTask` objects. When a user executes `edittask n/P-A i/1 p/LOW`, `CommandRunner#handleEditTask()` locates the SKU and invokes `SKUTaskList#editSKUTask()`. `SKUTaskList` identifies the proper `SKUTask` at the index and modifies its state exclusively, reinforcing the abstraction.
 
 The following sequence diagram shows the holistic flow of setting properties (e.g., due date, priority, and description via `t/DESC`):
+
 ![Setters Sequence Diagram](plantUML/skutask-operations/settersSequence.png)
 
 The following sequence diagram illustrates reading properties from the objects for listing (e.g., executing `listtasks n/P-A`). Note that task output is produced by `toString()`, which internally includes the description if non-empty:
+
 ![Getters Sequence Diagram](plantUML/skutask-operations/gettersSequence.png)
 
 The following class diagram shows the architecture connecting the `CommandRunner` down to the `SKUTask` instances:
+
 ![SKU Task Architecture Class Diagram](plantUML/skutask-operations/skutask-architecture.png)
 
-#### Design considerations
+#### Design Considerations
 
 **Aspect: Managing task modifications via `SKUTaskList` wrappers versus returning internal objects:**
+
 * **Current Implementation:** `SKUTaskList` handles modification duties in place (e.g., reading indices inside `editSKUTask` and mapping updates, working directly with enums like `Priority`).
     * *Pros:* Strong encapsulation. `SKUTaskList` dictates precisely how a task is safely modified, without leaking mutable object references back to caller-components.
     * *Cons:* Requires additional boilerplate wrapper methods inside `SKUTaskList` just to pass down simple enum updates (`Priority`) or strings to the internal tasks.
@@ -108,13 +120,14 @@ The following class diagram shows the architecture connecting the `CommandRunner
     * *Pros:* Simpler logic to write, heavily reducing the number of pass-through methods in `SKUTaskList`.
     * *Cons:* Weakens data coupling boundaries. A caller command might hold onto a `SKUTask` and accidentally modify it asynchronously outside of the defined safe access points, compromising system stability.
 
-
 ### Mark / Unmark SKU Task Feature
 
 #### Implementation Details
+
 The Mark and Unmark operations allow users to toggle the completion state of a `SKUTask`. Both operations are facilitated by the `CommandRunner` component, which routes execution through the SKU's `SKUTaskList` down to the individual `SKUTask`.
 
 The operations are handled internally via the following methods:
+
 * `CommandRunner#handleMarkTask(ParsedCommand)` — Locates the target SKU and task, validates that the task is not already marked, and delegates to `SKUTaskList#markTask()`.
 * `CommandRunner#handleUnmarkTask(ParsedCommand)` — Locates the target SKU and task, validates that the task is not already unmarked, and delegates to `SKUTaskList#unmarkTask()`.
 
@@ -126,25 +139,29 @@ Given below is an example usage scenario for the Mark SKU Task mechanism.
 
 **Step 3.** `handleMarkTask()` calls `findSku("P-A")` to locate the target `SKU`. It then retrieves the `SKUTaskList` and the internal `ArrayList<SKUTask>` to validate the index.
 
-**Step 4.** The task's `isDone()` state is checked. If already marked, an error is returned. Otherwise, `SKUTaskList#markTask(1)` is called, which delegates to `SKUTask#mark()` to set `isDone = true`.
+**Step 4.** The task's `isDone()` state is checked. If already marked, an info message is returned. Otherwise, `SKUTaskList#markTask(1)` is called, which delegates to `SKUTask#mark()` to set `isDone = true`.
 
 **Step 5.** Execution completes and a success message is displayed.
 
 *Note: `unmarktask` follows the same traversal in reverse — it validates the task is currently marked before calling `SKUTaskList#unmarkTask()`, which delegates to `SKUTask#unmark()`.*
 
 The following sequence diagram shows the flow of marking a task:
+
 ![Mark Task Sequence Diagram](plantUML/mark-unmark-task/markTaskSequence.png)
 
 The following sequence diagram shows the flow of unmarking a task:
+
 ![Unmark Task Sequence Diagram](plantUML/mark-unmark-task/unmarkTaskSequence.png)
 
 The following class diagram shows the architecture:
+
 ![Mark/Unmark Architecture Class Diagram](plantUML/mark-unmark-task/mark-unmark-architecture.png)
 
-#### Design considerations
+#### Design Considerations
 
 **Aspect: Pre-condition check before toggling state:**
-* **Current Implementation:** `handleMarkTask()` and `handleUnmarkTask()` check `isDone()` on the task before delegating, rejecting redundant operations with an error.
+
+* **Current Implementation:** `handleMarkTask()` and `handleUnmarkTask()` check `isDone()` on the task before delegating, rejecting redundant operations with an info message.
     * *Pros:* Prevents silent no-ops that could confuse users (e.g., marking an already-done task with no feedback).
     * *Cons:* Requires an extra read call to `isDone()` before the write, slightly increasing coupling between `CommandRunner` and `SKUTask` state.
 * **Alternative:** Delegate the guard check into `SKUTaskList` or `SKUTask` itself, throwing an exception on invalid toggle.
@@ -163,10 +180,10 @@ The following class diagram shows the architecture:
 
 ## Appendix B: User Stories
 
-|Version| As a ... | I want to ... | So that I can ...|
-|--------|----------|---------------|------------------|
-|v1.0|new user|see usage instructions|refer to them when I forget how to use the application|
-|v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
+| Version | As a ... | I want to ...             | So that I can ...                                           |
+|---------|----------|---------------------------|-------------------------------------------------------------|
+| v1.0    | new user | see usage instructions    | refer to them when I forget how to use the application      |
+| v2.0    | user     | find a to-do item by name | locate a to-do without having to go through the entire list |
 
 ## Appendix C: Non-Functional Requirements
 
