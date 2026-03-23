@@ -58,6 +58,59 @@ The following class diagram shows the architecture:
   * *Pros:* Fast, O(1) time complexity when looking up tasks for a specific SKU during filtering or task addition.
   * *Cons:* Severe data duplication and poor encapsulation. This requires the `CommandRunner` to juggle references and manually synchronize deletions across two separate data structures, leading to an architecture prone to orphaned tasks if not correctly synced.
 
+### Add / Delete SKU Task Feature
+
+#### Implementation Details
+The Add and Delete SKU Task operations are facilitated by the `CommandRunner` component, which routes execution to the specific SKU identified by the user, and subsequently down to that SKU's `SKUTaskList`. The `SKUTaskList` internally manages an `ArrayList<SKUTask>` and delegates data updates to the underlying `SKUTask` instances. The properties for a task include its ID, due date, completion status, and importantly, its `Priority` (an enum of HIGH, MEDIUM, or LOW). Following strict access boundaries, `SKUTaskList` does not expose its raw collection but instead provides safe wrapper methods.
+
+The operations are exposed and handled internally via the following flow:
+* `CommandRunner#handleAddSkuTask(ParsedCommand)` — Extracts the targeted SKU ID and the task properties (including `Priority`). It validates the SKU's existence and delegates to `SKUTaskList#addSKUTask()` to instantiate a new `SKUTask`.
+* `CommandRunner#handleDeleteTask(ParsedCommand)` — Locates the SKU, validates the target task index, and instructs `SKUTaskList#deleteSKUTaskByIndex()` to remove the task from the internal array.
+
+Given below is an example usage scenario demonstrating how the Add SKU Task mechanism behaves step-by-step.
+
+**Step 1.** The user executes `addskutask n/P-A d/2026-10-10 p/HIGH`. The `Ui` reads the input, and the `Parser` extracts the command word and maps the arguments `n/` to `P-A`, `d/` to `2026-10-10`, and `p/` to `HIGH` into a `ParsedCommand` object.
+
+**Step 2.** The `CommandRunner#run()` method receives this `ParsedCommand`. Recognizing the `addskutask` command word, it routes execution to `CommandRunner#handleAddSkuTask()`.
+
+**Step 3.** `handleAddSkuTask()` processes the properties (parsing `HIGH` into the `Priority` enum). It calls `findSku("P-A")` to locate the target `SKU`. Upon finding it, it retrieves the SKU's internal `SKUTaskList`.
+
+**Step 4.** The `SKUTaskList#addSKUTask()` method is invoked. This method instantiates a new `SKUTask` object with the extracted properties (including the `Priority` enum state). The task is appended to the internal `ArrayList`.
+
+**Step 5.** Execution completes successfully, and control returns to the `Ui` to print the success message. 
+
+*Note: The delete operation follows a nearly identical traversal, except `CommandRunner#handleDeleteTask()` parses the target index instead of properties, and delegates to `SKUTaskList#deleteSKUTaskByIndex()`.*
+
+The following sequence diagram shows the end-to-end flow of adding a SKU Task:
+![Add SKU Task Sequence Diagram](plantUML/skutask-operations/addTaskSequence.png)
+
+The following sequence diagram shows the end-to-end flow of deleting a SKU Task:
+![Delete SKU Task Sequence Diagram](plantUML/skutask-operations/deleteTaskSequence.png)
+
+### Task Property Access (Setters & Getters)
+
+#### Implementation Details
+Updating or retrieving a task's state passes entirely through `CommandRunner`, down to `SKUTaskList`, and finally to individual `SKUTask` objects. When a user executes `edittask n/P-A i/1 p/LOW`, `CommandRunner#handleEditTask()` locates the SKU and invokes `SKUTaskList#editSKUTask()`. `SKUTaskList` identifies the proper `SKUTask` at the index and modifies its state exclusively, reinforcing the abstraction. 
+
+The following sequence diagram shows the holistic flow of setting properties (e.g., due date and priority enum, strictly excluding `taskDescription` as per the design requirements):
+![Setters Sequence Diagram](plantUML/skutask-operations/settersSequence.png)
+
+The following sequence diagram illustrates reading properties from the objects for listing (e.g., executing `listtasks n/P-A`, avoiding the `taskDescription` getter):
+![Getters Sequence Diagram](plantUML/skutask-operations/gettersSequence.png)
+
+The following class diagram shows the architecture connecting the `CommandRunner` down to the `SKUTask` instances:
+![SKU Task Architecture Class Diagram](plantUML/skutask-operations/skutask-architecture.png)
+
+#### Design considerations
+
+**Aspect: Managing task modifications via `SKUTaskList` wrappers versus returning internal objects:**
+* **Current Implementation:** `SKUTaskList` handles modification duties in place (e.g., reading indices inside `editSKUTask` and mapping updates, working directly with enums like `Priority`).
+  * *Pros:* Strong encapsulation. `SKUTaskList` dictates precisely how a task is safely modified, without leaking mutable object references back to caller-components.
+  * *Cons:* Requires additional boilerplate wrapper methods inside `SKUTaskList` just to pass down simple enum updates (`Priority`) or strings to the internal tasks.
+* **Alternative:** Expose `getTask(index)` method from `SKUTaskList`, letting callers (e.g., `CommandRunner`) modify the returned `SKUTask` object directly.
+  * *Pros:* Simpler logic to write, heavily reducing the number of pass-through methods in `SKUTaskList`.
+  * *Cons:* Weakens data coupling boundaries. A caller command might hold onto a `SKUTask` and accidentally modify it asynchronously outside of the defined safe access points, compromising system stability.
+
 
 ## Appendix A: Product Scope
 

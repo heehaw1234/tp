@@ -1,0 +1,37 @@
+@startuml
+!include ../style.puml
+
+Actor User as user USER_COLOR
+Participant ":Ui" as ui UI_COLOR
+Participant ":Parser" as parser LOGIC_COLOR_T1
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":SKUList" as skuList MODEL_COLOR
+Participant ":SKU" as sku MODEL_COLOR_T1
+Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+Participant ":SKUTask" as task MODEL_COLOR_T3
+
+user -> ui ++ : "edittask n/P-A i/1 p/LOW"
+ui -> parser ++ : parse(...)
+return cmd : ParsedCommand
+
+ui -> runner ++ : run(cmd)
+runner -> runner ++ : handleEditTask(cmd)
+
+runner -> skuList ++ : getSKUList()
+return List<SKU>
+
+runner -> runner ++ : findSku("P-A")
+return targetSku
+
+runner -> sku ++ : getSKUTaskList()
+return taskList
+
+runner -> taskList ++ : editSKUTask(1, null, Priority.LOW, null)
+taskList -> task ++ : setSKUTaskPriority(Priority.LOW)
+return
+return
+
+return
+return
+return display success message
+@enduml

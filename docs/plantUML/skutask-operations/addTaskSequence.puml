@@ -1,0 +1,43 @@
+@startuml
+!include ../style.puml
+
+Actor User as user USER_COLOR
+Participant ":Ui" as ui UI_COLOR
+Participant ":Parser" as parser LOGIC_COLOR_T1
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":SKUList" as skuList MODEL_COLOR
+Participant ":SKU" as sku MODEL_COLOR_T1
+Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+Participant ":SKUTask" as task MODEL_COLOR_T3
+
+user -> ui ++ : "addskutask n/P-A d/2026-10-10 p/HIGH"
+ui -> parser ++ : parse(...)
+return cmd : ParsedCommand
+
+ui -> runner ++ : run(cmd)
+runner -> runner ++ : handleAddSkuTask(cmd)
+
+runner -> skuList ++ : getSKUList()
+return List<SKU>
+
+runner -> runner ++ : findSku("P-A")
+return targetSku
+
+runner -> sku ++ : getSKUTaskList()
+return taskList
+
+runner -> taskList ++ : addSKUTask("P-A", Priority.HIGH, "2026-10-10", "")
+taskList -> task ** : SKUTask("P-A", Priority.HIGH, "2026-10-10", "")
+activate task MODEL_COLOR_T3
+task --> taskList
+deactivate task
+
+taskList -> taskList ++ : skuTaskList.add(newTask)
+return
+
+return
+
+return
+return
+return display success message
+@enduml
