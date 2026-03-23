@@ -18,6 +18,11 @@ runner -> runner ++ : handleAddSku(cmd)
 runner -> runner ++ : Location.valueOf("A1")
 return location
 
+runner -> runner ++ : findSku("PALLET-A")
+runner -> skuList ++ : getSKUList()
+return List<SKU>
+return null
+
 runner -> skuList ++ : addSKU("PALLET-A", location)
 skuList -> sku ** : create("PALLET-A", location)
 activate sku MODEL_COLOR_T1

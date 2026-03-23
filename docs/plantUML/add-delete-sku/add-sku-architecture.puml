@@ -4,7 +4,7 @@ skinparam arrowThickness 1.1
 
 class CommandRunner LOGIC_COLOR {
   - isRunning: boolean
-  + handleAddSku(cmd: ParsedCommand): void
+  - handleAddSku(cmd: ParsedCommand): void
 }
 
 class SKUList MODEL_COLOR {
