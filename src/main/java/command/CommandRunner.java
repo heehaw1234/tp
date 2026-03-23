@@ -505,8 +505,11 @@ public class CommandRunner {
         } else {
             System.out.println(" All tasks:");
             Ui.printDivider();
-            boolean anyTasks = false;
+            if (skuList.getSKUList().isEmpty()) {
+                Ui.printInfo("No SKUs registered yet.");
+            }
 
+            boolean anyTasks = false;
             for (SKU sku : skuList.getSKUList()) {
                 System.out.println(" SKU [" + sku.getSKUID().toUpperCase() + "]:");
                 if (sku.getSKUTaskList().isEmpty()) {
@@ -516,8 +519,7 @@ public class CommandRunner {
                     anyTasks = true;
                 }
             }
-
-            if (!anyTasks) {
+            if (!skuList.getSKUList().isEmpty() && !anyTasks) {
                 Ui.printInfo("No tasks in the system yet.");
             }
             Ui.printDivider();
