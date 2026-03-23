@@ -4,10 +4,11 @@ skinparam arrowThickness 1.1
 
 class CommandRunner LOGIC_COLOR {
   - isRunning: boolean
-  + handleAddSkuTask(cmd: ParsedCommand): void
-  + handleDeleteTask(cmd: ParsedCommand): void
-  + handleEditTask(cmd: ParsedCommand): void
-  + handleListTasks(cmd: ParsedCommand): void
+  - handleAddSkuTask(cmd: ParsedCommand): void
+  - handleDeleteTask(cmd: ParsedCommand): void
+  - handleEditTask(cmd: ParsedCommand): void
+  - handleListTasks(cmd: ParsedCommand): void
+  - findSku(skuId: String): SKU
 }
 
 class SKUList MODEL_COLOR {
@@ -16,12 +17,17 @@ class SKUList MODEL_COLOR {
 class SKU MODEL_COLOR_T1 {
   - skuID: String
   - skuLocation: Location
+  - skuTaskList: SKUTaskList
 }
 
 class SKUTaskList MODEL_COLOR_T2 {
+  - skuTaskList: ArrayList<SKUTask>
   + addSKUTask(skuID: String, priority: Priority, dueDate: String, desc: String): void
   + deleteSKUTaskByIndex(index: int): void
   + editSKUTask(index: int, newDate: String, newPriority: Priority, newDesc: String): void
+  + getSKUTaskList(): ArrayList<SKUTask>
+  + markTask(taskIndex: int): void
+  + unmarkTask(taskIndex: int): void
 }
 
 class SKUTask MODEL_COLOR_T3 {
@@ -30,6 +36,9 @@ class SKUTask MODEL_COLOR_T3 {
   - dueDate: String
   - isDone: boolean
   - taskDescription: String
+  + mark(): void
+  + unmark(): void
+  + isDone(): boolean
 }
 
 CommandRunner -down-> "1" SKUList : skuList

@@ -12,9 +12,6 @@
 ### Add / Delete SKU Feature
 
 #### Implementation Details
-### Add / Delete SKU Feature
-
-#### Implementation Details
 The Add and Delete SKU mechanism is facilitated by the `CommandRunner` component, which manages the application's core state through a single primary data structure: the `SKUList`. Following strict Object-Oriented encapsulation, there are no external maps; each `SKU` inherently manages its own `SKUTaskList`.
 
 The operations are exposed and handled internally via the following methods:
