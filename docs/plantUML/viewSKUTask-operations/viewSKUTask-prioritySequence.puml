@@ -1,0 +1,36 @@
+@startuml
+!include ../style.puml
+
+Actor User as user USER_COLOR
+Participant ":Ui" as ui UI_COLOR
+Participant ":Parser" as parser LOGIC_COLOR_T1
+Participant "runner:CommandRunner" as runner LOGIC_COLOR
+Participant "viewer:ViewSKUTask" as viewer LOGIC_COLOR_T3
+Participant "skuList:SKUList" as skuList MODEL_COLOR
+
+user -> ui ++ : "listtasks p/HIGH"
+ui -> parser ++ : parse(...)
+return cmd : ParsedCommand
+
+ui -> runner ++ : run(cmd)
+runner -> runner ++ : handleListTasks(cmd)
+
+create viewer
+runner -> viewer : ViewSKUTask()
+
+runner -> viewer ++ : setPriorityFilter("HIGH")
+return
+
+runner -> viewer ++ : listTasks(skuList)
+viewer -> skuList ++ : getSKUList()
+return allSkus:List<SKU>
+
+note right of viewer : viewer filters allSkus for\ntasks matching Priority.HIGH
+
+return results:List<SKUTask>
+
+return
+return
+ui --> user : display results
+deactivate ui
+@enduml

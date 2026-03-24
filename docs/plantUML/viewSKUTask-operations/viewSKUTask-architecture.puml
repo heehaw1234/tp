@@ -1,0 +1,59 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+
+class CommandRunner LOGIC_COLOR {
+  - isRunning: boolean
+  - skuList: SKUList
+  + run(cmd: ParsedCommand): void
+  - handleListTasks(cmd: ParsedCommand): void
+  - findSku(skuId: String): SKU
+}
+
+class ViewSKUTask LOGIC_COLOR_T1 {
+  - skuFilter: String
+  - priorityFilter: String
+  - locationFilter: String
+  + listTasks(fullList: SKUList): List<SKUTask>
+  + calculateDistance(task: SKUTask, pos: String, list: SKUList): int
+  + setSkuFilter(f: String): void
+  + setPriorityFilter(f: String): void
+  + setLocationFilter(f: String): void
+}
+
+class SKUList MODEL_COLOR {
+  + getSKUList(): List<SKU>
+  + addSKU(id: String, loc: Location): void
+}
+
+class SKU MODEL_COLOR_T1 {
+  - skuID: String
+  - skuLocation: Location
+  + getSKUTaskList(): SKUTaskList
+}
+
+class SKUTaskList MODEL_COLOR_T2 {
+  + getSKUTaskList(): List<SKUTask>
+  + markTask(index: int): void
+}
+
+class SKUTask MODEL_COLOR_T3 {
+  - skuTaskID: String
+  - priority: Priority
+  - isDone: boolean
+  + mark(): void
+  + getSKUTaskID(): String
+}
+
+CommandRunner .down.> ViewSKUTask : creates >
+CommandRunner -down-> "1" SKUList : skuList
+
+ViewSKUTask .right.> SKUList : queries >
+ViewSKUTask .right.> SKUTask : sorts >
+
+SKUList -down-> "*" SKU : skuList
+SKU -down-> "1" SKUTaskList : skuTaskList
+SKUTaskList -down-> "*" SKUTask : skuTaskList
+
+@enduml

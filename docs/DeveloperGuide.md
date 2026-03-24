@@ -168,6 +168,59 @@ The following class diagram shows the architecture:
     * *Pros:* Encapsulates the guard closer to the data.
     * *Cons:* Requires exception propagation for a non-exceptional condition, which adds overhead and complicates the call chain.
 
+### View SKU Task Feature
+
+#### Implementation Details
+
+The View SKU Task mechanism allows users to retrieve filtered or sorted views of the warehouse tasks without modifying the underlying data. This is facilitated by the `ViewSKUTask` logic processor, which decouples the filtering and sorting algorithms from the core `CommandRunner` and `Model` components.
+
+The feature supports three primary modes:
+1.  **SKU Filtering (`n/`):** Isolates tasks belonging to a specific SKU ID.
+2.  **Priority Filtering (`p/`):** Streams all tasks and filters by the `Priority` enum (HIGH, MEDIUM, LOW).
+3.  **Spatial Sorting (`l/`):** Sorts all system tasks based on the distance from a specified warehouse `Location`.
+
+The operations are handled internally via the following flow:
+
+* **Command Routing:** `CommandRunner#handleListTasks(ParsedCommand)` extracts the arguments, instantiates a `ViewSKUTask` object, and sets the respective filter strings.
+* **Data Aggregation:** `ViewSKUTask#listTasks(SKUList)` performs a full traversal of the `SKUList` to gather all available `SKUTask` objects into a "flattened" master list.
+* **Filtering & Sorting Logic:**
+  * For **SKU ID** and **Priority**, the viewer applies a Java Stream filter directly on the task list. Since these properties are encapsulated within the `SKUTask` object itself, no further interaction with the Model is required.
+  * For **Distance**, the viewer uses `calculateDistance()` within a comparator. This method performs a **parent-lookup** for each task to retrieve the physical coordinates from its associated `parentSku`.
+
+The Distance formula used for spatial sorting is:
+$$\text{Distance} = |x_1 - x_2| + |y_1 - y_2|$$
+
+#### Usage Scenarios and Sequence Diagrams
+
+**Scenario 1: Spatial Sorting (`listtasks l/B2`)** This scenario demonstrates the parent-lookup loop required to resolve coordinates. The viewer iterates through each `SKU` to collect tasks and then references the `parentSku` location during the sort.
+
+![View SKU Task (Distance) Sequence Diagram](plantUML/viewSKUTask-operations/viewSKUTask-distanceSequence.png)
+
+**Scenario 2: Priority Filtering (`listtasks p/HIGH`)** This illustrates a simplified flow. Because `Priority` is stored internally within the `SKUTask`, the viewer gathers the tasks once and filters them internally without further Model interaction.
+
+![View SKU Task (Priority) Sequence Diagram](plantUML/viewSKUTask-operations/viewSKUTask-prioritySequence.png)
+
+**Scenario 3: SKU ID Filtering (`listtasks n/A123`)** Similar to Priority filtering, the SKU ID is an internal property of the `SKUTask`. The viewer gathers the list and filters it without needing a secondary lookup to the `parentSku`.
+
+![View SKU Task (SKU ID) Sequence Diagram](plantUML/viewSKUTask-operations/viewSKUTask-SKUSequence.png)
+
+#### Architecture
+
+The following class diagram shows how the `ViewSKUTask` logic component interacts with the Model:
+
+![View SKU Task Architecture](plantUML/viewSKUTask-operations/viewSKUTask-architecture.png)
+
+#### Design Considerations
+
+**Aspect: Data "Flattening" for Global Views:**
+
+* **Current Implementation:** `ViewSKUTask` manually iterates through the nested `SKU -> SKUTaskList` hierarchy to build a temporary list for filtering/sorting.
+  * *Pros:* Maintains strict encapsulation. Neither `CommandRunner` nor `ViewSKUTask` needs to maintain a redundant global map of tasks, ensuring the `SKU` remains the single source of truth for its tasks.
+  * *Cons:* Performance cost of $O(N)$ where $N$ is the total number of SKUs, as every list must be visited to gather tasks for a global view.
+* **Alternative:** Maintain a `MasterTaskList` in `SKUList` that updates whenever a task is added/deleted.
+  * *Pros:* Sorting and filtering are faster ($O(1)$ to retrieve the base list).
+  * *Cons:* Higher risk of data inconsistency. Deleting an SKU would require purging its specific tasks from the master list, increasing complexity in the `Delete SKU` feature.
+
 ## Appendix A: Product Scope
 
 ### Target user profile

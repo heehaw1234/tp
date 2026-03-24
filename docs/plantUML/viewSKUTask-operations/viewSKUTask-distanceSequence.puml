@@ -1,0 +1,48 @@
+@startuml
+!include ../style.puml
+
+Actor User as user USER_COLOR
+Participant ":Ui" as ui UI_COLOR
+Participant ":Parser" as parser LOGIC_COLOR_T1
+Participant "runner:CommandRunner" as runner LOGIC_COLOR
+Participant "viewer:ViewSKUTask" as viewer LOGIC_COLOR_T3
+Participant "skuList:SKUList" as skuList MODEL_COLOR
+' Updated naming to parentSku
+Participant "parentSku:SKU" as sku MODEL_COLOR_T1
+Participant "tasks:SKUTaskList" as taskList MODEL_COLOR_T2
+
+user -> ui ++ : "listtasks l/B2"
+ui -> parser ++ : parse(...)
+return cmd : ParsedCommand
+
+ui -> runner ++ : run(cmd)
+runner -> runner ++ : handleListTasks(cmd)
+
+create viewer
+runner -> viewer : ViewSKUTask()
+
+runner -> viewer ++ : setLocationFilter("B2")
+return
+
+runner -> viewer ++ : listTasks(skuList)
+
+viewer -> skuList ++ : getSKUList()
+return List<SKU>
+
+loop for each SKU in List
+    viewer -> sku ++ : getSKUTaskList()
+    return taskList
+
+    viewer -> taskList ++ : getSKUTaskList()
+    return List<SKUTask>
+end
+
+note right of viewer : viewer sorts the full list\nusing calculateDistance() to\nfind the location of each parentSku
+
+return results:List<SKUTask>
+
+return
+return
+ui --> user : display results
+deactivate ui
+@enduml
