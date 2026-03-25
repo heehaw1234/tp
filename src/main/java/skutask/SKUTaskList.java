@@ -113,7 +113,7 @@ public class SKUTaskList {
     }
 
     /**
-     * Deletes the task at the given 1-based index from the list.
+     * Deletes the task at the given 1-based index from SKUTasklist.
      *
      * @param taskIndex The 1-based index of the task to delete.
      */
