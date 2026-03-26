@@ -13,10 +13,10 @@ import java.io.IOException;
 public class ItemTasker {
 
     /**
-     * The main execution method for the application.
-     * 
+     * Executes the main application loop and serves as the entry point for ItemTasker.
      * @param args Command line arguments.
      * @throws ItemTaskerException If a top-level error occurs during execution.
+     * @throws IOException If an error occurs during file loading or saving.
      */
     public static void main(String[] args) throws ItemTaskerException, IOException {
         SKUList skuList = new SKUList();

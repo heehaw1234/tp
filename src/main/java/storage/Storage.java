@@ -33,7 +33,6 @@ public class Storage {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         try (FileWriter writer = new FileWriter(FILE_PATH)) {
-            // Gson automatically serializes the entire SKUList and its nested tasks
             gson.toJson(skuList, writer);
         } catch (IOException e) {
             System.out.println("Error saving: " + e.getMessage());
@@ -63,7 +62,7 @@ public class Storage {
         } catch (IOException e) {
             System.out.println("[ERROR] Error loading: " + e.getMessage());
         } catch (com.google.gson.JsonSyntaxException e) {
-            System.out.println("[ERROR] Corrupted or outdated JSON format. Please delete " + FILE_PATH);
+            System.out.println("[ERROR] Corrupted or outdated JSON format. Please delete!" + FILE_PATH);
         }
     }
 }
