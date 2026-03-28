@@ -1,5 +1,10 @@
 package ui;
 
+import sku.SKU;
+import sku.SKUList;
+import skutask.SKUTask;
+
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -123,4 +128,110 @@ public class Ui {
     public static void printDivider() {
         System.out.println(DIVIDER);
     }
+
+    /**
+     * Prints a numbered list of tasks belonging to a specific SKU.
+     *
+     * @param skuId The SKU identifier for the header.
+     * @param tasks The list of tasks to display.
+     */
+    public static void printTasksForSku(String skuId, List<SKUTask> tasks) {
+        System.out.println(" Tasks for SKU [" + skuId.toUpperCase() + "]:");
+        printDivider();
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println((i + 1) + ". " + tasks.get(i));
+        }
+        printDivider();
+    }
+
+    /**
+     * Prints tasks filtered by a specific priority level.
+     *
+     * @param priority The priority level used as a filter.
+     * @param tasks    The filtered list of tasks to display.
+     */
+    public static void printTasksByPriority(String priority, List<SKUTask> tasks) {
+        System.out.println(" Tasks with priority [" + priority.toUpperCase() + "]:");
+        printDivider();
+        if (tasks.isEmpty()) {
+            printInfo("No tasks found with priority: " + priority.toUpperCase());
+        } else {
+            for (SKUTask t : tasks) {
+                System.out.println("  [SKU: " + t.getSKUTaskID() + "] " + t);
+            }
+        }
+        printDivider();
+    }
+
+    /**
+     * Prints tasks sorted by distance from a given location.
+     *
+     * @param fromLocation     The reference location name.
+     * @param formattedEntries Pre-formatted distance entry strings.
+     */
+    public static void printTasksByDistance(String fromLocation, List<String> formattedEntries) {
+        System.out.println(" Tasks sorted by distance from [" + fromLocation + "]:");
+        printDivider();
+        if (formattedEntries.isEmpty()) {
+            printInfo("No tasks found.");
+        } else {
+            for (String entry : formattedEntries) {
+                System.out.println(entry);
+            }
+        }
+        printDivider();
+    }
+
+    /**
+     * Prints all tasks grouped by their parent SKU.
+     *
+     * @param skuList The master list of all SKUs in the system.
+     */
+    public static void printAllTasks(SKUList skuList) {
+        System.out.println(" All tasks:");
+        printDivider();
+        if (skuList.isEmpty()) {
+            printInfo("No SKUs registered yet.");
+        }
+        boolean anyTasks = false;
+        for (SKU sku : skuList.getSKUList()) {
+            System.out.println(" SKU [" + sku.getSKUID().toUpperCase() + "]:");
+            if (sku.getSKUTaskList().isEmpty()) {
+                System.out.println("   No tasks for this SKU.");
+            } else {
+                sku.getSKUTaskList().printSKUTaskList();
+                anyTasks = true;
+            }
+        }
+        if (!skuList.isEmpty() && !anyTasks) {
+            printInfo("No tasks in the system yet.");
+        }
+        printDivider();
+    }
+
+    /**
+     * Prints the search results header before the search executes,
+     * so it appears even if an exception interrupts the search.
+     */
+    public static void printSearchHeader() {
+        System.out.println(" Search results:");
+        printDivider();
+    }
+
+    /**
+     * Prints the search result entries and closing divider.
+     *
+     * @param results Pre-formatted result strings. Empty list shows "no match" message.
+     */
+    public static void printSearchFooter(List<String> results) {
+        if (results.isEmpty()) {
+            printInfo("No matching tasks found.");
+        } else {
+            for (String result : results) {
+                System.out.println(result);
+            }
+        }
+        printDivider();
+    }
 }
+

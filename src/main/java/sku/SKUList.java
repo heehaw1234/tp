@@ -66,6 +66,21 @@ public class SKUList {
     }
 
     /**
+     * Finds and returns the SKU with the given ID (case-insensitive).
+     *
+     * @param skuId The alphanumeric identifier to search for.
+     * @return The matching SKU object, or null if no match is found.
+     */
+    public SKU findByID(String skuId) {
+        for (SKU sku : skuList) {
+            if (sku.getSKUID().equalsIgnoreCase(skuId)) {
+                return sku;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Retrieves the entire list of SKUs.
      *
      * @return The ArrayList containing all tracked SKU objects.
