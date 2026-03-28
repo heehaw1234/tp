@@ -18,7 +18,6 @@ import java.util.logging.Logger;
  * Handles all task-level commands: adding, editing, deleting,
  * marking, and unmarking tasks within SKUs.
  */
-
 //@@author omcodedthis
 public class TaskCommandHandler {
     private static final Logger LOGGER = Logger.getLogger(TaskCommandHandler.class.getName());
@@ -52,15 +51,19 @@ public class TaskCommandHandler {
         }
 
         String description = cmd.hasArg("t") ? cmd.getArg("t") : "";
-
         SKUTaskList taskList = targetSku.getSKUTaskList();
 
-        taskList.addSKUTask(skuId.toUpperCase(), priority, dueDate, description);
-        int newIndex = taskList.getSize();
+        try {
+            taskList.addSKUTask(skuId.toUpperCase(), priority, dueDate, description);
+            int newIndex = taskList.getSize();
 
-        LOGGER.log(Level.INFO, "Added task #" + newIndex + " to SKU [" + skuId + "]");
-        Ui.printSuccess("Added task #" + newIndex + " to SKU [" + skuId.toUpperCase() + "] | Priority: "
-                + priority + " | Due: " + dueDate + (description.isEmpty() ? "" : " | Desc: " + description));
+            LOGGER.log(Level.INFO, "Added task #" + newIndex + " to SKU [" + skuId + "]");
+            Ui.printSuccess("Added task #" + newIndex + " to SKU [" + skuId.toUpperCase() + "] | Priority: "
+                    + priority + " | Due: " + dueDate + (description.isEmpty() ? "" : " | Desc: " + description));
+        } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.WARNING, "Domain validation rejected task addition", e);
+            Ui.printError("Failed to add task due to invalid data: " + e.getMessage());
+        }
     }
 
     public void handleEditTask(ParsedCommand cmd) throws InvalidIndexException, SKUNotFoundException {
@@ -105,11 +108,19 @@ public class TaskCommandHandler {
             return;
         }
 
-        taskList.editSKUTask(index, newDate, newPriority, newDesc);
-        SKUTask updated = taskList.getSKUTaskList().get(index - 1);
+        try {
+            taskList.editSKUTask(index, newDate, newPriority, newDesc);
+            SKUTask updated = taskList.getSKUTaskList().get(index - 1);
 
-        LOGGER.log(Level.INFO, "Edited task #" + index + " for SKU [" + skuId + "]");
-        Ui.printSuccess("Updated task #" + index + " for SKU [" + skuId.toUpperCase() + "]: " + updated);
+            LOGGER.log(Level.INFO, "Edited task #" + index + " for SKU [" + skuId + "]");
+            Ui.printSuccess("Updated task #" + index + " for SKU [" + skuId.toUpperCase() + "]: " + updated);
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.log(Level.SEVERE, "Index out of bounds during edit, bypassing guard clause", e);
+            throw new InvalidIndexException(index, skuId);
+        } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.WARNING, "Domain validation rejected task edit", e);
+            Ui.printError("Failed to edit task due to invalid data: " + e.getMessage());
+        }
     }
 
     public void handleDeleteTask(ParsedCommand cmd) throws InvalidIndexException, SKUNotFoundException {
@@ -141,9 +152,14 @@ public class TaskCommandHandler {
             return;
         }
 
-        taskList.deleteSKUTaskByIndex(index);
-        LOGGER.log(Level.INFO, "Deleted task #" + index + " from SKU [" + skuId + "]");
-        Ui.printSuccess("Deleted task #" + index + " from SKU [" + skuId.toUpperCase() + "].");
+        try {
+            taskList.deleteSKUTaskByIndex(index);
+            LOGGER.log(Level.INFO, "Deleted task #" + index + " from SKU [" + skuId + "]");
+            Ui.printSuccess("Deleted task #" + index + " from SKU [" + skuId.toUpperCase() + "].");
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.log(Level.SEVERE, "Index out of bounds during deletion", e);
+            throw new InvalidIndexException(index, skuId);
+        }
     }
 
     public void handleMarkTask(ParsedCommand cmd) throws MissingArgumentException, InvalidIndexException {
@@ -174,19 +190,24 @@ public class TaskCommandHandler {
             throw new InvalidIndexException(index, skuId);
         }
 
-        SKUTask task = taskList.getSKUTaskList().get(index - 1);
-        if (task.isDone()) {
-            Ui.printInfo("Task #" + index + " for SKU [" + skuId.toUpperCase() + "] is already marked as done.");
-            return;
-        }
+        try {
+            SKUTask task = taskList.getSKUTaskList().get(index - 1);
+            if (task.isDone()) {
+                Ui.printInfo("Task #" + index + " for SKU [" + skuId.toUpperCase() + "] is already marked as done.");
+                return;
+            }
 
-        taskList.markTask(index);
-        LOGGER.log(Level.INFO, "Marked task #" + index + " as done for SKU [" + skuId + "]");
-        Ui.printSuccess("Marked task #" + index + " as done for SKU [" + skuId.toUpperCase() + "].");
+            taskList.markTask(index);
+            LOGGER.log(Level.INFO, "Marked task #" + index + " as done for SKU [" + skuId + "]");
+            Ui.printSuccess("Marked task #" + index + " as done for SKU [" + skuId.toUpperCase() + "].");
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.log(Level.SEVERE, "Index out of bounds during mark", e);
+            throw new InvalidIndexException(index, skuId);
+        }
     }
 
     public void handleUnmarkTask(ParsedCommand cmd) throws MissingArgumentException, InvalidIndexException {
-        assert cmd != null : "Internal Error: ParsedCommand cannot be null"; // ADDED
+        assert cmd != null : "Internal Error: ParsedCommand cannot be null";
 
         String skuId = cmd.getArg("n");
         String indexStr = cmd.getArg("i");
@@ -213,14 +234,19 @@ public class TaskCommandHandler {
             throw new InvalidIndexException(index, skuId);
         }
 
-        SKUTask task = taskList.getSKUTaskList().get(index - 1);
-        if (!task.isDone()) {
-            Ui.printInfo("Task #" + index + " for SKU [" + skuId.toUpperCase() + "] is already unmarked.");
-            return;
-        }
+        try {
+            SKUTask task = taskList.getSKUTaskList().get(index - 1);
+            if (!task.isDone()) {
+                Ui.printInfo("Task #" + index + " for SKU [" + skuId.toUpperCase() + "] is already unmarked.");
+                return;
+            }
 
-        taskList.unmarkTask(index);
-        LOGGER.log(Level.INFO, "Unmarked task #" + index + " for SKU [" + skuId + "]");
-        Ui.printSuccess("Unmarked task #" + index + " for SKU [" + skuId.toUpperCase() + "].");
+            taskList.unmarkTask(index);
+            LOGGER.log(Level.INFO, "Unmarked task #" + index + " for SKU [" + skuId + "]");
+            Ui.printSuccess("Unmarked task #" + index + " for SKU [" + skuId.toUpperCase() + "].");
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.log(Level.SEVERE, "Index out of bounds during unmark", e);
+            throw new InvalidIndexException(index, skuId);
+        }
     }
 }
