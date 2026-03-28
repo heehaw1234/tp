@@ -1,7 +1,7 @@
 @startuml
 !include ../style.puml
 skinparam arrowThickness 1.1
-
+skinparam classAttributeIconSize 0
 class Ui UI_COLOR {
     - {static} DIVIDER : String
     - {static} LOGO : String
