@@ -1,65 +1,47 @@
 package sku;
 
 import skutask.SKUTaskList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a Stock Keeping Unit (SKU) in the inventory ticketing system.
- * Contains the SKU identifier, its physical location in the warehouse, and a list of tasks assigned to it.
  */
 public class SKU {
+    private static final Logger LOGGER = Logger.getLogger(SKU.class.getName());
+
     private String skuID;
     private Location skuLocation;
     private SKUTaskList skuTaskList;
 
-    /**
-     * Initializes a new SKU with the specified ID and location.
-     * An empty task list is automatically created for the SKU upon instantiation.
-     *
-     * @param skuID The unique alphanumeric identifier for the SKU.
-     * @param skuLocation The physical sector location of the SKU in the warehouse.
-     */
     public SKU(String skuID, Location skuLocation) {
+        assert skuID != null && !skuID.trim().isEmpty() : "Internal Error: SKU ID cannot be null or empty";
+        assert skuLocation != null : "Internal Error: SKU Location cannot be null";
+
         this.skuID = skuID;
         this.skuLocation = skuLocation;
         this.skuTaskList = new SKUTaskList();
 
-        assert this.skuID != null && !this.skuID.trim().isEmpty() : "SKU ID cannot be null or empty";
-        assert this.skuLocation != null : "SKU Location cannot be null";
+        LOGGER.log(Level.INFO, "Instantiated new SKU object: [" + skuID + "] at " + skuLocation);
     }
 
-    /**
-     * Retrieves the identifier of the SKU.
-     *
-     * @return The SKU's unique ID.
-     */
     public String getSKUID() {
         return skuID;
     }
 
-    /**
-     * Retrieves the physical warehouse location of the SKU.
-     *
-     * @return The Location enum representing the SKU's placement.
-     */
     public Location getSKULocation() {
         return skuLocation;
     }
 
-    /**
-     * Sets the warehouse location of this SKU.
-     *
-     * @param location The new Location to assign.
-     */
     public void setLocation(Location location) {
-        assert location != null : "SKU Location cannot be null";
+        assert location != null : "Internal Error: Cannot set SKU Location to null";
+
+        Location oldLocation = this.skuLocation;
         this.skuLocation = location;
+
+        LOGGER.log(Level.INFO, "Moved SKU [" + skuID + "] from " + oldLocation + " to " + location);
     }
 
-    /**
-     * Retrieves the list of tasks assigned to this SKU.
-     *
-     * @return The SKUTaskList containing all tasks associated with the SKU.
-     */
     public SKUTaskList getSKUTaskList() {
         return skuTaskList;
     }

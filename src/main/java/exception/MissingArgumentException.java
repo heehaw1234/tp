@@ -3,6 +3,7 @@ package exception;
 /**
  * Represents an error when a required argument (like an index or description) is missing.
  */
+//@@author omcodedthis
 public class MissingArgumentException extends ItemTaskerException {
 
     /**

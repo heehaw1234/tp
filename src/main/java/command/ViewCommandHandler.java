@@ -21,6 +21,8 @@ import java.util.List;
  * and finding tasks by combinable search criteria.
  * Each complex operation is broken into single-purpose sub-methods (SLAP).
  */
+
+//@@author dorndorn54
 public class ViewCommandHandler {
 
     private final SKUList skuList;
@@ -29,15 +31,13 @@ public class ViewCommandHandler {
         this.skuList = skuList;
     }
 
-    // ========== listtasks — dispatches to one sub-method per filter type ==========
-
     /**
      * Dispatches to the appropriate listing sub-method based on which filter is provided.
      *
      * @param cmd The parsed command containing optional filter arguments.
      * @throws InvalidCommandException If the command format is fundamentally invalid.
-     * @throws EmptyListException      If the system is queried but currently tracks no tasks.
-     * @throws SKUNotFoundException    If a specific SKU filter is applied but the SKU does not exist.
+     * @throws EmptyListException If the system is queried but currently tracks no tasks.
+     * @throws SKUNotFoundException If a specific SKU filter is applied but the SKU does not exist.
      */
     public void handleListTasks(ParsedCommand cmd) throws InvalidCommandException, EmptyListException,
             SKUNotFoundException {
@@ -112,7 +112,7 @@ public class ViewCommandHandler {
     /**
      * Formats task entries with their distance from a reference location.
      *
-     * @param tasks       The sorted list of tasks.
+     * @param tasks The sorted list of tasks.
      * @param locationStr The reference location string for distance calculation.
      * @return A list of pre-formatted distance entry strings.
      */
@@ -139,8 +139,8 @@ public class ViewCommandHandler {
      *
      * @param cmd The parsed command containing the filter flags.
      * @throws MissingArgumentException If no filter flags are provided.
-     * @throws SKUNotFoundException     If the specified SKU does not exist in the warehouse.
-     * @throws InvalidIndexException    If the task index is not a valid number or is out of range.
+     * @throws SKUNotFoundException If the specified SKU does not exist in the warehouse.
+     * @throws InvalidIndexException If the task index is not a valid number or is out of range.
      */
     public void handleFind(ParsedCommand cmd) throws MissingArgumentException, SKUNotFoundException,
             InvalidIndexException {
@@ -166,11 +166,11 @@ public class ViewCommandHandler {
     /**
      * Validates that at least one filter is provided and that the SKU filter (if given) exists.
      *
-     * @param skuFilter  The SKU filter, or null.
+     * @param skuFilter The SKU filter, or null.
      * @param descFilter The description filter, or null.
-     * @param indexStr   The index filter string, or null.
+     * @param indexStr The index filter string, or null.
      * @throws MissingArgumentException If all filters are null.
-     * @throws SKUNotFoundException     If the specified SKU does not exist.
+     * @throws SKUNotFoundException If the specified SKU does not exist.
      */
     private void validateFindArgs(String skuFilter, String descFilter, String indexStr)
             throws MissingArgumentException, SKUNotFoundException {
@@ -185,9 +185,9 @@ public class ViewCommandHandler {
     /**
      * Searches all matching tasks across SKUs based on the provided filters.
      *
-     * @param skuFilter  The SKU ID filter, or null to search all SKUs.
+     * @param skuFilter The SKU ID filter, or null to search all SKUs.
      * @param descFilter The description keyword filter, or null to match all.
-     * @param taskIndex  The 1-based task index filter, or -1 to search all indices.
+     * @param taskIndex The 1-based task index filter, or -1 to search all indices.
      * @return A list of pre-formatted result strings for matching tasks.
      * @throws InvalidIndexException If the index is out of range for a filtered SKU.
      */
@@ -206,11 +206,11 @@ public class ViewCommandHandler {
     /**
      * Searches tasks within a single SKU and appends formatted results to the list.
      *
-     * @param sku          The SKU to search within.
-     * @param descFilter   The description keyword filter, or null to match all.
-     * @param taskIndex    The 1-based task index filter, or -1 to search all indices.
+     * @param sku The SKU to search within.
+     * @param descFilter The description keyword filter, or null to match all.
+     * @param taskIndex The 1-based task index filter, or -1 to search all indices.
      * @param hasSkuFilter Whether the user specified a SKU filter (affects error behaviour).
-     * @param results      The accumulator list for formatted result strings.
+     * @param results The accumulator list for formatted result strings.
      * @throws InvalidIndexException If the index is out of range and a SKU filter was specified.
      */
     private void searchTasksInSku(SKU sku, String descFilter, int taskIndex,
@@ -227,12 +227,12 @@ public class ViewCommandHandler {
     /**
      * Searches for a task at a specific index within a SKU.
      *
-     * @param sku          The SKU being searched.
-     * @param tasks        The task list of the SKU.
-     * @param descFilter   The description keyword filter, or null to match all.
-     * @param taskIndex    The 1-based task index to look up.
+     * @param sku The SKU being searched.
+     * @param tasks The task list of the SKU.
+     * @param descFilter The description keyword filter, or null to match all.
+     * @param taskIndex The 1-based task index to look up.
      * @param hasSkuFilter Whether the user specified a SKU filter.
-     * @param results      The accumulator list for formatted result strings.
+     * @param results The accumulator list for formatted result strings.
      * @throws InvalidIndexException If the index is out of range and a SKU filter was specified.
      */
     private void searchByIndex(SKU sku, ArrayList<SKUTask> tasks, String descFilter,
@@ -253,10 +253,10 @@ public class ViewCommandHandler {
     /**
      * Searches all tasks within a SKU for description matches.
      *
-     * @param sku        The SKU being searched.
-     * @param tasks      The task list of the SKU.
+     * @param sku The SKU being searched.
+     * @param tasks The task list of the SKU.
      * @param descFilter The description keyword filter, or null to match all.
-     * @param results    The accumulator list for formatted result strings.
+     * @param results The accumulator list for formatted result strings.
      */
     private void searchAllTasks(SKU sku, ArrayList<SKUTask> tasks, String descFilter, List<String> results) {
         for (int i = 0; i < tasks.size(); i++) {
@@ -272,7 +272,7 @@ public class ViewCommandHandler {
      *
      * @param skuId The SKU identifier.
      * @param index The 1-based task index.
-     * @param task  The matching task.
+     * @param task The matching task.
      * @return A formatted result string.
      */
     private String formatSearchResult(String skuId, int index, SKUTask task) {

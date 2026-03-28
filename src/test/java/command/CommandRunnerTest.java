@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * captured from {@code System.out} so we can assert on success/error messages
  * without requiring a real terminal.
  */
+
 public class CommandRunnerTest {
 
     private CommandRunner runner;

@@ -4,6 +4,7 @@ package exception;
  * Represents the base exception for all ItemTasker-specific errors.
  * All custom exceptions in the application should inherit from this class.
  */
+//@@author omcodedthis
 public class ItemTaskerException extends Exception {
 
     /**

@@ -9,6 +9,8 @@ import java.util.Map;
  *   <li>A map of flag keys to values (e.g. {@code "n" -> "COMPUTER-MOUSE-X1"})</li>
  * </ul>
  */
+
+//@@author AkshayPranav19
 public class ParsedCommand {
 
     private final String commandWord;

@@ -13,6 +13,8 @@ import java.io.IOException;
  * Handles persistent storage of the warehouse state by serializing and
  * deserializing the SKU list to and from a JSON file on disk.
  */
+
+//@@author dorndorn54
 public class Storage {
     private static final String FILE_PATH = "Data/storage.json";
 
