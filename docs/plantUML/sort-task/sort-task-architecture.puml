@@ -1,0 +1,52 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
+
+class TaskCommandHandler LOGIC_COLOR {
+  + handleSortTask(cmd: ParsedCommand): void
+}
+
+class TaskSorter LOGIC_COLOR {
+  - sortedTasks: List<SKUTask>
+  - sortField: String
+  - ascending: boolean
+  + TaskSorter(tasks: List<SKUTask>, sortField: String, ascending: boolean)
+  + getSortedTasks(): List<SKUTask>
+  + {static} isValidSortField(field: String): boolean
+  + getSortField(): String
+  + isAscending(): boolean
+}
+
+class SKUList MODEL_COLOR {
+  + findByID(skuID: String): SKU
+}
+
+class SKU MODEL_COLOR_T1 {
+  - skuID: String
+  + getSKUTaskList(): SKUTaskList
+}
+
+class SKUTaskList MODEL_COLOR_T2 {
+  + getSKUTaskList(): ArrayList<SKUTask>
+  + getSize(): int
+}
+
+class SKUTask MODEL_COLOR_T3 {
+  - skuTaskID: String
+  - priority: Priority
+  - dueDate: String
+  - isDone: boolean
+  + getSKUTaskDueDate(): String
+  + getSKUTaskPriority(): Priority
+  + isDone(): boolean
+}
+
+TaskCommandHandler -down-> "1" SKUList : skuList
+TaskCommandHandler ..> TaskSorter : creates
+SKUList -down-> "*" SKU : skuList
+SKU -down-> "1" SKUTaskList : skuTaskList
+SKUTaskList -down-> "*" SKUTask : skuTaskList
+TaskSorter ..> SKUTask : sorts
+@enduml

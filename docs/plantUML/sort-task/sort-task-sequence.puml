@@ -1,0 +1,49 @@
+@startuml
+!include ../style.puml
+
+Actor User as user USER_COLOR
+Participant ":Ui" as ui UI_COLOR
+Participant ":Parser" as parser LOGIC_COLOR_T1
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":TaskCommandHandler" as handler LOGIC_COLOR
+Participant ":CommandHelper" as helper LOGIC_COLOR
+Participant ":SKUList" as skuList MODEL_COLOR
+Participant ":SKU" as sku MODEL_COLOR_T1
+Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+Participant ":TaskSorter" as sorter LOGIC_COLOR
+
+user -> ui ++ : "sorttasks n/PALLET-A s/date o/ascending"
+ui -> parser ++ : parse(...)
+return cmd : ParsedCommand
+
+ui -> runner ++ : run(cmd)
+runner -> handler ++ : handleSortTask(cmd)
+
+handler -> helper ++ : findSkuOrError(skuList, "PALLET-A")
+helper -> skuList ++ : findByID("PALLET-A")
+return sku
+return sku
+
+handler -> handler ++ : TaskSorter.isValidSortField("date")
+return true
+
+handler -> sku ++ : getSKUTaskList()
+return taskList
+
+handler -> taskList ++ : getSKUTaskList()
+return ArrayList<SKUTask>
+
+handler -> sorter ** : TaskSorter(tasks, "date", true)
+activate sorter LOGIC_COLOR
+sorter -> sorter ++ : sort()
+return
+handler -> sorter ++ : getSortedTasks()
+return sortedTasks
+deactivate sorter
+
+handler -> ui : printSortedTasks("PALLET-A", "date", "ascending", sortedTasks)
+
+return
+return
+return display sorted tasks
+@enduml

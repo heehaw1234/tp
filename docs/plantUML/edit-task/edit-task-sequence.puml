@@ -1,0 +1,52 @@
+@startuml
+!include ../style.puml
+
+Actor User as user USER_COLOR
+Participant ":Ui" as ui UI_COLOR
+Participant ":Parser" as parser LOGIC_COLOR_T1
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":TaskCommandHandler" as handler LOGIC_COLOR
+Participant ":CommandHelper" as helper LOGIC_COLOR
+Participant ":DateValidator" as validator LOGIC_COLOR
+Participant ":SKUList" as skuList MODEL_COLOR
+Participant ":SKU" as sku MODEL_COLOR_T1
+Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+Participant ":SKUTask" as task MODEL_COLOR_T3
+
+user -> ui ++ : "edittask n/PALLET-A i/1 d/2026-12-31 p/LOW t/updated"
+ui -> parser ++ : parse(...)
+return cmd : ParsedCommand
+
+ui -> runner ++ : run(cmd)
+runner -> handler ++ : handleEditTask(cmd)
+
+handler -> validator ++ : validateDateOrError("2026-12-31")
+return "2026-12-31"
+
+handler -> helper ++ : parseIndex("1")
+return 1
+
+handler -> helper ++ : findSkuOrError(skuList, "PALLET-A")
+helper -> skuList ++ : findByID("PALLET-A")
+return sku
+return sku
+
+handler -> sku ++ : getSKUTaskList()
+return taskList
+
+handler -> helper ++ : parsePriority("LOW")
+return LOW
+
+handler -> taskList ++ : editSKUTask(1, "2026-12-31", LOW, "updated")
+taskList -> task ++ : setSKUTaskDueDate("2026-12-31")
+return
+taskList -> task ++ : setSKUTaskPriority(LOW)
+return
+taskList -> task ++ : setSKUTaskDescription("updated")
+return
+return
+
+return
+return
+return display success message
+@enduml
