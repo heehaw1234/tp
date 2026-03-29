@@ -14,6 +14,8 @@ import java.util.logging.Logger;
  * Handles the logic for filtering and sorting tasks based on SKU ID, priority, or location.
  * This class acts as a view processor to decouple the data storage from the presentation layer.
  */
+
+// @@author SeanTLY23
 public class ViewSKUTask {
 
     private static final Logger logger = Logger.getLogger(ViewSKUTask.class.getName());

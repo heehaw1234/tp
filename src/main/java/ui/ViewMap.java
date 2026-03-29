@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+// @@author SeanTLY23
 public class ViewMap {
     private static final Logger logger = Logger.getLogger(ViewMap.class.getName());
 

@@ -47,6 +47,13 @@ public class ParsedCommand {
     }
 
     /**
+     * Returns all flag keys present in this command.
+     */
+    public java.util.Set<String> getAllFlags() {
+        return args.keySet();
+    }
+
+    /**
      * Returns whether the given flag key is present in this command.
      *
      * @param key Flag key without slash.
