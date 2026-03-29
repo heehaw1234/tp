@@ -7,12 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles the logic for filtering and sorting tasks based on SKU ID, priority, or location.
  * This class acts as a view processor to decouple the data storage from the presentation layer.
  */
 public class ViewSKUTask {
+
+    private static final Logger logger = Logger.getLogger(ViewSKUTask.class.getName());
     private String skuFilter;
     private String priorityFilter;
     private String locationFilter;
@@ -28,7 +32,7 @@ public class ViewSKUTask {
     public List<SKUTask> listTasks(SKUList fullList) {
         List<SKUTask> allTasks = new ArrayList<>();
 
-        // ARCHITECTURE FIX: Extract all tasks directly from the encapsulated SKU objects
+        logger.log(Level.FINE, "Aggregating all tasks from {0} SKUs.", fullList.getSKUList().size());
         for (SKU sku : fullList.getSKUList()) {
             allTasks.addAll(sku.getSKUTaskList().getSKUTaskList());
         }
@@ -37,24 +41,29 @@ public class ViewSKUTask {
 
         // Handle SKU Filter: "listtasks n/SKU_ID"
         if (skuFilter != null) {
+            logger.log(Level.INFO, "Applying SKU Filter: {0}", skuFilter);
             result = allTasks.stream()
                     .filter(t -> t.getSKUTaskID().equalsIgnoreCase(skuFilter))
                     .collect(Collectors.toList());
 
             // Handle Priority Filter: "listtasks p/HIGH"
         } else if (priorityFilter != null) {
+            logger.log(Level.INFO, "Applying Priority Filter: {0}", priorityFilter);
             return allTasks.stream()
                     .filter(t -> t.getSKUTaskPriority().toString().equalsIgnoreCase(priorityFilter))
                     .collect(Collectors.toList());
 
             // Handle Distance Filter: "listtasks l/B2"
         } else if (locationFilter != null) {
+            logger.log(Level.INFO, "Applying Distance Sorting from Location: {0}", locationFilter);
             result = allTasks.stream()
                     .sorted(Comparator.comparingInt(t -> calculateDistance(t, locationFilter, fullList)))
                     .collect(Collectors.toList());
         } else {
+            logger.log(Level.FINE, "No filters set. Returning all {0} tasks.", allTasks.size());
             result = allTasks;
         }
+        logger.log(Level.INFO, "Filter/Sort operation returned {0} results.", result.size());
         return result;
     }
 

@@ -15,6 +15,8 @@ import ui.Ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles all view and search commands: listing tasks with optional filters
@@ -25,6 +27,7 @@ import java.util.List;
 //@@author dorndorn54
 public class ViewCommandHandler {
 
+    private static final Logger logger = Logger.getLogger(ViewCommandHandler.class.getName());
     private final SKUList skuList;
 
     public ViewCommandHandler(SKUList skuList) {
@@ -45,6 +48,8 @@ public class ViewCommandHandler {
         String priorityFilter = cmd.getArg("p");
         String locationFilter = cmd.getArg("l");
 
+        logger.log(Level.INFO, "Listing tasks. Filters -> SKU: {0}, Priority: {1}, Location: {2}",
+                new Object[]{skuFilter, priorityFilter, locationFilter});
         if (skuFilter != null) {
             listTasksForSku(skuFilter);
         } else if (priorityFilter != null) {
@@ -52,6 +57,7 @@ public class ViewCommandHandler {
         } else if (locationFilter != null) {
             listTasksByDistance(locationFilter);
         } else {
+            logger.log(Level.FINE, "No filters provided, listing all tasks.");
             Ui.printAllTasks(this.skuList);
         }
     }
@@ -64,6 +70,7 @@ public class ViewCommandHandler {
     private void listTasksForSku(String skuId) {
         SKU targetSku = skuList.findByID(skuId);
         if (targetSku == null || targetSku.getSKUTaskList().isEmpty()) {
+            logger.log(Level.WARNING, "Lookup failed: SKU {0} not found or empty.", skuId);
             Ui.printInfo("No tasks found for SKU: " + skuId.toUpperCase());
             return;
         }
@@ -81,6 +88,7 @@ public class ViewCommandHandler {
      */
     private void listTasksByPriority(String priorityStr) {
         if (CommandHelper.parsePriority(priorityStr) == null) {
+            logger.log(Level.WARNING, "Invalid priority level provided: {0}", priorityStr);
             return;
         }
 
@@ -98,6 +106,7 @@ public class ViewCommandHandler {
     private void listTasksByDistance(String locationStr) {
         Location from = CommandHelper.parseLocation(locationStr);
         if (from == null) {
+            logger.log(Level.WARNING, "Invalid location for distance filter: {0}", locationStr);
             return;
         }
 
@@ -122,6 +131,7 @@ public class ViewCommandHandler {
         for (SKUTask t : tasks) {
             SKU skuObj = skuList.findByID(t.getSKUTaskID());
             if (skuObj == null) {
+                logger.log(Level.SEVERE, "Data Integrity Error: Task {0} has no parent SKU.", t.getSKUTaskID());
                 continue;
             }
             int dist = viewer.calculateDistance(t, locationStr, this.skuList);
