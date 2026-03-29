@@ -154,4 +154,21 @@ public class FindCommandTest {
             runner.run(buildFindCommand("WIDGET-A1", null, "99"));
         });
     }
+
+    @Test
+    public void find_byIndexOnly_showsTaskAtIndexAcrossAllSKUs() throws ItemTaskerException, IOException {
+        runner.run(buildFindCommand(null, null, "1"));
+        String output = getOutput();
+        assertTrue(output.contains("restock shelf"));
+        assertTrue(output.contains("restock back"));
+    }
+
+    @Test
+    public void find_byDescAndIndex_narrowsResults() throws ItemTaskerException, IOException {
+        runner.run(buildFindCommand(null, "restock", "1"));
+        String output = getOutput();
+        assertTrue(output.contains("restock shelf"));
+        assertTrue(output.contains("restock back"));
+        assertFalse(output.contains("check inventory"));
+    }
 }

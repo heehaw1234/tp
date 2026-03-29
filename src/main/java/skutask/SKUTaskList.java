@@ -1,12 +1,15 @@
 package skutask;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages a list of SKU tasks.
  * Provides methods to add, delete, retrieve, and display tasks.
  */
 public class SKUTaskList {
+    private static final Logger LOGGER = Logger.getLogger(SKUTaskList.class.getName());
     private final ArrayList<SKUTask> skuTaskList;
 
     /**
@@ -50,6 +53,8 @@ public class SKUTaskList {
 
         SKUTask newTask = new SKUTask(skuID, priority, dueDate, description);
         skuTaskList.add(newTask);
+        LOGGER.log(Level.INFO, "Task added for SKU {0} (size now {1})",
+                new Object[]{skuID, skuTaskList.size()});
     }
 
     /**
@@ -118,6 +123,10 @@ public class SKUTaskList {
         int idxToDelete = getIndexOfSKUTask(skuIDToDelete);
         if (idxToDelete != -1) {
             skuTaskList.remove(idxToDelete);
+            LOGGER.log(Level.INFO, "Task deleted for SKU {0} (size now {1})",
+                    new Object[]{skuIDToDelete, skuTaskList.size()});
+        } else {
+            LOGGER.log(Level.WARNING, "Delete requested but SKU {0} not found in task list", skuIDToDelete);
         }
     }
 
@@ -127,7 +136,15 @@ public class SKUTaskList {
      * @param taskIndex The 1-based index of the task to delete.
      */
     public void deleteSKUTaskByIndex(int taskIndex) {
+        assert taskIndex >= 1 && taskIndex <= skuTaskList.size()
+                : "Task index " + taskIndex + " out of bounds (size: " + skuTaskList.size() + ")";
+        if (taskIndex < 1 || taskIndex > skuTaskList.size()) {
+            throw new IndexOutOfBoundsException(
+                    "Task index " + taskIndex + " is out of range. List size: " + skuTaskList.size());
+        }
         skuTaskList.remove(taskIndex - 1);
+        LOGGER.log(Level.INFO, "Task at index {0} deleted (size now {1})",
+                new Object[]{taskIndex, skuTaskList.size()});
     }
 
     /**
@@ -160,6 +177,8 @@ public class SKUTaskList {
      * @param newDesc     The new description, or null to leave unchanged.
      */
     public void editSKUTask(int taskIndex, String newDueDate, Priority newPriority, String newDesc) {
+        assert taskIndex >= 1 && taskIndex <= skuTaskList.size()
+                : "Task index " + taskIndex + " out of bounds (size: " + skuTaskList.size() + ")";
         SKUTask task = skuTaskList.get(taskIndex - 1);
         if (newDueDate != null) {
             task.setSKUTaskDueDate(newDueDate);
@@ -170,6 +189,7 @@ public class SKUTaskList {
         if (newDesc != null) {
             task.setSKUTaskDescription(newDesc);
         }
+        LOGGER.log(Level.INFO, "Task at index {0} edited", taskIndex);
     }
 
     /**
@@ -178,6 +198,9 @@ public class SKUTaskList {
      * @param taskIndex The 1-based index of the task to mark.
      */
     public void markTask(int taskIndex) {
+        assert taskIndex >= 1 && taskIndex <= skuTaskList.size()
+                : "Task index " + taskIndex + " out of bounds (size: " + skuTaskList.size() + ")";
+        LOGGER.log(Level.FINE, "Delegating mark to task at index {0}", taskIndex);
         skuTaskList.get(taskIndex - 1).mark();
     }
 
@@ -187,6 +210,9 @@ public class SKUTaskList {
      * @param taskIndex The 1-based index of the task to unmark.
      */
     public void unmarkTask(int taskIndex) {
+        assert taskIndex >= 1 && taskIndex <= skuTaskList.size()
+                : "Task index " + taskIndex + " out of bounds (size: " + skuTaskList.size() + ")";
+        LOGGER.log(Level.FINE, "Delegating unmark to task at index {0}", taskIndex);
         skuTaskList.get(taskIndex - 1).unmark();
     }
 }

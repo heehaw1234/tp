@@ -6,6 +6,8 @@ import skutask.SKUTask;
 import skutask.SKUTaskList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SKUTaskListTest {
@@ -105,5 +107,62 @@ public class SKUTaskListTest {
         task.setSKUTaskDescription("third");
 
         assertEquals("third", task.getSKUTaskDescription());
+    }
+
+    @Test
+    public void setSKUTaskDueDate_validDate_updatesDate() {
+        SKUTask task = new SKUTask("SKU-A", Priority.HIGH, "2026-01-01", "test");
+        task.setSKUTaskDueDate("2026-12-31");
+        assertEquals("2026-12-31", task.getSKUTaskDueDate());
+    }
+
+    @Test
+    public void setSKUTaskPriority_validPriority_updatesPriority() {
+        SKUTask task = new SKUTask("SKU-A", Priority.HIGH, "2026-01-01", "test");
+        task.setSKUTaskPriority(Priority.LOW);
+        assertEquals(Priority.LOW, task.getSKUTaskPriority());
+    }
+
+    @Test
+    public void toString_withoutDescription_excludesDescField() {
+        SKUTask task = new SKUTask("SKU-A", Priority.HIGH, "2026-01-01", "");
+        String result = task.toString();
+        assertFalse(result.contains("Desc:"));
+        assertTrue(result.contains("SKU-A"));
+    }
+
+    @Test
+    public void toString_markedTask_showsXStatus() {
+        SKUTask task = new SKUTask("SKU-A", Priority.HIGH, "2026-01-01", "test");
+        task.mark();
+        assertTrue(task.toString().startsWith("[X]"));
+    }
+
+    @Test
+    public void deleteSKUTaskByIndex_validIndex_taskRemoved() {
+        SKUTaskList taskList = new SKUTaskList();
+        taskList.addSKUTask("SKU-A", Priority.HIGH, "2026-01-01", "first");
+        taskList.addSKUTask("SKU-B", Priority.LOW, "2026-02-01", "second");
+        taskList.deleteSKUTaskByIndex(1);
+
+        assertEquals(1, taskList.getSize());
+        assertEquals("SKU-B", taskList.getSKUTaskList().get(0).getSKUTaskID());
+    }
+
+    @Test
+    public void deleteSKUTaskByIndex_invalidIndex_throwsException() {
+        SKUTaskList taskList = new SKUTaskList();
+        taskList.addSKUTask("SKU-A", Priority.HIGH, "2026-01-01", "only task");
+        assertThrows(AssertionError.class, () -> taskList.deleteSKUTaskByIndex(5));
+    }
+
+    @Test
+    public void addSKUTask_twoArgs_defaultsPriorityAndDescription() {
+        SKUTaskList taskList = new SKUTaskList();
+        taskList.addSKUTask("SKU-Z", "2026-09-01");
+
+        assertEquals(1, taskList.getSize());
+        assertEquals(Priority.HIGH, taskList.getSKUTaskList().get(0).getSKUTaskPriority());
+        assertEquals("", taskList.getSKUTaskList().get(0).getSKUTaskDescription());
     }
 }
