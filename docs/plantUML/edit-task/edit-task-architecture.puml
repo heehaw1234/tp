@@ -1,0 +1,51 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
+
+class TaskCommandHandler LOGIC_COLOR {
+  + handleEditTask(cmd: ParsedCommand): void
+}
+
+class DateValidator LOGIC_COLOR {
+  + {static} validateDateOrError(dateStr: String): String
+}
+
+class CommandHelper LOGIC_COLOR {
+  + {static} findSkuOrError(skuList: SKUList, skuId: String): SKU
+  + {static} parseIndex(indexStr: String): int
+  + {static} parsePriority(priorityStr: String): Priority
+}
+
+class SKUList MODEL_COLOR {
+  + findByID(skuID: String): SKU
+}
+
+class SKU MODEL_COLOR_T1 {
+  - skuID: String
+  + getSKUTaskList(): SKUTaskList
+}
+
+class SKUTaskList MODEL_COLOR_T2 {
+  + editSKUTask(index: int, date: String, priority: Priority, desc: String): void
+  + getSKUTaskList(): ArrayList<SKUTask>
+  + getSize(): int
+}
+
+class SKUTask MODEL_COLOR_T3 {
+  - dueDate: String
+  - priority: Priority
+  - taskDescription: String
+  + setSKUTaskDueDate(dueDate: String): void
+  + setSKUTaskPriority(priority: Priority): void
+  + setSKUTaskDescription(desc: String): void
+}
+
+TaskCommandHandler -down-> "1" SKUList : skuList
+TaskCommandHandler ..> CommandHelper : uses
+TaskCommandHandler ..> DateValidator : uses
+SKUList -down-> "*" SKU : skuList
+SKU -down-> "1" SKUTaskList : skuTaskList
+SKUTaskList -down-> "*" SKUTask : skuTaskList
+@enduml
