@@ -24,6 +24,8 @@ __________________________________________________________________________
    deletetask n/SKU_ID i/TASK_INDEX    Delete task at given index.
    marktask n/SKU_ID i/TASK_INDEX      Mark a task as completed.
    unmarktask n/SKU_ID i/TASK_INDEX    Unmark a completed task.
+   sorttasks n/SKU_ID s/SORT_BY        Sort tasks within a SKU (date|priority|status).
+         [o/ORDER]                     Optional: ascending (default) or descending.
 
  VIEWING
    listtasks                           List all tasks.

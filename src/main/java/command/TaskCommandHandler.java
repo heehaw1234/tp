@@ -9,7 +9,11 @@ import sku.SKUList;
 import skutask.Priority;
 import skutask.SKUTask;
 import skutask.SKUTaskList;
+import skutask.TaskSorter;
 import ui.Ui;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +42,11 @@ public class TaskCommandHandler {
             return;
         }
 
+        String validatedDate = DateValidator.validateDateOrError(dueDate);
+        if (validatedDate == null) {
+            return;
+        }
+
         SKU targetSku = skuList.findByID(skuId);
         if (targetSku == null) {
             LOGGER.log(Level.WARNING, "Failed to add task: SKU [" + skuId + "] not found.");
@@ -54,18 +63,20 @@ public class TaskCommandHandler {
         SKUTaskList taskList = targetSku.getSKUTaskList();
 
         try {
-            taskList.addSKUTask(skuId.toUpperCase(), priority, dueDate, description);
+            taskList.addSKUTask(skuId.toUpperCase(), priority, validatedDate, description);
             int newIndex = taskList.getSize();
 
             LOGGER.log(Level.INFO, "Added task #" + newIndex + " to SKU [" + skuId + "]");
             Ui.printSuccess("Added task #" + newIndex + " to SKU [" + skuId.toUpperCase() + "] | Priority: "
-                    + priority + " | Due: " + dueDate + (description.isEmpty() ? "" : " | Desc: " + description));
+                    + priority + " | Due: " + validatedDate
+                    + (description.isEmpty() ? "" : " | Desc: " + description));
         } catch (IllegalArgumentException e) {
             LOGGER.log(Level.WARNING, "Domain validation rejected task addition", e);
             Ui.printError("Failed to add task due to invalid data: " + e.getMessage());
         }
     }
 
+    //@@author AkshayPranav19
     public void handleEditTask(ParsedCommand cmd) throws InvalidIndexException, SKUNotFoundException {
         assert cmd != null : "Internal Error: ParsedCommand cannot be null";
 
@@ -84,6 +95,13 @@ public class TaskCommandHandler {
         if (newDate == null && newPriorityStr == null && newDesc == null) {
             Ui.printError("Provide at least one field to update: d/DATE, p/PRIORITY, or t/DESC.");
             return;
+        }
+
+        if (newDate != null) {
+            newDate = DateValidator.validateDateOrError(newDate);
+            if (newDate == null) {
+                return;
+            }
         }
 
         int index = CommandHelper.parseIndex(indexStr);
@@ -123,6 +141,7 @@ public class TaskCommandHandler {
         }
     }
 
+    //@@author omcodedthis
     public void handleDeleteTask(ParsedCommand cmd) throws InvalidIndexException, SKUNotFoundException {
         assert cmd != null : "Internal Error: ParsedCommand cannot be null";
 
@@ -162,6 +181,7 @@ public class TaskCommandHandler {
         }
     }
 
+    //@@author AkshayPranav19
     public void handleMarkTask(ParsedCommand cmd) throws MissingArgumentException, InvalidIndexException {
         assert cmd != null : "Internal Error: ParsedCommand cannot be null";
 
@@ -247,6 +267,65 @@ public class TaskCommandHandler {
         } catch (IndexOutOfBoundsException e) {
             LOGGER.log(Level.SEVERE, "Index out of bounds during unmark", e);
             throw new InvalidIndexException(index, skuId);
+        }
+    }
+
+
+    /**
+     * Sorts tasks for a specific SKU by the given field in the specified order.
+     * Supported sort fields: date, priority, status.
+     * Default sort order is ascending if not specified.
+     *
+     * @param cmd The parsed command containing SKU ID, sort field, and optional order.
+     * @throws SKUNotFoundException If the specified SKU does not exist.
+     */
+    //@@author AkshayPranav19
+    public void handleSortTask(ParsedCommand cmd) throws SKUNotFoundException {
+        assert cmd != null : "Internal Error: ParsedCommand cannot be null";
+
+        String skuId = cmd.getArg("n");
+        String sortField = cmd.getArg("s");
+
+        if (skuId == null || sortField == null) {
+            LOGGER.log(Level.WARNING, "Sort command missing required arguments.");
+            Ui.printError("Usage: sorttasks n/SKU_ID s/date|priority|status [o/asc|desc]");
+            return;
+        }
+
+        LOGGER.log(Level.INFO, "Sorting tasks for SKU [" + skuId + "] by field: " + sortField);
+
+        SKU targetSku = CommandHelper.findSkuOrError(skuList, skuId);
+        if (targetSku == null) {
+            LOGGER.log(Level.WARNING, "Sort failed: SKU [" + skuId + "] not found.");
+            return;
+        }
+
+        if (!TaskSorter.isValidSortField(sortField)) {
+            LOGGER.log(Level.WARNING, "Invalid sort field provided: " + sortField);
+            Ui.printError("Invalid sort field '" + sortField + "'. Use: date, priority, or status.");
+            return;
+        }
+
+        String orderStr = cmd.hasArg("o") ? cmd.getArg("o") : "ascending";
+        boolean ascending = !orderStr.toLowerCase().startsWith("desc");
+
+        SKUTaskList taskList = targetSku.getSKUTaskList();
+        assert taskList != null : "Internal Error: SKUTaskList should never be null";
+
+        try {
+            List<SKUTask> tasks = new ArrayList<>(taskList.getSKUTaskList());
+            TaskSorter sorter = new TaskSorter(tasks, sortField.toLowerCase(), ascending);
+            List<SKUTask> sorted = sorter.getSortedTasks();
+
+            assert sorted.size() == tasks.size()
+                    : "Sorted result size must match original task count";
+
+            LOGGER.log(Level.INFO, "Successfully sorted " + sorted.size() + " tasks for SKU ["
+                    + skuId + "] by " + sortField + " (" + orderStr + ")");
+            Ui.printSortedTasks(skuId, sortField, orderStr, sorted);
+        } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.SEVERE, "Sort failed due to invalid data in SKU [" + skuId + "]", e);
+            Ui.printError("Failed to sort tasks: " + e.getMessage());
         }
     }
 }

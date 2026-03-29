@@ -14,6 +14,7 @@ import java.io.IOException;
  * the application's running state. Each command category is delegated
  * to a dedicated handler class (SRP).
  */
+//@@author dorndorn54
 public class CommandRunner {
 
     private boolean isRunning;
@@ -80,6 +81,9 @@ public class CommandRunner {
             break;
         case "unmarktask":
             taskHandler.handleUnmarkTask(cmd);
+            break;
+        case "sorttasks":
+            taskHandler.handleSortTask(cmd);
             break;
         case "listtasks":
             viewHandler.handleListTasks(cmd);

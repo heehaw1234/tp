@@ -13,7 +13,7 @@ import ui.Ui;
  * Each public method corresponds to a single user command.
  */
 
-//@@author AkshayPranav19
+//@@author omcodedthis
 public class SkuCommandHandler {
 
     private final SKUList skuList;
@@ -57,6 +57,7 @@ public class SkuCommandHandler {
      * @param cmd The parsed command containing the SKU ID and new location.
      * @throws SKUNotFoundException If the specified SKU does not exist in the warehouse.
      */
+    //@@author AkshayPranav19
     public void handleEditSku(ParsedCommand cmd) throws SKUNotFoundException {
         String skuId = cmd.getArg("n");
         String locationStr = cmd.getArg("l");
@@ -87,6 +88,7 @@ public class SkuCommandHandler {
      * @throws MissingArgumentException If the SKU ID is not provided.
      * @throws SKUNotFoundException     If the specified SKU does not exist in the warehouse.
      */
+    //@@author omcodedthis
     public void handleDeleteSku(ParsedCommand cmd) throws MissingArgumentException, SKUNotFoundException {
         String skuId = cmd.getArg("n");
         if (skuId == null) {
