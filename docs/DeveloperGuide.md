@@ -14,7 +14,7 @@ We also acknowledge the following for their contributions to our development pro
 
 ItemTasker follows a layered architecture with clear separation of concerns:
 
-![Architecture Diagram](plantUML/command/command-runner-architecture.png)
+![Architecture Diagram](plantUML/architecture.png)
 
 **Component Relationships:**
 
@@ -25,7 +25,7 @@ The diagram shows the main components and their relationships:
 - **CommandRunner** dispatches commands to the appropriate handler
 - **SkuCommandHandler** manages SKU-level commands (`addsku`, `editsku`, `deletesku`)
 - **TaskCommandHandler** manages task-level commands (`addskutask`, `edittask`, `deletetask`, `marktask`, `unmarktask`, `sorttasks`)
-- **ViewCommandHandler** manages read-only commands (`listtasks`, `find`)
+- **ViewCommandHandler** manages read-only commands (`listtasks`, `find`, `status`)
 - **CommandHelper** and **DateValidator** provide shared validation utilities
 - **TaskSorter** sorts tasks by date, priority, or completion status
 - **SKUList** contains multiple **SKU** instances (1-to-many relationship)
@@ -42,7 +42,12 @@ The diagram shows the main components and their relationships:
 - **Encapsulation**: Each `SKU` owns its own `SKUTaskList` — no external maps or redundant data structures
 - **Layered Architecture**: UI → Logic → Model → Storage separation
 
-
+### Command component - Samuel
+### Exception component - Samuel
+### SKU component - om
+### SKUTask component - Sean
+### Storage component - Om
+### Ui component - Sean
 
 ## Implementation
 
@@ -157,53 +162,87 @@ The following class diagram shows the architecture connecting the `CommandRunner
     * *Pros:* Simpler logic to write, heavily reducing the number of pass-through methods in `SKUTaskList`.
     * *Cons:* Weakens data coupling boundaries. A caller command might hold onto a `SKUTask` and accidentally modify it asynchronously outside of the defined safe access points, compromising system stability.
 
-### Mark / Unmark SKU Task Feature
+### Edit SKU / Edit Task Feature
 
 #### Implementation Details
 
-The Mark and Unmark operations allow users to toggle the completion state of a `SKUTask`. Both operations are facilitated by the `CommandRunner` component, which routes execution through the SKU's `SKUTaskList` down to the individual `SKUTask`.
+The Edit SKU and Edit Task operations allow users to modify existing data in the warehouse. Edit SKU updates a SKU's warehouse location, while Edit Task updates a task's due date, priority, and/or description. Both operations are facilitated by the `CommandRunner` component, which routes execution to the appropriate handler and down to the target object.
 
 The operations are handled internally via the following methods:
 
-* `CommandRunner#handleMarkTask(ParsedCommand)` — Locates the target SKU and task, validates that the task is not already marked, and delegates to `SKUTaskList#markTask()`.
-* `CommandRunner#handleUnmarkTask(ParsedCommand)` — Locates the target SKU and task, validates that the task is not already unmarked, and delegates to `SKUTaskList#unmarkTask()`.
+* `SkuCommandHandler#handleEditSku(ParsedCommand)` — Locates the target SKU, validates the new location, and delegates to `SKU#setLocation()`.
+* `TaskCommandHandler#handleEditTask(ParsedCommand)` — Locates the target SKU and task, validates all provided fields (date, priority, description), and delegates to `SKUTaskList#editSKUTask()`.
 
-Given below is an example usage scenario for the Mark SKU Task mechanism.
+#### Edit SKU
 
-**Step 1.** The user executes `marktask n/P-A i/1`. The `Ui` reads the input, and the `Parser` maps the arguments into a `ParsedCommand` object.
+Given below is an example usage scenario for the Edit SKU mechanism.
 
-**Step 2.** The `CommandRunner#run()` method routes execution to `CommandRunner#handleMarkTask()`.
+**Step 1.** The user executes `editsku n/PALLET-A l/C3`. The `Ui` reads the input, and the `Parser` maps the arguments into a `ParsedCommand` object.
 
-**Step 3.** `handleMarkTask()` calls `findSku("P-A")` to locate the target `SKU`. It then retrieves the `SKUTaskList` and the internal `ArrayList<SKUTask>` to validate the index.
+**Step 2.** The `CommandRunner#run()` method routes execution to `SkuCommandHandler#handleEditSku()`.
 
-**Step 4.** The task's `isDone()` state is checked. If already marked, an info message is returned. Otherwise, `SKUTaskList#markTask(1)` is called, which delegates to `SKUTask#mark()` to set `isDone = true`.
+**Step 3.** `handleEditSku()` calls `CommandHelper.findSkuOrError()` to locate the target `SKU` via case-insensitive lookup. If not found, an error is printed and the method returns early.
 
-**Step 5.** Execution completes and a success message is displayed.
+**Step 4.** The handler calls `CommandHelper.parseLocation("C3")` to validate and convert the string into a `Location` enum. If the location is invalid (e.g. `Z9`), an error is printed and the method returns.
 
-*Note: `unmarktask` follows the same traversal in reverse — it validates the task is currently marked before calling `SKUTaskList#unmarkTask()`, which delegates to `SKUTask#unmark()`.*
+**Step 5.** `SKU#setLocation(Location.C3)` is called, updating the SKU's location in place. All existing tasks attached to the SKU are preserved. A success message is displayed.
 
-The following sequence diagram shows the flow of marking a task:
+The following sequence diagram shows the flow of editing a SKU:
 
-![Mark Task Sequence Diagram](plantUML/mark-unmark-task/markTaskSequence.png)
-
-The following sequence diagram shows the flow of unmarking a task:
-
-![Unmark Task Sequence Diagram](plantUML/mark-unmark-task/unmarkTaskSequence.png)
+![Edit SKU Sequence Diagram](plantUML/edit-sku/edit-sku-sequence.png)
 
 The following class diagram shows the architecture:
 
-![Mark/Unmark Architecture Class Diagram](plantUML/mark-unmark-task/mark-unmark-architecture.png)
+![Edit SKU Architecture Class Diagram](plantUML/edit-sku/edit-sku-architecture.png)
+
+#### Edit Task
+
+Given below is an example usage scenario for the Edit Task mechanism.
+
+**Step 1.** The user executes `edittask n/PALLET-A i/1 d/2026-12-31 p/LOW t/updated`. The `Ui` reads the input, and the `Parser` maps the arguments into a `ParsedCommand` object.
+
+**Step 2.** The `CommandRunner#run()` method routes execution to `TaskCommandHandler#handleEditTask()`.
+
+**Step 3.** `handleEditTask()` performs a multi-stage validation chain:
+1. Checks required arguments (`n/` SKU ID, `i/` task index) are present
+2. Checks at least one editable field (`d/`, `p/`, `t/`) is provided
+3. Validates date format via `DateValidator.validateDateOrError()`
+4. Parses and validates index via `CommandHelper.parseIndex()`
+5. Locates SKU via `CommandHelper.findSkuOrError()`
+6. Bounds-checks the index against the task list size
+7. Parses and validates priority via `CommandHelper.parsePriority()`
+
+**Step 4.** Only after all validations pass, the handler calls `SKUTaskList#editSKUTask()`. This method applies only the non-null fields — unchanged fields are preserved. Internally, it delegates to `SKUTask#setSKUTaskDueDate()`, `SKUTask#setSKUTaskPriority()`, and `SKUTask#setSKUTaskDescription()` as needed.
+
+**Step 5.** Execution completes and a success message is displayed showing the updated task state.
+
+The following sequence diagram shows the flow of editing a task:
+
+![Edit Task Sequence Diagram](plantUML/edit-task/edit-task-sequence.png)
+
+The following class diagram shows the architecture:
+
+![Edit Task Architecture Class Diagram](plantUML/edit-task/edit-task-architecture.png)
 
 #### Design Considerations
 
-**Aspect: Pre-condition check before toggling state:**
+**Aspect: In-place mutation vs. delete-and-recreate for Edit SKU:**
 
-* **Current Implementation:** `handleMarkTask()` and `handleUnmarkTask()` check `isDone()` on the task before delegating, rejecting redundant operations with an info message.
-    * *Pros:* Prevents silent no-ops that could confuse users (e.g., marking an already-done task with no feedback).
-    * *Cons:* Requires an extra read call to `isDone()` before the write, slightly increasing coupling between `CommandRunner` and `SKUTask` state.
-* **Alternative:** Delegate the guard check into `SKUTaskList` or `SKUTask` itself, throwing an exception on invalid toggle.
-    * *Pros:* Encapsulates the guard closer to the data.
-    * *Cons:* Requires exception propagation for a non-exceptional condition, which adds overhead and complicates the call chain.
+* **Current Implementation:** Directly mutates the `SKU` object's location field via `setLocation()`.
+  * *Pros:* Simple, efficient, and preserves all existing tasks attached to the SKU. No risk of orphaned tasks.
+  * *Cons:* The SKU object is mutable, which could be a concern in concurrent environments.
+* **Alternative:** Delete the old SKU and recreate it at the new location, then re-attach tasks.
+  * *Pros:* Maintains immutability of SKU objects.
+  * *Cons:* Significantly more complex. Requires migrating all tasks to the new object, with high risk of data loss if the migration fails partway.
+
+**Aspect: Managing task modifications via `SKUTaskList` wrappers versus returning internal objects:**
+
+* **Current Implementation:** `SKUTaskList#editSKUTask()` handles modification duties in place, applying only non-null fields to the target `SKUTask`.
+  * *Pros:* Strong encapsulation. `SKUTaskList` dictates precisely how a task is safely modified, without leaking mutable object references back to caller-components.
+  * *Cons:* Requires additional boilerplate wrapper methods inside `SKUTaskList` just to pass down simple updates to the internal tasks.
+* **Alternative:** Expose `getTask(index)` method from `SKUTaskList`, letting callers modify the returned `SKUTask` object directly.
+  * *Pros:* Simpler logic to write, reducing the number of pass-through methods.
+  * *Cons:* Weakens data coupling boundaries. A caller might hold onto a `SKUTask` and accidentally modify it outside of the defined safe access points.
 
 ### View SKU Task Feature
 
