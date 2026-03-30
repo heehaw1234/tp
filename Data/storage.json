@@ -419,6 +419,36 @@
           }
         ]
       }
+    },
+    {
+      "skuID": "WIDGET-A1",
+      "skuLocation": "A1",
+      "skuTaskList": {
+        "skuTaskList": [
+          {
+            "skuTaskID": "WIDGET-A1",
+            "priority": "HIGH",
+            "dueDate": "2026-05-01",
+            "isDone": false,
+            "taskDescription": "restock shelf"
+          }
+        ]
+      }
+    },
+    {
+      "skuID": "WIDGET-A1",
+      "skuLocation": "A1",
+      "skuTaskList": {
+        "skuTaskList": [
+          {
+            "skuTaskID": "WIDGET-A1",
+            "priority": "HIGH",
+            "dueDate": "2026-05-01",
+            "isDone": false,
+            "taskDescription": "restock shelf"
+          }
+        ]
+      }
     }
   ]
 }
