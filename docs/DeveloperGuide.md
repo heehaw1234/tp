@@ -2,7 +2,7 @@
 
 ## Acknowledgements
 
-This project is a derivative of the [SE-EDU initiative's](https://se-education.org) AddressBook-Level3 (AB3). We have customized its foundational architecture, parser logic, and command execution flow for our specific use case.
+This project used the [SE-EDU initiative's](https://se-education.org) AddressBook-Level3 (AB3) as guidance. We have customized its foundational architecture, parser logic, and command execution flow for our specific use case.
 
 We also acknowledge the following for their contributions to our development process:
 - [PlantUML](https://plantuml.com) for UML diagram generation.
