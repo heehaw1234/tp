@@ -21,7 +21,7 @@ class CommandRunner LOGIC_COLOR {
   + isRunning(): boolean
 }
 
-class SkuCommandHandler LOGIC_COLOR {
+class SKUCommandHandler LOGIC_COLOR {
   + handleAddSku(cmd): void
   + handleEditSku(cmd): void
   + handleDeleteSku(cmd): void
@@ -76,13 +76,13 @@ ItemTasker -right-> Ui
 ItemTasker -left-> Parser
 
 ' -- Logic layer --
-CommandRunner -down-> SkuCommandHandler
+CommandRunner -down-> SKUCommandHandler
 CommandRunner -down-> TaskCommandHandler
 CommandRunner -down-> ViewCommandHandler
 CommandRunner -left-> Storage
 
 ' -- All handlers to model --
-SkuCommandHandler -down-> SKUList
+SKUCommandHandler -down-> SKUList
 TaskCommandHandler -down-> SKUList
 ViewCommandHandler -down-> SKUList
 

@@ -4,7 +4,7 @@ skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
 hide circle
 
-class SkuCommandHandler LOGIC_COLOR {
+class SKUCommandHandler LOGIC_COLOR {
   + handleEditSku(cmd: ParsedCommand): void
 }
 
@@ -23,7 +23,7 @@ class SKU MODEL_COLOR_T1 {
   + setLocation(location: Location): void
 }
 
-SkuCommandHandler -down-> "1" SKUList : skuList
-SkuCommandHandler ..> CommandHelper : uses
+SKUCommandHandler -down-> "1" SKUList : skuList
+SKUCommandHandler ..> CommandHelper : uses
 SKUList -down-> "*" SKU : skuList
 @enduml

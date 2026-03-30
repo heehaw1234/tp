@@ -23,7 +23,7 @@ The diagram shows the main components and their relationships:
 - **Ui** handles all user interface interactions
 - **Parser** transforms raw input into structured `ParsedCommand` objects
 - **CommandRunner** dispatches commands to the appropriate handler
-- **SkuCommandHandler** manages SKU-level commands (`addsku`, `editsku`, `deletesku`)
+- **SKUCommandHandler** manages SKU-level commands (`addsku`, `editsku`, `deletesku`)
 - **TaskCommandHandler** manages task-level commands (`addskutask`, `edittask`, `deletetask`, `marktask`, `unmarktask`, `sorttasks`)
 - **ViewCommandHandler** manages read-only commands (`listtasks`, `find`, `status`)
 - **CommandHelper** and **DateValidator** provide shared validation utilities
@@ -171,7 +171,7 @@ The Edit SKU and Edit Task operations allow users to modify existing data in the
 
 The operations are handled internally via the following methods:
 
-* `SkuCommandHandler#handleEditSku(ParsedCommand)` — Locates the target SKU, validates the new location, and delegates to `SKU#setLocation()`.
+* `SKUCommandHandler#handleEditSku(ParsedCommand)` — Locates the target SKU, validates the new location, and delegates to `SKU#setLocation()`.
 * `TaskCommandHandler#handleEditTask(ParsedCommand)` — Locates the target SKU and task, validates all provided fields (date, priority, description), and delegates to `SKUTaskList#editSKUTask()`.
 
 #### Edit SKU
@@ -180,7 +180,7 @@ Given below is an example usage scenario for the Edit SKU mechanism.
 
 **Step 1.** The user executes `editsku n/PALLET-A l/C3`. The `Ui` reads the input, and the `Parser` maps the arguments into a `ParsedCommand` object.
 
-**Step 2.** The `CommandRunner#run()` method routes execution to `SkuCommandHandler#handleEditSku()`.
+**Step 2.** The `CommandRunner#run()` method routes execution to `SKUCommandHandler#handleEditSku()`.
 
 **Step 3.** `handleEditSku()` calls `CommandHelper.findSkuOrError()` to locate the target `SKU` via case-insensitive lookup. If not found, an error is printed and the method returns early.
 
