@@ -1,0 +1,94 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
+
+class ItemTasker UI_COLOR {
+  + main(args: String[]): void
+}
+
+class Parser UI_COLOR {
+  + {static} parse(input): ParsedCommand
+}
+
+class Ui UI_COLOR {
+  + readInput(): String
+}
+
+class CommandRunner LOGIC_COLOR {
+  + run(cmd: ParsedCommand): void
+  + isRunning(): boolean
+}
+
+class SkuCommandHandler LOGIC_COLOR {
+  + handleAddSku(cmd): void
+  + handleEditSku(cmd): void
+  + handleDeleteSku(cmd): void
+}
+
+class TaskCommandHandler LOGIC_COLOR {
+  + handleAddSkuTask(cmd): void
+  + handleEditTask(cmd): void
+  + handleDeleteTask(cmd): void
+  + handleMarkTask(cmd): void
+  + handleUnmarkTask(cmd): void
+  + handleSortTask(cmd): void
+}
+
+class ViewCommandHandler LOGIC_COLOR {
+  + handleListTasks(cmd): void
+  + handleFind(cmd): void
+  + handleStatus(cmd): void
+}
+
+class SKUList MODEL_COLOR {
+  + addSKU(id, loc): void
+  + deleteSKU(id): void
+  + findByID(id): SKU
+}
+
+class SKU MODEL_COLOR_T1 {
+  - skuID: String
+  - skuLocation: Location
+}
+
+class SKUTaskList MODEL_COLOR_T2 {
+  + editSKUTask(...): void
+  + markTask(index): void
+  + unmarkTask(index): void
+}
+
+class SKUTask MODEL_COLOR_T3 {
+  - priority: Priority
+  - dueDate: String
+  - isDone: boolean
+}
+
+class Storage STORAGE_COLOR {
+  + {static} saveState(skuList): void
+  + {static} loadState(skuList): void
+}
+
+' -- UI layer --
+ItemTasker -down-> CommandRunner
+ItemTasker -right-> Ui
+ItemTasker -left-> Parser
+
+' -- Logic layer --
+CommandRunner -down-> SkuCommandHandler
+CommandRunner -down-> TaskCommandHandler
+CommandRunner -down-> ViewCommandHandler
+CommandRunner -left-> Storage
+
+' -- All handlers to model --
+SkuCommandHandler -down-> SKUList
+TaskCommandHandler -down-> SKUList
+ViewCommandHandler -down-> SKUList
+
+' -- Model layer --
+SKUList -down-> "*" SKU
+SKU -down-> "1" SKUTaskList
+SKUTaskList -down-> "*" SKUTask
+
+@enduml
