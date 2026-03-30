@@ -1,17 +1,27 @@
 @startuml
 !include ../style.puml
-show members
-hide empty members
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
 
-package "System Memory State (Steps 1 to 3)" {
-    object "<u>runner:CommandRunner</u>" as runner LOGIC_COLOR
-    object "<u>skuList:SKUList</u>" as skuList MODEL_COLOR
+skinparam ClassFontColor #000000
+skinparam ClassBorderColor #000000
+skinparam ClassBackgroundColor #FFFFAA
+
+title System Memory State (Steps 1 to 3)
+
+class "cmd:ParsedCommand" as cmd {
+    commandWord = "addsku"
+    args = {"n": "PALLET-A", "l": "A1"}
 }
 
-runner -down-> skuList
+class "skuHandler:SKUCommandHandler" as handler
 
-note right of runner
-  ParsedCommand and Location
-  are local variables.
-end note
+class "skuList:SKUList" as skuList {
+    skuList = []
+}
+
+handler -right-> cmd : reads properties from >
+handler -down-> skuList : searches for duplicates in >
+
 @enduml

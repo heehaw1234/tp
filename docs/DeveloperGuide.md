@@ -41,57 +41,59 @@ The diagram shows the main components and their relationships:
 - **Command Delegation**: `CommandRunner` acts purely as a dispatcher with no business logic
 - **Encapsulation**: Each `SKU` owns its own `SKUTaskList` — no external maps or redundant data structures
 - **Layered Architecture**: UI → Logic → Model → Storage separation
+
+
+
 ## Implementation
 
 ### Add / Delete SKU Feature
 
 #### Implementation Details
-
-The Add and Delete SKU mechanism is facilitated by the `CommandRunner` component, which manages the application's core state through a single primary data structure: the `SKUList`. Following strict Object-Oriented encapsulation, there are no external maps; each `SKU` inherently manages its own `SKUTaskList`.
+The Add and Delete SKU mechanism is facilitated by the `SKUCommandHandler` component, which is dispatched by the `CommandRunner`. It manages the application's core state through a single primary data structure: the `SKUList`. Following object-oriented encapsulation principles, there are no external maps; each `SKU` manages its own `SKUTaskList`.
 
 The operations are exposed and handled internally via the following methods:
 
-* `CommandRunner#handleAddSku(ParsedCommand)` — Validates constraints and delegates to `SKUList` to instantiate a new `SKU` (which automatically initializes its own internal task list).
-* `CommandRunner#handleDeleteSku(ParsedCommand)` — Removes the `SKU` from the inventory, which inherently purges all tasks associated with it.
+* `SKUCommandHandler#handleAddSku(ParsedCommand)` — Validates arguments (ensuring they are not null or empty), checks for duplicates, and delegates to `SKUList` to instantiate a new `SKU` (which automatically initializes its own internal task list).
+* `SKUCommandHandler#handleDeleteSku(ParsedCommand)` — Validates the input, ensures the target SKU exists, and removes the `SKU` from the inventory, which deletes purges all tasks associated with it.
 
 Given below is an example usage scenario demonstrating how the Add SKU mechanism behaves at each step.
 
 **Step 1.** The user executes `addsku n/PALLET-A l/A1`. The `Ui` reads the input, and the `Parser` extracts the command word and maps the arguments `n/` to `PALLET-A` and `l/` to `A1` into a `ParsedCommand` object.
 
-**Step 2.** The `CommandRunner#run()` method receives this `ParsedCommand`. Recognizing the `addsku` command word, it routes execution to `CommandRunner#handleAddSku()`.
+**Step 2.** The `CommandRunner#run()` method receives this `ParsedCommand`. Recognizing the `addsku` command word, it routes execution to the dedicated `SKUCommandHandler#handleAddSku()`.
 
-**Step 3.** `handleAddSku()` parses the location string into a `Location` enum. It then calls `findSku("PALLET-A")` to iterate through the `SKUList`. Finding no duplicates, it proceeds with the insertion.
+**Step 3.** `handleAddSku()` performs validations, checking for missing or empty arguments. It calls `CommandHelper.parseLocation("A1")` to resolve the `Location` enum. It then calls `skuList.findByID("PALLET-A")` to iterate through the `SKUList`. If no duplicates are found, it proceeds with the insertion.
 
-![System Memory State Steps 1 to 3](plantUML/add-delete-sku/add-sku-step1-3.png)
+![Steps 1 to 3](plantUML/add-delete-sku/add-sku-step1-3.png)
 
-**Step 4.** The `SKUList#addSKU()` method is invoked. This method calls the `SKU` constructor, instantiating a new `SKU` object. During instantiation, the `SKU` automatically generates an empty `SKUTaskList` for itself. The `SKU` is then appended to the internal `ArrayList`.
+**Step 4.** The `SKUList#addSKU()` method is invoked. This method acts as a secondary defensive barrier, checking inputs before calling the `SKU` constructor. During instantiation, the `SKU` normalizes its ID (trimming whitespace and forcing uppercase) and automatically generates an empty `SKUTaskList` for itself. The `SKU` is then appended to the internal `ArrayList`.
 
-![System Memory State Step 4](plantUML/add-delete-sku/add-sku-step4.png)
+![Step 4](plantUML/add-delete-sku/add-sku-step4.png)
 
 **Step 5.** Back in `handleAddSku()`, execution completes successfully. Control returns to the `Ui` to print the success message. The system's memory state now contains the new `SKU`, fully equipped to accept tasks without requiring any external mapping.
 
-![System Memory State Step 5](plantUML/add-delete-sku/add-sku-step5.png)
+![Step 5](plantUML/add-delete-sku/add-sku-step5.png)
 
-*Note: The `deletesku` command operates by simply calling `SKUList#deleteSKU()` to remove the object from the array. Due to encapsulation, dropping the `SKU` object automatically garbage-collects its associated `SKUTaskList`, preventing memory leaks.*
+*Note: The `deletesku` command operates by routing to `SKUCommandHandler#handleDeleteSku()`, which validates the input and throws a `SKUNotFoundException` if the target does not exist. It then calls `SKUList#deleteSKU()` to perform a case-insensitive removal from the array. Due to encapsulation, dropping the `SKU` object automatically garbage-collects its associated `SKUTaskList`, preventing memory leaks.*
 
 The following sequence diagram shows the flow of adding a SKU:
 
-![Add SKU Sequence Diagram](plantUML/add-delete-sku/add-sku-sequence.png)
+![Step 5](plantUML/add-delete-sku/add-sku-sequence.png)
 
 The following class diagram shows the architecture:
 
-![Add SKU Class Diagram](plantUML/add-delete-sku/add-sku-architecture.png)
+![Step 5](plantUML/add-delete-sku/add-sku-architecture.png)
 
 #### Design Considerations
 
 **Aspect: How SKU tasks are stored and mapped to their parent SKU:**
 
 * **Current Implementation:** Require all task operations to access the `SKUTaskList` directly through the `SKU` object residing in the `SKUList`.
-    * *Pros:* High cohesion and strict encapsulation. A SKU is solely responsible for its own tasks. Memory overhead is reduced, and state mutations are safer as there is no need to synchronize deletions across multiple data structures.
-    * *Cons:* Slightly slower lookup times, as finding a task requires iterating through the `SKUList` to locate the parent SKU first (O(n) complexity).
-* **Alternative:** Maintain a `HashMap<String, SKUTaskList>` inside the `CommandRunner` to map SKU IDs to their tasks.
-    * *Pros:* Fast, O(1) time complexity when looking up tasks for a specific SKU during filtering or task addition.
-    * *Cons:* Severe data duplication and poor encapsulation. This requires the `CommandRunner` to juggle references and manually synchronize deletions across two separate data structures, leading to an architecture prone to orphaned tasks if not correctly synced.
+  * *Pros:* High cohesion and strict encapsulation. A SKU is solely responsible for its own tasks. Memory overhead is reduced, and state mutations are safer as there is no need to synchronize deletions across multiple data structures.
+  * *Cons:* Slightly slower lookup times, as finding a task requires iterating through the `SKUList` to locate the parent SKU first (O(n) complexity).
+* **Alternative:** Maintain a `HashMap<String, SKUTaskList>` inside the command handlers or `CommandRunner` to map SKU IDs to their tasks.
+  * *Pros:* Fast, O(1) time complexity when looking up tasks for a specific SKU during filtering or task addition.
+  * *Cons:* Severe data duplication and poor encapsulation. This requires the handlers to juggle references and manually synchronize deletions across two separate data structures, leading to an architecture prone to orphaned tasks if not correctly synced.
 
 ### Add / Delete SKU Task Feature
 
@@ -259,15 +261,12 @@ The following class diagram shows how the `ViewSKUTask` logic component interact
 ## Appendix A: Product Scope
 
 ### Target user profile
-
-{Describe the target user profile}
+This product is targeted at Inventory Managers of Warehouse Distribution Centers who prefer a CLI UI for fast access and easy tracking.
 
 ### Value proposition
-
-{Describe the value proposition: what problem does it solve?}
+Enterprise systems are often slow and rigid. ItemTracker provides an agile, local layer for managing immediate warehouse tasks. Managers can log and view "action items" on specific stock items without the latency of connecting the servers of enterprise systems. It ensures that critical tasks, (e.g product inspections) are tracked accordingly.
 
 ## Appendix B: User Stories
-
 | Version | As a ... | I want to ... | So that I can ... |
 |---------|----------|---------------|-------------------|
 | v1.0 | Inventory Manager | register a new SKU | begin tracking accountability tasks for this particular SKU |
@@ -311,4 +310,46 @@ The following class diagram shows how the `ViewSKUTask` logic component interact
 
 ## Appendix E: Instructions for Manual Testing
 
-{Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+Given below are instructions to test the app manually.
+
+<div class="alert alert-info">
+<strong>Note:</strong> These instructions only provide a starting point for testers to work on; testers are expected to do more exploratory testing.
+</div>
+
+### Launch and shutdown
+1. **Initial launch**
+  1. Download the latest `.jar` file and copy it into an empty folder.
+  2. Open a terminal in that folder and run `java -jar ItemTasker.jar`.
+  3. *Expected:* The welcome logo appears. A new `Data/` folder is generated in the background.
+
+2. **Shutdown**
+  1. Type `bye`.
+  2. *Expected:* The goodbye message is printed, the application closes, and a storage file is populated in the `Data/` folder.
+
+### Adding and Deleting SKUs and Tasks
+1. **Adding tasks with missing/invalid data**
+  1. *Prerequisite:* Add a valid SKU using `addsku n/PALLET-1 l/A1`.
+  2. *Test case:* `addskutask n/PALLET-1 d/2026-02-30 t/Check items` (Impossible calendar date).
+  3. *Expected:* Task is rejected. Error message informs user the date does not exist.
+  4. *Test case:* `addskutask n/GHOST-SKU d/2026-10-10` (Non-existent SKU).
+  5. *Expected:* Task is rejected. Error message states SKU not found.
+
+2. **Deleting out-of-bounds tasks**
+  1. *Prerequisite:* Ensure `PALLET-1` has exactly 1 task.
+  2. *Test case:* `deletetask n/PALLET-1 i/2`
+  3. *Expected:* Task deletion fails. Error message states index 2 is out of range.
+  4. *Test case:* `deletetask n/PALLET-1 i/-1`
+  5. *Expected:* Task deletion fails. Error message explicitly states task index must be a positive integer.
+
+### Storage and File Integrity
+1. **Dealing with a corrupted JSON file**
+  1. *Prerequisite:* Run the app, add a SKU, type `bye` to save.
+  2. Open `Data/storage.json` in a text editor and randomly delete some quotation marks or brackets to break the JSON syntax. Save the file.
+  3. Launch ItemTasker again.
+  4. *Expected:* The application does not crash. It logs a severe error to the console warning the user about the corrupted JSON and loads an empty warehouse state.
+
+2. **Dealing with an obstructed directory**
+  1. *Prerequisite:* Ensure the application is closed. Delete the `Data` folder if it exists.
+  2. Create a standard text file and name it exactly `Data` (with no file extension).
+  3. Launch ItemTasker and type the `export` command.
+  4. *Expected:* The application attempts to create the `Data/` directory for the export file, realizes a file is blocking it, and safely prints: `[ERROR] Failed to export data: Target path 'Data' exists but is not a directory.` without crashing.
