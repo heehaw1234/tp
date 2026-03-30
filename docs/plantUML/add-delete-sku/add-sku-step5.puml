@@ -1,21 +1,27 @@
 @startuml
 !include ../style.puml
-show members
-hide empty members
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
 
-package "System Memory State (Step 5)" {
-    object "<u>runner:CommandRunner</u>" as runner LOGIC_COLOR
-    object "<u>skuList:SKUList</u>" as skuList MODEL_COLOR
+skinparam ClassFontColor #000000
+skinparam ClassBorderColor #000000
+skinparam ClassBackgroundColor #FFFFAA
 
-    object "<u>newSku:SKU</u>" as sku MODEL_COLOR_T1 {
-        skuID = "PALLET-A"
-        skuLocation = Location.A1
-    }
+title System Memory State (Step 5)
 
-    object "<u>emptyList:SKUTaskList</u>" as taskList MODEL_COLOR_T2
+class "skuList:SKUList" as skuList
+
+class "sku:SKU" as sku {
+    skuID = "PALLET-A"
+    skuLocation = Location.A1
 }
 
-runner -down-> skuList
-skuList -down-> sku : contains >
-sku -down-> taskList : owns >
+class "skuTaskList:SKUTaskList" as taskList {
+    skuTaskList = []
+}
+
+skuList o-- sku : contains >
+sku *-- taskList : owns and encapsulates >
+
 @enduml

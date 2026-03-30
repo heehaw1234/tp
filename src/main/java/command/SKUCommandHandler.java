@@ -17,11 +17,14 @@ import java.util.logging.Logger;
  */
 
 //@@author omcodedthis
-public class SkuCommandHandler {
-    private static final Logger LOGGER = Logger.getLogger(SkuCommandHandler.class.getName());
+public class SKUCommandHandler {
+    private static final Logger LOGGER = Logger.getLogger(SKUCommandHandler.class.getName());
     private final SKUList skuList;
 
-    public SkuCommandHandler(SKUList skuList) {
+    public SKUCommandHandler(SKUList skuList) {
+        if (skuList == null) {
+            throw new IllegalArgumentException("SKUCommandHandler requires a non-null SKUList");
+        }
         this.skuList = skuList;
     }
 
@@ -29,15 +32,16 @@ public class SkuCommandHandler {
      * Adds a new SKU to the warehouse after validating the ID and location.
      *
      * @param cmd The parsed command containing the SKU ID and location.
-     * @throws SKUNotFoundException If an issue related to finding the SKU occurs during validation.
+     * @throws MissingArgumentException If required arguments are missing or empty.
      */
-    public void handleAddSku(ParsedCommand cmd) throws SKUNotFoundException {
+    public void handleAddSku(ParsedCommand cmd) throws MissingArgumentException {
+        assert cmd != null : "Internal Error: ParsedCommand cannot be null";
+
         String skuId = cmd.getArg("n");
         String locationStr = cmd.getArg("l");
 
-        if (skuId == null || locationStr == null) {
-            Ui.printError("Usage: addsku n/SKU_ID l/LOCATION  (e.g. addsku n/WIDGET-A1 l/B2)");
-            return;
+        if (skuId == null || skuId.trim().isEmpty() || locationStr == null || locationStr.trim().isEmpty()) {
+            throw new MissingArgumentException("Usage: addsku n/SKU_ID l/LOCATION  (e.g. addsku n/WIDGET-A1 l/B2)");
         }
 
         Location location = CommandHelper.parseLocation(locationStr);
@@ -46,7 +50,7 @@ public class SkuCommandHandler {
         }
 
         if (skuList.findByID(skuId) != null) {
-            Ui.printError("SKU already exists: " + skuId);
+            Ui.printError("SKU already exists: " + skuId.toUpperCase());
             return;
         }
 
@@ -104,13 +108,16 @@ public class SkuCommandHandler {
      */
     //@@author omcodedthis
     public void handleDeleteSku(ParsedCommand cmd) throws MissingArgumentException, SKUNotFoundException {
+        assert cmd != null : "Internal Error: ParsedCommand cannot be null";
+
         String skuId = cmd.getArg("n");
-        if (skuId == null) {
-            Ui.printError("Usage: deletesku n/SKU_ID");
-            return;
+
+        if (skuId == null || skuId.trim().isEmpty()) {
+            throw new MissingArgumentException("Usage: deletesku n/SKU_ID");
         }
-        if (CommandHelper.findSkuOrError(skuList, skuId) == null) {
-            return;
+
+        if (skuList.findByID(skuId) == null) {
+            throw new SKUNotFoundException(skuId);
         }
 
         skuList.deleteSKU(skuId);

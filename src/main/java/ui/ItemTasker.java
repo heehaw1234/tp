@@ -8,7 +8,7 @@ import sku.SKUList;
 import java.io.IOException;
 
 /**
- * Main entry-point for the java.duke.ItemTasker application.
+ * Main entry-point for the ItemTasker application.
  */
 
 //@@author omcodedthis

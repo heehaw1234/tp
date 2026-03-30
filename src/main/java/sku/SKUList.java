@@ -28,20 +28,31 @@ public class SKUList {
     }
 
     public void addSKU(String skuID, Location skuLocation) {
-        assert skuID != null && !skuID.trim().isEmpty() : "Internal Error: skuID cannot be null or empty";
-        assert skuLocation != null : "Internal Error: skuLocation cannot be null";
+        if (skuID == null || skuID.trim().isEmpty()) {
+            LOGGER.log(Level.WARNING, "Attempted to add SKU with null/empty ID.");
+            throw new IllegalArgumentException("Internal Error: skuID cannot be null or empty");
+        }
+        if (skuLocation == null) {
+            LOGGER.log(Level.WARNING, "Attempted to add SKU with null location.");
+            throw new IllegalArgumentException("Internal Error: skuLocation cannot be null");
+        }
+
+        if (findByID(skuID) != null) {
+            LOGGER.log(Level.WARNING, "Duplicate SKU ID: " + skuID);
+            throw new IllegalArgumentException("SKU ID already exists.");
+        }
 
         SKU sku = new SKU(skuID, skuLocation);
         skuList.add(sku);
         LOGGER.log(Level.INFO, "Successfully added SKU: [" + skuID + "] at Location: " + skuLocation);
 
-        assert skuList.size() > 0 : "Internal Error: SKUList should have size > 0 after adding an SKU";
+        assert skuList.size() > 0 : "Internal Error: SKUList should have size > 0 after adding";
     }
 
     public void deleteSKU(String skuID) {
         assert skuID != null && !skuID.trim().isEmpty() : "Internal Error: skuID to delete cannot be null";
 
-        boolean isRemoved = skuList.removeIf(sku -> sku.getSKUID().equals(skuID));
+        boolean isRemoved = skuList.removeIf(sku -> sku.getSKUID().equalsIgnoreCase(skuID));
 
         if (isRemoved) {
             LOGGER.log(Level.INFO, "Successfully deleted SKU: [" + skuID + "]");

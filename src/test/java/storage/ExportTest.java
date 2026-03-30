@@ -107,10 +107,8 @@ class ExportTest {
 
     @Test
     public void exportToTextFile_directoryCreationFails_throwsException() {
-        // Simulate a scenario where a FILE named "Data" already exists
         File fakeDir = new File("Data");
 
-        // If the directory doesn't exist, create a dummy file to block it
         boolean createdFakeFile = false;
         try {
             if (!fakeDir.exists()) {
@@ -123,7 +121,6 @@ class ExportTest {
         } catch (IOException e) {
             assertNotNull(e);
         } finally {
-            // Clean up the sabotage
             if (createdFakeFile) {
                 fakeDir.delete();
             }

@@ -1,37 +1,71 @@
 @startuml
 !include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
 
-Actor User as user USER_COLOR
-Participant ":Ui" as ui UI_COLOR
-Participant ":Parser" as parser LOGIC_COLOR_T1
-Participant ":CommandRunner" as runner LOGIC_COLOR
-Participant ":SKUList" as skuList MODEL_COLOR
-Participant ":SKU" as sku MODEL_COLOR_T1
-Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+participant ":CommandRunner" as runner LOGIC_COLOR
+participant ":SKUCommandHandler" as skuHandler LOGIC_COLOR
+participant "<<class>>\nCommandHelper" as commandHelper LOGIC_COLOR
 
-user -> ui ++ : "addsku n/PALLET-A l/A1"
-ui -> parser ++ : parse("addsku n/PALLET-A l/A1")
-return cmd : ParsedCommand
+participant ":SKUList" as skuList MODEL_COLOR
+participant "newSku:SKU" as sku MODEL_COLOR
+participant "skuTaskList:SKUTaskList" as taskList MODEL_COLOR
 
-ui -> runner ++ : run(cmd)
-runner -> runner ++ : handleAddSku(cmd)
-runner -> runner ++ : Location.valueOf("A1")
-return location
+participant "<<class>>\nUi" as ui UI_COLOR
 
-runner -> runner ++ : findSku("PALLET-A")
-runner -> skuList ++ : getSKUList()
-return List<SKU>
-return null
+[-> runner : run(cmd)
+activate runner LOGIC_COLOR
 
-runner -> skuList ++ : addSKU("PALLET-A", location)
-skuList -> sku ** : create("PALLET-A", location)
-activate sku MODEL_COLOR_T1
-sku -> taskList ** : create()
+runner -> skuHandler : handleAddSku(cmd)
+activate skuHandler LOGIC_COLOR
+
+' 1. Missing Location Parsing
+skuHandler -> commandHelper : parseLocation("A1")
+activate commandHelper LOGIC_COLOR
+commandHelper --> skuHandler : Location.A1
+deactivate commandHelper
+
+skuHandler -> skuList : findByID("PALLET-A")
+activate skuList MODEL_COLOR
+skuList --> skuHandler : null
+deactivate skuList
+
+skuHandler -> skuList : addSKU("PALLET-A", Location.A1)
+activate skuList MODEL_COLOR
+
+' 2. Missing Defensive Self-Call inside SKUList
+skuList -> skuList : findByID("PALLET-A")
+activate skuList MODEL_COLOR
+skuList --> skuList : null
+deactivate skuList
+
+create sku
+skuList -> sku : new SKU("PALLET-A", Location.A1)
+activate sku MODEL_COLOR
+
+' 3. Missing TaskList Initialization
+create taskList
+sku -> taskList : new SKUTaskList()
+activate taskList MODEL_COLOR
+taskList --> sku
+deactivate taskList
+
 sku --> skuList
 deactivate sku
-return
 
-return
-return
-return display success message
+skuList --> skuHandler
+deactivate skuList
+
+' 4. Missing UI Output
+skuHandler -> ui : printSuccess(...)
+activate ui UI_COLOR
+ui --> skuHandler
+deactivate ui
+
+skuHandler --> runner
+deactivate skuHandler
+
+[<-- runner
+deactivate runner
 @enduml

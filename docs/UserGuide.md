@@ -1,8 +1,7 @@
 # User Guide
 
 ## Introduction
-
-{Give a product intro}
+ItemTasker is a CLI-based Stock Keeping Unit (SKU) Ticketing System. A localized command-line tool designed to handle inventory specific actions required for individual item SKUs such as damage checks, expiry reviews & quality control. Unlike standard commercial inventory software that tracks quantity, ItemTracker tracks accountability & actions, allowing managers to attach specific tasks with priorities to individual SKUs.
 
 ## Quick Start
 
@@ -31,11 +30,22 @@ Example of usage:
 
 ## FAQ
 
-**Q**: How do I transfer my data to another computer? 
+**Q**: How do I transfer my warehouse data to another computer?  
+**A**: Install the application on the other computer and run it once to generate the default folders. Then, simply overwrite the `Data/storage.json` file it creates with the `storage.json` file from your previous computer.
 
-**A**: {your answer here}
+**Q**: Do I need to manually save my tasks before closing the application?  
+**A**: No. ItemTasker automatically saves your entire inventory and task list to the hard disk whenever you close the application using the `bye` or `exit` commands. Just ensure you exit the app properly instead of force-closing the terminal!
 
-## command Summary
+**Q**: Can I use my own custom location names like "Loading-Dock" or "Aisle-12"?  
+**A**: Currently, ItemTasker strictly uses a standardized 3x3 grid system (A1 through C3) to ensure spatial sorting and distance calculations work instantly. You must assign SKUs to one of the 9 predefined sectors.
+
+**Q**: How does the `listtasks l/LOCATION` command calculate distance?  
+**A**: It calculates the "Manhattan Distance" across the warehouse grid. It measures the physical grid steps required to move from your specified location to the SKU's location, bringing the closest tasks to the top of your list so you can clear them efficiently.
+
+**Q**: What happens if I manually edit the `storage.json` file and make a mistake?  
+**A**: If the JSON format becomes invalid, outdated, or corrupted due to manual edits, ItemTasker will print a warning on startup and begin with an empty warehouse to prevent system crashes. It is highly recommended to make a copy of your `storage.json` file before doing any manual tweaking.
+
+## Command Summary
 
 | Action | Format | Example |
 |--------|--------|---------|

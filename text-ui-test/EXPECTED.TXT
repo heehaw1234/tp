@@ -54,7 +54,7 @@ __________________________________________________________________________
 >  [OK] Added task #2 to SKU [PALLET-A] | Priority: MEDIUM | Due: 2026-04-05 | Desc: count inventory
 >  [OK] Added task #1 to SKU [PALLET-B] | Priority: HIGH | Due: 2026-04-10 | Desc: ship out
 >  [OK] Added task #1 to SKU [PALLET-C] | Priority: LOW | Due: 2026-04-15 | Desc: inspect pallets
-> >  [ERROR] SKU not found: GHOST-SKU. Use 'addsku' to register it first.
+> >  [ERROR] SKU 'GHOST-SKU' not found. Use 'listtasks' to see available SKUs.
 >  [ERROR] Invalid priority 'URGENT'. Use HIGH, MEDIUM, or LOW.
 >  [ERROR] Usage: addskutask n/SKU_ID d/DUE_DATE [p/PRIORITY] [t/DESCRIPTION]
 > >  [OK] Updated task #1 for SKU [PALLET-A]: [ ] ID: PALLET-A | Priority: HIGH | Due: 2026-05-01 | Desc: restock widgets
@@ -135,7 +135,7 @@ __________________________________________________________________________
 > >  [OK] Deleted task #2 from SKU [PALLET-A].
 >  [ERROR] Task index 99 is out of range for SKU: PALLET-A
 >  [OK] Deleted SKU [PALLET-B] and all its tasks.
->  [ERROR] SKU not found: GHOST-SKU
+>  [ERROR] SKU 'GHOST-SKU' not found. Use 'listtasks' to see available SKUs.
 > >  All tasks:
 __________________________________________________________________________
  SKU [PALLET-A]:

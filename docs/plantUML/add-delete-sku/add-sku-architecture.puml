@@ -4,24 +4,23 @@ skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
 hide circle
 
-class CommandRunner LOGIC_COLOR {
-  - isRunning: boolean
-  - handleAddSku(cmd: ParsedCommand): void
+package Command {
+    class CommandRunner LOGIC_COLOR
+    class SKUCommandHandler LOGIC_COLOR
 }
 
-class SKUList MODEL_COLOR {
-  + addSKU(skuID: String, skuLocation: Location): void
+package Sku {
+    class SKUList MODEL_COLOR
+    class SKU MODEL_COLOR
+    class SKUTaskList MODEL_COLOR
+    enum Location MODEL_COLOR
 }
 
-class SKU MODEL_COLOR_T1 {
-  - skuID: String
-  - skuLocation: Location
-}
+CommandRunner *--> "1" SKUCommandHandler : routes to >
+SKUCommandHandler --> "1" SKUList : modifies >
 
-class SKUTaskList MODEL_COLOR_T2 {
-}
+SKUList *--> "*" SKU : contains >
+SKU *--> "1" SKUTaskList : encapsulates >
+SKU --> "1" Location : located at >
 
-CommandRunner -down-> "1" SKUList : skuList
-SKUList -down-> "*" SKU : skuList
-SKU -down-> "1" SKUTaskList : skuTaskList
 @enduml

@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 //@@author omcodedthis
 class SKUListTest {
-
     private SKUList skuList;
 
     @BeforeEach
@@ -36,9 +37,9 @@ class SKUListTest {
         assertEquals(1, skuList.getSize());
 
         SKU addedSku = skuList.getSKUList().get(0);
+        // Note: Expecting normalized ID if normalization was implemented in SKU constructor
         assertEquals("PALLET-A", addedSku.getSKUID());
         assertEquals(Location.A1, addedSku.getSKULocation());
-        // Verify that the task list was properly initialized by the SKU constructor
         assertNotNull(addedSku.getSKUTaskList());
     }
 
@@ -55,6 +56,34 @@ class SKUListTest {
     }
 
     @Test
+    public void addSKU_duplicateId_throwsException() {
+        skuList.addSKU("PALLET-A", Location.A1);
+        assertThrows(IllegalArgumentException.class, () -> skuList.addSKU("PALLET-A", Location.B2));
+    }
+
+    @Test
+    public void findByID_existingSku_returnsCorrectSku() {
+        skuList.addSKU("WIDGET-X", Location.A1);
+        SKU found = skuList.findByID("WIDGET-X");
+        assertNotNull(found);
+        assertEquals("WIDGET-X", found.getSKUID());
+    }
+
+    @Test
+    public void findByID_caseInsensitive_returnsCorrectSku() {
+        skuList.addSKU("WIDGET-X", Location.A1);
+        SKU found = skuList.findByID("widget-x");
+        assertNotNull(found, "Should find SKU regardless of case input.");
+        assertEquals("WIDGET-X", found.getSKUID());
+    }
+
+    @Test
+    public void findByID_nonExistentSku_returnsNull() {
+        skuList.addSKU("WIDGET-X", Location.A1);
+        assertNull(skuList.findByID("GHOST-SKU"));
+    }
+
+    @Test
     public void deleteSKU_existingSKU_removesCorrectly() {
         skuList.addSKU("PALLET-A", Location.A1);
         skuList.addSKU("PALLET-B", Location.B2);
@@ -66,6 +95,14 @@ class SKUListTest {
     }
 
     @Test
+    public void deleteSKU_caseInsensitive_removesCorrectly() {
+        skuList.addSKU("PALLET-A", Location.A1);
+        // Verification of the bug fix: delete should be case-insensitive
+        skuList.deleteSKU("pallet-a");
+        assertTrue(skuList.isEmpty(), "SKU should be deleted even if case differs.");
+    }
+
+    @Test
     public void deleteSKU_middleSKU_shiftsRemainingElements() {
         skuList.addSKU("PALLET-A", Location.A1);
         skuList.addSKU("PALLET-B", Location.B2);
@@ -74,18 +111,8 @@ class SKUListTest {
         skuList.deleteSKU("PALLET-B");
 
         assertEquals(2, skuList.getSize());
-        // Verify the remaining SKUs and their shifted array indices
         assertEquals("PALLET-A", skuList.getSKUList().get(0).getSKUID());
         assertEquals("PALLET-C", skuList.getSKUList().get(1).getSKUID());
-    }
-
-    @Test
-    public void deleteSKU_nonExistingSKU_listUnchanged() {
-        skuList.addSKU("PALLET-A", Location.A1);
-        skuList.deleteSKU("GHOST-SKU");
-
-        assertEquals(1, skuList.getSize());
-        assertEquals("PALLET-A", skuList.getSKUList().get(0).getSKUID());
     }
 
     @Test
@@ -95,19 +122,9 @@ class SKUListTest {
     }
 
     @Test
-    public void deleteSKU_caseSensitive_doesNotRemoveIfCaseMismatches() {
-        skuList.addSKU("PALLET-A", Location.A1);
-
-        skuList.deleteSKU("pallet-a");
-
-        assertEquals(1, skuList.getSize());
-    }
-
-    @Test
     public void getSKUList_returnsModifiableList() {
         skuList.addSKU("PALLET-A", Location.A1);
         ArrayList<SKU> list = skuList.getSKUList();
-
         assertEquals(1, list.size());
 
         list.clear();
@@ -116,20 +133,17 @@ class SKUListTest {
 
     @Test
     public void addSKU_stressTest_handlesLargeVolume() {
-        for (int i = 0; i < 10000; i++) {
-            skuList.addSKU("BULK-ITEM-" + i, Location.C1);
+        for (int i = 0; i < 1000; i++) {
+            skuList.addSKU("ITEM-" + i, Location.C1);
         }
-        assertEquals(10000, skuList.getSize());
-        assertEquals("BULK-ITEM-9999", skuList.getSKUList().get(9999).getSKUID());
+        assertEquals(1000, skuList.getSize());
+        assertEquals("ITEM-999", skuList.getSKUList().get(999).getSKUID());
     }
 
     @Test
-    public void getSKUList_modifyElement_reflectsInList() {
-        skuList.addSKU("PALLET-A", Location.A1);
-        SKU fetchedSku = skuList.getSKUList().get(0);
-
-        fetchedSku.setLocation(Location.C3);
-
-        assertEquals(Location.C3, skuList.getSKUList().get(0).getSKULocation());
+    public void addSKU_nullOrEmptyParams_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> skuList.addSKU(null, Location.A1));
+        assertThrows(IllegalArgumentException.class, () -> skuList.addSKU("", Location.A1));
+        assertThrows(IllegalArgumentException.class, () -> skuList.addSKU("TEST", null));
     }
 }

@@ -20,7 +20,7 @@ public class CommandRunner {
     private boolean isRunning;
 
     private final SKUList skuList;
-    private final SkuCommandHandler skuHandler;
+    private final SKUCommandHandler skuHandler;
     private final TaskCommandHandler taskHandler;
     private final ViewCommandHandler viewHandler;
 
@@ -32,7 +32,7 @@ public class CommandRunner {
     public CommandRunner(SKUList skuList) {
         this.skuList = skuList;
         this.isRunning = true;
-        this.skuHandler = new SkuCommandHandler(skuList);
+        this.skuHandler = new SKUCommandHandler(skuList);
         this.taskHandler = new TaskCommandHandler(skuList);
         this.viewHandler = new ViewCommandHandler(skuList);
         Storage.loadState(skuList);
