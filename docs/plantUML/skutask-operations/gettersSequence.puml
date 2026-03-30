@@ -5,6 +5,8 @@ Actor User as user USER_COLOR
 Participant ":Ui" as ui UI_COLOR
 Participant ":Parser" as parser LOGIC_COLOR_T1
 Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":ViewCommandHandler" as viewHandler LOGIC_COLOR_T2
+Participant "<<class>>\nCommandHelper" as CommandHelper LOGIC_COLOR_T3
 Participant ":SKUList" as skuList MODEL_COLOR
 Participant ":SKU" as sku MODEL_COLOR_T1
 Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
@@ -15,21 +17,21 @@ ui -> parser ++ : parse(...)
 return cmd : ParsedCommand
 
 ui -> runner ++ : run(cmd)
-runner -> runner ++ : handleListTasks(cmd)
+runner -> viewHandler ++ : handleListTasks(cmd)
 
-runner -> runner ++ : findSku("P-A")
-runner -> skuList ++ : getSKUList()
-return List<SKU>
+viewHandler -> CommandHelper ++ : findSkuOrError(skuList, "P-A")
+CommandHelper -> skuList ++ : findByID("P-A")
+return targetSku
 return targetSku
 
-runner -> sku ++ : getSKUTaskList()
+viewHandler -> sku ++ : getSKUTaskList()
 return taskList
 
-runner -> taskList ++ : getSKUTaskList()
+viewHandler -> taskList ++ : getSKUTaskList()
 return ArrayList<SKUTask>
 
 loop for each printed task
-    runner -> task ++ : toString()
+    viewHandler -> task ++ : toString()
     task -> task ++ : isDone()
     return isDone
     task -> task ++ : getSKUTaskID()

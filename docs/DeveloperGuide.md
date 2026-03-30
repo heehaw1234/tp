@@ -45,7 +45,48 @@ The diagram shows the main components and their relationships:
 ### Command component - Samuel
 ### Exception component - Samuel
 ### SKU component - om
-### SKUTask component - Sean
+
+### SKUTask component
+
+**API** : `SKUTaskList.java`, `SKUTask.java`
+
+Here's a class diagram of the SKUTask component:
+
+![SKUTask Architecture Diagram](plantUML/skutask-operations/skutask-architecture.png)
+
+The sequence diagram below illustrates the interactions within the SKUTask component, taking the `addSKUTask` API call as an example.
+
+**Interactions Inside the SKUTask Component for the `addskutask` Command**
+
+![Add SKU Task Sequence Diagram](plantUML/skutask-operations/addTaskSequence.png)
+
+How the SKUTask component works:
+
+When the `SKUTaskList` is called upon to execute a task-level operation, it receives the extracted task properties (e.g., date, priority, description) from the parent `SKU` that delegates it.
+This results in a `SKUTask` object being instantiated (or an existing one being modified or deleted) which is managed entirely within the `SKUTaskList`.
+The `SKUTaskList` communicates internally with the individual `SKUTask` items, enforcing controlled access through wrapper methods.
+Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the list and the individual task fields) to update specific parameters like the `Priority` enum or completion status.
+The result of the task execution permanently mutates the system's memory model, which is ultimately fetched back by higher-level components for confirmation.
+
+Here are the other interactions in the SKUTask component (omitted from the sequence diagram above) that are used for property reading and modifications:
+
+**Property Modifications (Setters)**
+
+![Setters Sequence Diagram](plantUML/skutask-operations/settersSequence.png)
+
+**Property Retrieval (Getters)**
+
+![Getters Sequence Diagram](plantUML/skutask-operations/gettersSequence.png)
+
+**Task Deletion**
+
+![Delete SKU Task Sequence Diagram](plantUML/skutask-operations/deleteTaskSequence.png)
+
+How task properties and deletions work:
+
+When called upon to modify a task, the `TaskCommandHandler` class relies on a shared `CommandHelper` utility to safely locate the specific `SKUTask` object instance inside the model environment without needing to hold a map.
+Depending on the command, it uses the specific parameter wrappers on the `SKUTaskList` object, which apply the mutation or extraction down to the base `SKUTask` class level and return the newly shaped data to the user.
+
 ### Storage component - Om
 ### Ui component - Sean
 
@@ -108,22 +149,22 @@ The Add and Delete SKU Task operations are facilitated by the `CommandRunner` co
 
 The operations are handled internally via the following flow:
 
-* `CommandRunner#handleAddSkuTask(ParsedCommand)` — Extracts the targeted SKU ID and the task properties (including `Priority`). It calls `CommandRunner#findSku()` to validate the SKU's existence and delegates to `SKUTaskList#addSKUTask()` to instantiate a new `SKUTask`.
-* `CommandRunner#handleDeleteTask(ParsedCommand)` — Calls `CommandRunner#findSku()` to locate the SKU, validates the target task index, and instructs `SKUTaskList#deleteSKUTaskByIndex()` to remove the task from the internal array.
+* `TaskCommandHandler#handleAddSkuTask(ParsedCommand)` — Extracts the targeted SKU ID and the task properties (including `Priority`). It looks up the SKU via `SKUList#findByID()` and delegates to `SKUTaskList#addSKUTask()` to instantiate a new `SKUTask`.
+* `TaskCommandHandler#handleDeleteTask(ParsedCommand)` — Calls `CommandHelper#findSkuOrError()` to locate the SKU safely, validates the target task index, and instructs `SKUTaskList#deleteSKUTaskByIndex()` to remove the task from the internal array.
 
 Given below is an example usage scenario demonstrating how the Add SKU Task mechanism behaves step-by-step.
 
 **Step 1.** The user executes `addskutask n/P-A d/2026-10-10 p/HIGH`. The `Ui` reads the input, and the `Parser` extracts the command word and maps the arguments `n/` to `P-A`, `d/` to `2026-10-10`, and `p/` to `HIGH` into a `ParsedCommand` object.
 
-**Step 2.** The `CommandRunner#run()` method receives this `ParsedCommand`. Recognizing the `addskutask` command word, it routes execution to `CommandRunner#handleAddSkuTask()`.
+**Step 2.** The `CommandRunner#run()` method receives this `ParsedCommand`. Recognizing the `addskutask` command word, it routes execution to `TaskCommandHandler#handleAddSkuTask()`.
 
-**Step 3.** `handleAddSkuTask()` processes the properties (parsing `HIGH` into the `Priority` enum). It calls `findSku("P-A")` to locate the target `SKU`. Upon finding it, it retrieves the SKU's internal `SKUTaskList`.
+**Step 3.** `handleAddSkuTask()` processes the properties (parsing `HIGH` into the `Priority` enum). It calls `skuList.findByID("P-A")` to locate the target `SKU`. Upon finding it, it retrieves the SKU's internal `SKUTaskList`.
 
 **Step 4.** The `SKUTaskList#addSKUTask()` method is invoked. This method instantiates a new `SKUTask` object with the extracted properties (including the `Priority` enum state). The task is appended to the internal `ArrayList`.
 
 **Step 5.** Execution completes successfully, and control returns to the `Ui` to print the success message.
 
-*Note: The delete operation follows a nearly identical traversal, except `CommandRunner#handleDeleteTask()` parses the target index instead of properties, and delegates to `SKUTaskList#deleteSKUTaskByIndex()`.*
+*Note: The delete operation follows a nearly identical traversal, except `TaskCommandHandler#handleDeleteTask()` parses the target index instead of properties, and delegates to `SKUTaskList#deleteSKUTaskByIndex()`.*
 
 The following sequence diagram shows the end-to-end flow of adding a SKU Task:
 
@@ -137,7 +178,7 @@ The following sequence diagram shows the end-to-end flow of deleting a SKU Task:
 
 #### Implementation Details
 
-Updating or retrieving a task's state passes entirely through `CommandRunner`, down to `SKUTaskList`, and finally to individual `SKUTask` objects. When a user executes `edittask n/P-A i/1 p/LOW`, `CommandRunner#handleEditTask()` locates the SKU and invokes `SKUTaskList#editSKUTask()`. `SKUTaskList` identifies the proper `SKUTask` at the index and modifies its state exclusively, reinforcing the abstraction.
+Updating or retrieving a task's state passes entirely from a specific command handler down to `SKUTaskList`, and finally to individual `SKUTask` objects. When a user executes `edittask n/P-A i/1 p/LOW`, the flow routes to `TaskCommandHandler#handleEditTask()`, which locates the SKU and invokes `SKUTaskList#editSKUTask()`. `SKUTaskList` identifies the proper `SKUTask` at the index and modifies its state exclusively, reinforcing the abstraction.
 
 The following sequence diagram shows the holistic flow of setting properties (e.g., due date, priority, and description via `t/DESC`):
 
@@ -258,7 +299,7 @@ The feature supports three primary modes:
 
 The operations are handled internally via the following flow:
 
-* **command Routing:** `CommandRunner#handleListTasks(ParsedCommand)` extracts the arguments, instantiates a `ViewSKUTask` object, and sets the respective filter strings.
+* **Command Routing:** `ViewCommandHandler#handleListTasks(ParsedCommand)` extracts the arguments, instantiates a `ViewSKUTask` object, and sets the respective filter strings.
 * **Data Aggregation:** `ViewSKUTask#listTasks(SKUList)` performs a full traversal of the `SKUList` to gather all available `SKUTask` objects into a "flattened" master list.
 * **Filtering & Sorting Logic:**
   * For **SKU ID** and **Priority**, the viewer applies a Java Stream filter directly on the task list. Since these properties are encapsulated within the `SKUTask` object itself, no further interaction with the Model is required.

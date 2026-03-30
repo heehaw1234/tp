@@ -6,11 +6,16 @@ hide circle
 
 class CommandRunner LOGIC_COLOR {
   - isRunning: boolean
-  - handleAddSkuTask(cmd: ParsedCommand): void
-  - handleDeleteTask(cmd: ParsedCommand): void
-  - handleEditTask(cmd: ParsedCommand): void
-  - handleListTasks(cmd: ParsedCommand): void
-  - findSku(skuId: String): SKU
+  + run(cmd: ParsedCommand): void
+}
+
+class TaskCommandHandler LOGIC_COLOR_T1 {
+  - skuList: SKUList
+  + handleAddSkuTask(cmd: ParsedCommand): void
+  + handleDeleteTask(cmd: ParsedCommand): void
+  + handleEditTask(cmd: ParsedCommand): void
+  + handleMarkTask(cmd: ParsedCommand): void
+  + handleUnmarkTask(cmd: ParsedCommand): void
 }
 
 class SKUList MODEL_COLOR {
@@ -43,7 +48,8 @@ class SKUTask MODEL_COLOR_T3 {
   + isDone(): boolean
 }
 
-CommandRunner -down-> "1" SKUList : skuList
+CommandRunner -down-> TaskCommandHandler : delegates to
+TaskCommandHandler -down-> "1" SKUList : skuList
 SKUList -down-> "*" SKU : skuList
 SKU -down-> "1" SKUTaskList : skuTaskList
 SKUTaskList -down-> "*" SKUTask : skuTaskList

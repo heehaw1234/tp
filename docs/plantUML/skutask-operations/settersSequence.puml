@@ -5,6 +5,8 @@ Actor User as user USER_COLOR
 Participant ":Ui" as ui UI_COLOR
 Participant ":Parser" as parser LOGIC_COLOR_T1
 Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":TaskCommandHandler" as taskHandler LOGIC_COLOR_T2
+Participant "<<class>>\nCommandHelper" as CommandHelper LOGIC_COLOR_T3
 Participant ":SKUList" as skuList MODEL_COLOR
 Participant ":SKU" as sku MODEL_COLOR_T1
 Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
@@ -15,18 +17,17 @@ ui -> parser ++ : parse(...)
 return cmd : ParsedCommand
 
 ui -> runner ++ : run(cmd)
-runner -> runner ++ : handleEditTask(cmd)
+runner -> taskHandler ++ : handleEditTask(cmd)
 
-runner -> skuList ++ : getSKUList()
-return List<SKU>
-
-runner -> runner ++ : findSku("P-A")
+taskHandler -> CommandHelper ++ : findSkuOrError(skuList, "P-A")
+CommandHelper -> skuList ++ : findByID("P-A")
+return targetSku
 return targetSku
 
-runner -> sku ++ : getSKUTaskList()
+taskHandler -> sku ++ : getSKUTaskList()
 return taskList
 
-runner -> taskList ++ : editSKUTask(1, null, Priority.LOW, null)
+taskHandler -> taskList ++ : editSKUTask(1, null, Priority.LOW, null)
 taskList -> task ++ : setSKUTaskPriority(Priority.LOW)
 return
 return

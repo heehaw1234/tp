@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//@@author heehaw1234
 /**
  * Manages a list of SKU tasks.
  * Provides methods to add, delete, retrieve, and display tasks.
  */
+//@@author heehaw1234
 public class SKUTaskList {
     private static final Logger LOGGER = Logger.getLogger(SKUTaskList.class.getName());
     private final ArrayList<SKUTask> skuTaskList;

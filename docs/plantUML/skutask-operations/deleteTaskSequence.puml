@@ -5,6 +5,7 @@ Actor User as user USER_COLOR
 Participant ":Ui" as ui UI_COLOR
 Participant ":Parser" as parser LOGIC_COLOR_T1
 Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":TaskCommandHandler" as taskHandler LOGIC_COLOR_T2
 Participant ":SKUList" as skuList MODEL_COLOR
 Participant ":SKU" as sku MODEL_COLOR_T1
 Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
@@ -14,18 +15,15 @@ ui -> parser ++ : parse(...)
 return cmd : ParsedCommand
 
 ui -> runner ++ : run(cmd)
-runner -> runner ++ : handleDeleteTask(cmd)
+runner -> taskHandler ++ : handleDeleteTask(cmd)
 
-runner -> skuList ++ : getSKUList()
-return List<SKU>
-
-runner -> runner ++ : findSku("P-A")
+taskHandler -> skuList ++ : findByID("P-A")
 return targetSku
 
-runner -> sku ++ : getSKUTaskList()
+taskHandler -> sku ++ : getSKUTaskList()
 return taskList
 
-runner -> taskList ++ : deleteSKUTaskByIndex(1)
+taskHandler -> taskList ++ : deleteSKUTaskByIndex(1)
 taskList -> taskList ++ : skuTaskList.remove(0)
 return
 return
