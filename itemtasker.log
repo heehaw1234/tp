@@ -6,3 +6,21 @@ Mar 30, 2026 1:55:15 PM sku.SKU <init>
 INFO: Instantiated new SKU object: [1] at A1
 Mar 30, 2026 1:55:15 PM sku.SKUList addSKU
 INFO: Successfully added SKU: [1] at Location: A1
+Mar 30, 2026 5:26:59 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Mar 30, 2026 5:27:11 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-A] at A1
+Mar 30, 2026 5:27:11 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-A] at Location: A1
+Mar 30, 2026 5:27:11 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-B] at B2
+Mar 30, 2026 5:27:11 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-B] at Location: B2
+Mar 30, 2026 5:27:11 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-C] at C3
+Mar 30, 2026 5:27:11 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-C] at Location: C3
+Mar 30, 2026 5:27:12 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-D] at A2
+Mar 30, 2026 5:27:12 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-D] at Location: A2

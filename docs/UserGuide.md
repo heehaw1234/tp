@@ -45,6 +45,12 @@ Example of usage:
 **Q**: What happens if I manually edit the `storage.json` file and make a mistake?  
 **A**: If the JSON format becomes invalid, outdated, or corrupted due to manual edits, ItemTasker will print a warning on startup and begin with an empty warehouse to prevent system crashes. It is highly recommended to make a copy of your `storage.json` file before doing any manual tweaking.
 
+**Q**: Where can I find the application logs if I need to report a bug?  
+**A**: ItemTasker automatically generates an `itemtasker.log` file in the same directory as the application containing diagnostic information. You can review or attach this file when reporting any unexpected behavior.
+
+**Q**: Is there a limit to how many SKUs or tasks I can add?  
+**A**: There is no hardcoded limit to the number of SKUs or tasks you can manage. However, performance might begin to slow down if you are managing tens of thousands of tasks simultaneously on older hardware.
+
 ## Command Summary
 
 | Action | Format | Example |
