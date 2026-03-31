@@ -27,6 +27,8 @@ public class SKUTaskList {
      */
     public int getSize() {
         return skuTaskList.size();
+    }
+    
     /**
      * Checks whether the task list is empty.
      *

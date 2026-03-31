@@ -24,3 +24,5 @@ Mar 30, 2026 5:27:12 PM sku.SKU <init>
 INFO: Instantiated new SKU object: [PALLET-D] at A2
 Mar 30, 2026 5:27:12 PM sku.SKUList addSKU
 INFO: Successfully added SKU: [PALLET-D] at Location: A2
+Mar 31, 2026 5:15:54 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.

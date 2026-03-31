@@ -305,6 +305,11 @@ Example of usage:
 **Q**: What is the difference between `viewmap` and `status`?  
 **A**: `viewmap` is a visual tool that shows the physical distribution of tasks across the A1-C3 grid. `status` is an analytical tool that provides a breakdown of task completion percentages and identifies which SKUs require immediate attention.
 
+**Q**: Where can I find the application logs if I need to report a bug?  
+**A**: ItemTasker automatically generates an `itemtasker.log` file in the same directory as the application containing diagnostic information. You can review or attach this file when reporting any unexpected behavior.
+
+**Q**: Is there a limit to how many SKUs or tasks I can add?  
+**A**: There is no hardcoded limit to the number of SKUs or tasks you can manage. However, performance might begin to slow down if you are managing tens of thousands of tasks simultaneously on older hardware.
 
 ## command Summary
 
