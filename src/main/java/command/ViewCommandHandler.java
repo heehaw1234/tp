@@ -56,6 +56,10 @@ public class ViewCommandHandler {
             }
         }
 
+        if (skuFilter != null && skuFilter.trim().isEmpty()) {
+            throw new InvalidFilterException("The SKU name after n/ cannot be empty.");
+        }
+
         int filterCount = 0;
         if (skuFilter != null) {
             filterCount++;
@@ -170,11 +174,23 @@ public class ViewCommandHandler {
      *
      * @param cmd The parsed command containing an optional n/ SKU filter.
      */
-    public void handleStatus(ParsedCommand cmd) {
+    public void handleStatus(ParsedCommand cmd) throws InvalidFilterException{
         assert cmd != null : "ParsedCommand should not be null";
+
+        for (String flag : cmd.getAllFlags()) {
+            if (!flag.equals("n")) {
+                logger.log(Level.WARNING, "Unrecognized flag in status command: {0}", flag);
+                throw new InvalidFilterException("Unknown flag '" + flag + "/'. For status, only n/ is allowed.");
+            }
+        }
 
         String skuFilter = cmd.getArg("n");
         SKUStatusAnalyzer analyzer = new SKUStatusAnalyzer();
+
+        if (skuFilter != null && skuFilter.trim().isEmpty()) {
+            logger.log(Level.WARNING, "User provided empty SKU name for status.");
+            throw new InvalidFilterException("The SKU name after n/ cannot be empty.");
+        }
 
         if (skuFilter != null) {
             logger.log(Level.INFO, "Status requested for SKU: {0}", skuFilter);
