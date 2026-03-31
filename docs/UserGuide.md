@@ -45,6 +45,9 @@ Example of usage:
 **Q**: What happens if I manually edit the `storage.json` file and make a mistake?  
 **A**: If the JSON format becomes invalid, outdated, or corrupted due to manual edits, ItemTasker will print a warning on startup and begin with an empty warehouse to prevent system crashes. It is highly recommended to make a copy of your `storage.json` file before doing any manual tweaking.
 
+**Q**: Can I edit multiple fields of a task at once?  
+**A**: Yes. The `edittask` command accepts any combination of `d/` (due date), `p/` (priority), and `t/` (description) flags simultaneously. Only the fields you specify will be updated. All other fields are preserved.
+
 ## Command Summary
 
 | Action | Format | Example |
@@ -65,8 +68,9 @@ Example of usage:
 | Find tasks | `find [n/SKU_ID] [t/DESCRIPTION] [i/TASK_INDEX]` | `find n/PALLET-A t/Check` |
 | View warehouse map | `viewmap` | `viewmap` |
 | Export inventory | `export` | `export` |
+| View status | `status [n/SKU_ID]` | `status n/PALLET-A` |
 | Help | `help` | `help` |
 | Exit | `bye` / `exit` | `bye` |
-| View status | `status [n/SKU_ID]` | `status n/PALLET-A` |
+
 
 *Locations: A1 A2 A3 \| B1 B2 B3 \| C1 C2 C3 (3x3 warehouse grid). Priorities: HIGH, MEDIUM, LOW. Sort fields: date, priority, status.*

@@ -42,6 +42,23 @@ class ViewCommandHandler LOGIC_COLOR {
   + handleStatus(cmd): void
 }
 
+class CommandHelper LOGIC_COLOR {
+  + {static} findSkuOrError(skuList, id): SKU
+  + {static} parseLocation(str): Location
+  + {static} parsePriority(str): Priority
+  + {static} parseIndex(str): int
+}
+
+class DateValidator LOGIC_COLOR {
+  + {static} isValidDate(str): boolean
+  + {static} validateDateOrError(str): String
+}
+
+class TaskSorter LOGIC_COLOR {
+  + getSortedTasks(): List<SKUTask>
+  + {static} isValidSortField(field): boolean
+}
+
 class SKUList MODEL_COLOR {
   + addSKU(id, loc): void
   + deleteSKU(id): void
@@ -70,6 +87,10 @@ class Storage STORAGE_COLOR {
   + {static} loadState(skuList): void
 }
 
+class Export STORAGE_COLOR {
+  + {static} exportToTextFile(skuList): void
+}
+
 ' -- UI layer --
 ItemTasker -down-> CommandRunner
 ItemTasker -right-> Ui
@@ -80,11 +101,20 @@ CommandRunner -down-> SKUCommandHandler
 CommandRunner -down-> TaskCommandHandler
 CommandRunner -down-> ViewCommandHandler
 CommandRunner -left-> Storage
+CommandRunner ..> Export
+
+' -- Shared utilities --
+SKUCommandHandler ..> CommandHelper
+TaskCommandHandler ..> CommandHelper
+ViewCommandHandler ..> CommandHelper
+TaskCommandHandler ..> DateValidator
+TaskCommandHandler ..> TaskSorter
 
 ' -- All handlers to model --
 SKUCommandHandler -down-> SKUList
 TaskCommandHandler -down-> SKUList
 ViewCommandHandler -down-> SKUList
+Export ..> SKUList
 
 ' -- Model layer --
 SKUList -down-> "*" SKU
