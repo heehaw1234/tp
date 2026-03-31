@@ -1,0 +1,32 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
+
+package UI <<Rectangle>> {
+    class ItemTasker UI_COLOR
+    class Ui UI_COLOR_T1
+    class Parser UI_COLOR_T2
+    class ViewMap UI_COLOR_T3
+    class ItemTaskerLogger UI_COLOR_T4
+}
+
+package Logic <<Rectangle>> {
+}
+
+package Model <<Rectangle>> {
+}
+
+ItemTasker -down-> "1" Ui
+ItemTasker -down-> Parser
+ItemTasker -down-> ItemTaskerLogger
+ItemTasker -right-> Logic : executes >
+
+Logic .up.> Ui : calls static methods >
+Logic .up.> ViewMap : uses >
+
+Ui -down-> Model : displays >
+ViewMap -down-> Model : reads distribution >
+
+@enduml

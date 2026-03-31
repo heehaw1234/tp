@@ -90,7 +90,53 @@ When called upon to modify a task, the `TaskCommandHandler` class relies on a sh
 Depending on the command, it uses the specific parameter wrappers on the `SKUTaskList` object, which apply the mutation or extraction down to the base `SKUTask` class level and return the newly shaped data to the user.
 
 ### Storage component - Om
-### Ui component - Sean
+### UI component
+
+**API** : `Ui.java`, `Parser.java`, `ItemTasker.java`, `ItemTaskerLogger.java`, `ViewMap.java`
+
+The UI component handles the lifecycle of user interaction, from capturing raw terminal input to displaying formatted warehouse data.
+
+#### Architecture
+
+The class diagram below illustrates the structure of the UI component and its relationship with the Logic and Model components:
+
+![UI Architecture Diagram](plantUML/ui/UiComponentArchitecture.png)
+
+The UI consists of a core entry point, **ItemTasker**, which orchestrates the interaction between several specialized classes:
+* **Ui**: Manages the `Scanner` for input and provides `static` methods for centralized terminal printing (e.g., success/error messages, headers).
+* **Parser**: Responsible for decomposing raw strings into structured `ParsedCommand` objects using flag-based regex logic.
+* **ViewMap**: A specialized display class that renders a 3x3 grid visualization of warehouse task distribution.
+* **ItemTaskerLogger**: Manages internal system logging, redirecting debug output to `itemtasker.log` to keep the CLI interface clean.
+
+How the UI component works:
+* It **executes user commands** by passing `ParsedCommand` objects to the **Logic** component (`CommandRunner`).
+* It **reads user input** via a blocking `while` loop in the `ItemTasker` main method.
+* It **depends on Model classes** (e.g., `SKUList`, `SKUTask`) to extract and display data in formatted lists, maps, and status summaries.
+
+#### Interactions
+
+The sequence diagram below illustrates the standard interaction loop within the UI component when a user enters a command.
+
+**Interactions within the UI Component for a Command Lifecycle**
+
+![UI Interaction Sequence Diagram](plantUML/ui/UiComponentSequence.png)
+
+How the UI interaction loop works:
+1.  **ItemTasker** calls `Ui#readInput()`, which prompts the user with `> ` and waits for a string.
+2.  The raw string is passed to **Parser#parse()**, which identifies the command word and maps flags (e.g., `n/`, `d/`) to values.
+3.  **ItemTasker** passes the resulting `ParsedCommand` to the **Logic** component (`CommandRunner`).
+4.  If the logic execution fails, **ItemTasker** catches the exception and uses `Ui#printError()` to provide feedback.
+5.  On successful execution, the **Logic** component calls back to **Ui** static methods to display the specific results.
+
+#### Specialized Visualizations
+
+Beyond standard text feedback, the UI component provides complex data rendering:
+
+**Warehouse Map Rendering (`viewmap`)**
+When `viewmap` is called, the **ViewMap** class iterates through the `SKUList`, maps task counts to a coordinate grid (A1-C3), and renders a 3x3 visual representation of the warehouse floor.
+
+**Status Analysis Display**
+The **Ui** component works with the Model's analysis tools to display completion percentages and pending task counts through `printSkuStatus` and `printWarehouseStatus`.
 
 ## Implementation
 
@@ -292,54 +338,65 @@ The following class diagram shows the architecture:
 
 #### Implementation Details
 
-The View SKU Task mechanism allows users to retrieve filtered or sorted views of the warehouse tasks without modifying the underlying data. This is facilitated by the `ViewSKUTask` logic processor, which decouples the filtering and sorting algorithms from the core `CommandRunner` and `Model` components.
+The View SKU Task mechanism allows users to retrieve filtered or sorted views of the warehouse tasks without modifying the underlying data. This is facilitated by the **ViewSKUTask** logic processor, which decouples the filtering and sorting algorithms from the core **CommandRunner** and **Model** components.
 
 The feature supports three primary modes:
 1.  **SKU Filtering (`n/`):** Isolates tasks belonging to a specific SKU ID.
-2.  **Priority Filtering (`p/`):** Streams all tasks and filters by the `Priority` enum (HIGH, MEDIUM, LOW).
-3.  **Spatial Sorting (`l/`):** Sorts all system tasks based on the distance from a specified warehouse `Location`.
+2.  **Priority Filtering (`p/`):** Streams all tasks and filters by the **Priority** enum (**HIGH**, **MEDIUM**, **LOW**).
+3.  **Spatial Sorting (`l/`):** Sorts all system tasks based on the distance from a specified warehouse **Location**.
 
 The operations are handled internally via the following flow:
 
-* **Command Routing:** `ViewCommandHandler#handleListTasks(ParsedCommand)` extracts the arguments, instantiates a `ViewSKUTask` object, and sets the respective filter strings.
-* **Data Aggregation:** `ViewSKUTask#listTasks(SKUList)` performs a full traversal of the `SKUList` to gather all available `SKUTask` objects into a "flattened" master list.
+* **Command Parsing:** **ItemTasker** reads the raw input via **Ui** and passes it to the **Parser**, which returns a **ParsedCommand**.
+* **Command Routing:** **ItemTasker** passes this command to **CommandRunner**, which delegates the request to **ViewCommandHandler#handleListTasks(cmd)**.
+* **Logic Instantiation:** The handler instantiates a short-lived **ViewSKUTask** object and sets the respective filter strings.
+* **Data Aggregation (The Gathering Loop):** Before filtering, **ViewSKUTask#listTasks(skuList)** must perform a full traversal of the **SKUList**. It visits every **parentSku** to collect all **SKUTask** objects into a "flattened" master list.
 * **Filtering & Sorting Logic:**
-  * For **SKU ID** and **Priority**, the viewer applies a Java Stream filter directly on the task list. Since these properties are encapsulated within the `SKUTask` object itself, no further interaction with the Model is required.
-  * For **Distance**, the viewer uses `calculateDistance()` within a comparator. This method performs a **parent-lookup** for each task to retrieve the physical coordinates from its associated `parentSku`.
+  * For **SKU ID** and **Priority**, the viewer applies a Java Stream filter directly on the aggregated task list. Since these properties are encapsulated within the **SKUTask** object, no further model interaction is required after the initial gather.
+  * For **Distance**, the viewer uses `calculateDistance()` within a comparator. This method performs a secondary **parent-lookup** for each task to retrieve physical coordinates from its associated **SKU**.
 
 The Distance formula used for spatial sorting is:
 $$\text{Distance} = |x_1 - x_2| + |y_1 - y_2|$$
 
+---
+
 #### Usage Scenarios and Sequence Diagrams
 
-**Scenario 1: Spatial Sorting (`listtasks l/B2`)** This scenario demonstrates the parent-lookup loop required to resolve coordinates. The viewer iterates through each `SKU` to collect tasks and then references the `parentSku` location during the sort.
+**Scenario 1: Spatial Sorting (`listtasks l/B2`)**
+This scenario demonstrates the dual-loop process. The first loop gathers tasks from the hierarchy. The second loop occurs in the **ViewCommandHandler**, which calls `calculateDistance` for each result to format the distance values for the UI display.
 
 ![View SKU Task (Distance) Sequence Diagram](plantUML/viewSKUTask-operations/viewSKUTask-distanceSequence.png)
 
-**Scenario 2: Priority Filtering (`listtasks p/HIGH`)** This illustrates a simplified flow. Because `Priority` is stored internally within the `SKUTask`, the viewer gathers the tasks once and filters them internally without further Model interaction.
+**Scenario 2: Priority Filtering (`listtasks p/HIGH`)**
+In this flow, only the initial Gathering loop is required to populate the task list. The filtering happens internally within the viewer.
 
 ![View SKU Task (Priority) Sequence Diagram](plantUML/viewSKUTask-operations/viewSKUTask-prioritySequence.png)
 
-**Scenario 3: SKU ID Filtering (`listtasks n/A123`)** Similar to Priority filtering, the SKU ID is an internal property of the `SKUTask`. The viewer gathers the list and filters it without needing a secondary lookup to the `parentSku`.
+**Scenario 3: SKU ID Filtering (`listtasks n/A123`)**
+Similar to priority filtering, the viewer gathers all tasks via the hierarchy loop and then applies an internal string-match filter for the SKU ID.
 
 ![View SKU Task (SKU ID) Sequence Diagram](plantUML/viewSKUTask-operations/viewSKUTask-SKUSequence.png)
 
+---
+
 #### Architecture
 
-The following class diagram shows how the `ViewSKUTask` logic component interacts with the Model:
+The following class diagram shows how the logic components are structured to support the command flow from **ItemTasker** down to the **ViewSKUTask** processor:
 
 ![View SKU Task Architecture](plantUML/viewSKUTask-operations/viewSKUTask-architecture.png)
 
+---
+
 #### Design Considerations
 
-**Aspect: Data "Flattening" for Global Views:**
+**Aspect: Data "Flattening" for Global Views**
 
-* **Current Implementation:** `ViewSKUTask` manually iterates through the nested `SKU -> SKUTaskList` hierarchy to build a temporary list for filtering/sorting.
-  * *Pros:* Maintains strict encapsulation. Neither `CommandRunner` nor `ViewSKUTask` needs to maintain a redundant global map of tasks, ensuring the `SKU` remains the single source of truth for its tasks.
-  * *Cons:* Performance cost of $O(N)$ where $N$ is the total number of SKUs, as every list must be visited to gather tasks for a global view.
-* **Alternative:** Maintain a `MasterTaskList` in `SKUList` that updates whenever a task is added/deleted.
-  * *Pros:* Sorting and filtering are faster ($O(1)$ to retrieve the base list).
-  * *Cons:* Higher risk of data inconsistency. Deleting an SKU would require purging its specific tasks from the master list, increasing complexity in the `Delete SKU` feature.
+* **Current Implementation:** **ViewSKUTask** manually iterates through the nested **SKU -> SKUTaskList** hierarchy to build a temporary list for filtering/sorting.
+  * **Pros:** Maintains strict encapsulation. Neither **CommandRunner** nor **ViewSKUTask** needs to maintain a redundant global map of tasks, ensuring the **SKU** remains the single source of truth for its tasks.
+  * **Cons:** Performance cost of $O(N)$ where $N$ is the total number of SKUs, as every list must be visited to gather tasks for a global view.
+* **Alternative:** Maintain a `MasterTaskList` in **SKUList** that updates whenever a task is added/deleted.
+  * **Pros:** Sorting and filtering are faster ($O(1)$ to retrieve the base list).
+  * **Cons:** Higher risk of data inconsistency. Deleting an SKU would require purging its specific tasks from the master list, increasing complexity in the `Delete SKU` feature.
 
 ## Appendix A: Product Scope
 

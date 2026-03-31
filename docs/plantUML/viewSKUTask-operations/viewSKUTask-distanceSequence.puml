@@ -3,46 +3,70 @@
 
 Actor User as user USER_COLOR
 Participant ":Ui" as ui UI_COLOR
+Participant ":ItemTasker" as main UI_COLOR_T1
 Participant ":Parser" as parser LOGIC_COLOR_T1
 Participant "runner:CommandRunner" as runner LOGIC_COLOR
+Participant "viewHandler:ViewCommandHandler" as handler LOGIC_COLOR_T2
 Participant "viewer:ViewSKUTask" as viewer LOGIC_COLOR_T3
 Participant "skuList:SKUList" as skuList MODEL_COLOR
-' Updated naming to parentSku
 Participant "parentSku:SKU" as sku MODEL_COLOR_T1
 Participant "tasks:SKUTaskList" as taskList MODEL_COLOR_T2
 
-user -> ui ++ : "listtasks l/B2"
-ui -> parser ++ : parse(...)
-return cmd : ParsedCommand
+user -> ui : "listtasks l/B2"
+activate ui
+ui -> main : readInput()
+activate main
 
-ui -> runner ++ : run(cmd)
-runner -> runner ++ : handleListTasks(cmd)
+main -> parser : parse(input)
+activate parser
+return cmd
+
+main -> runner : run(cmd)
+activate runner
+
+runner -> handler : handleListTasks(cmd)
+activate handler
 
 create viewer
-runner -> viewer : ViewSKUTask()
+handler -> viewer : ViewSKUTask()
 
-runner -> viewer ++ : setLocationFilter("B2")
+handler -> viewer : setLocationFilter("B2")
+activate viewer
 return
 
-runner -> viewer ++ : listTasks(skuList)
+handler -> viewer : listTasks(skuList)
+activate viewer
 
-viewer -> skuList ++ : getSKUList()
+viewer -> skuList : getSKUList()
+activate skuList
 return List<SKU>
 
-loop for each SKU in List
-    viewer -> sku ++ : getSKUTaskList()
+loop for each parentSku in List
+    viewer -> sku : getSKUTaskList()
+    activate sku
     return taskList
 
-    viewer -> taskList ++ : getSKUTaskList()
+    viewer -> taskList : getSKUTaskList()
+    activate taskList
     return List<SKUTask>
 end
 
-note right of viewer : viewer sorts the full list\nusing calculateDistance() to\nfind the location of each parentSku
-
+note right of viewer : viewer sorts the full list\nusing calculateDistance()
 return results:List<SKUTask>
 
-return
-return
+loop for each task in results
+    handler -> viewer : calculateDistance(task, "B2", skuList)
+    activate viewer
+    return distance
+end
+
+handler -> ui : printTasksByDistance(results)
+activate ui
 ui --> user : display results
-deactivate ui
+return
+
+return
+return
+return
+deactivate main
 @enduml

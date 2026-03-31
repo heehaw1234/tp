@@ -48,6 +48,9 @@ Example of usage:
 **Q**: Can I edit multiple fields of a task at once?  
 **A**: Yes. The `edittask` command accepts any combination of `d/` (due date), `p/` (priority), and `t/` (description) flags simultaneously. Only the fields you specify will be updated. All other fields are preserved.
 
+**Q**: What is the difference between `viewmap` and `status`?  
+**A**: `viewmap` is a visual tool that shows the physical distribution of tasks across the A1-C3 grid. `status` is an analytical tool that provides a breakdown of task completion percentages and identifies which SKUs require immediate attention.
+
 ## Command Summary
 
 | Action | Format | Example |
@@ -66,6 +69,7 @@ Example of usage:
 | List by priority | `listtasks p/PRIORITY` | `listtasks p/HIGH` |
 | List by distance | `listtasks l/LOCATION` | `listtasks l/B2` |
 | Find tasks | `find [n/SKU_ID] [t/DESCRIPTION] [i/TASK_INDEX]` | `find n/PALLET-A t/Check` |
+| SKU Status         | `status [n/SKU_ID]` | `status n/PALLET-A`|
 | View warehouse map | `viewmap` | `viewmap` |
 | Export inventory | `export` | `export` |
 | View status | `status [n/SKU_ID]` | `status n/PALLET-A` |

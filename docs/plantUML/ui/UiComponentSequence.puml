@@ -1,0 +1,41 @@
+@startuml
+!include ../style.puml
+
+Actor User as user USER_COLOR
+Participant ":Ui" as ui UI_COLOR
+Participant ":ItemTasker" as main UI_COLOR_T1
+Participant ":Parser" as parser UI_COLOR_T2
+Participant "runner:CommandRunner" as runner LOGIC_COLOR
+Participant "handler:CommandHandler" as handler LOGIC_COLOR_T1
+
+== Input Phase ==
+user -> ui : "addskutask n/A1 d/2024-12-12"
+activate ui
+ui -> main : readInput()
+activate main
+
+main -> parser : parse(input)
+activate parser
+return cmd:ParsedCommand
+
+== Logic Phase ==
+main -> runner : run(cmd)
+activate runner
+runner -> handler : execute()
+activate handler
+
+note right of handler : Logic updates Model...
+
+== Feedback Phase ==
+handler -> ui : <<static>>\nprintSuccess("Task added")
+activate ui
+ui --> user : "[OK] Task added"
+deactivate ui
+
+return
+return
+
+== Loop Continuation ==
+main -> ui : readInput()
+note right of ui : Ready for next command
+@enduml
