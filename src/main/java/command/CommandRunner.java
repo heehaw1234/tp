@@ -86,11 +86,7 @@ public class CommandRunner {
             taskHandler.handleSortTask(cmd);
             break;
         case "listtasks":
-            try {
-                viewHandler.handleListTasks(cmd);
-            } catch (exception.MultipleFilterException | exception.InvalidFilterException e) {
-                Ui.printError(e.getMessage());
-            }
+            viewHandler.handleListTasks(cmd);
             break;
         case "find":
             viewHandler.handleFind(cmd);
