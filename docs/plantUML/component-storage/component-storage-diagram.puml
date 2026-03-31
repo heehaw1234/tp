@@ -1,0 +1,38 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
+
+skinparam classBackgroundColor #9D0012
+skinparam classFontColor #FFFFFF
+skinparam classBorderColor #9D0012
+skinparam ArrowColor #9D0012
+skinparam packageBorderColor transparent
+skinparam shadowing false
+
+package "Storage Component" {
+
+    class Storage {
+
+    }
+
+    class Export {
+
+    }
+
+}
+
+class SKUList <<external>> {
+}
+
+class Gson <<external>> {
+}
+
+Storage ..> SKUList : uses
+Export ..> SKUList : uses
+Storage ..> Gson : serializes/deserializes with
+
+Storage -[hidden]right- Export
+
+@enduml
