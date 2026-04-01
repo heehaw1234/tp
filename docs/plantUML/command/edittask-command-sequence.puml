@@ -1,0 +1,68 @@
+@startuml
+!include ../style.puml
+
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":TaskCommandHandler" as handler LOGIC_COLOR_T2
+Participant ":ParsedCommand" as cmd LOGIC_COLOR_T1
+Participant ":CommandHelper" as helper LOGIC_COLOR_T1
+Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+Participant ":Ui" as ui UI_COLOR
+
+== handleEditTask ==
+
+runner -> handler ++ : handleEditTask(cmd)
+
+handler -> cmd ++ : getArg("n"), getArg("i")
+return skuId, indexStr
+
+alt skuId == null or indexStr == null
+    handler -> ui : printError("Usage: edittask n/SKU_ID i/TASK_INDEX ...")
+    return
+end
+
+handler -> cmd ++ : getArg("d"), getArg("p"), getArg("t")
+return newDate, newPriorityStr, newDesc
+
+alt all three fields null
+    handler -> ui : printError("Provide at least one field to update ...")
+    return
+end
+
+handler -> helper ++ : parseIndex(indexStr)
+return index / -1
+
+alt index == -1
+    return
+end
+
+handler -> helper ++ : findSkuOrError(skuList, skuId)
+return targetSku / null
+
+alt targetSku == null
+    return
+end
+
+handler -> taskList ++ : getSize()
+return size
+
+alt index < 1 or index > size
+    handler -> runner : throw InvalidIndexException
+end
+
+handler -> helper ++ : parsePriority(newPriorityStr)
+return newPriority / null
+
+alt newPriorityStr != null and newPriority == null
+    return
+end
+
+handler -> taskList ++ : editSKUTask(index, newDate, newPriority, newDesc)
+return
+
+handler -> taskList ++ : getSKUTaskList().get(index - 1)
+return updated task
+
+handler -> ui : printSuccess("Updated task #" + index + " ...")
+
+return
+@enduml

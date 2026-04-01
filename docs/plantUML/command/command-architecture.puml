@@ -1,0 +1,62 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
+
+skinparam classBackgroundColor #9D0012
+skinparam classFontColor #FFFFFF
+skinparam classBorderColor #9D0012
+skinparam ArrowColor #9D0012
+skinparam packageBorderColor transparent
+skinparam shadowing false
+
+package "Command Component" {
+
+    class CommandRunner {
+    }
+
+    class SKUCommandHandler {
+    }
+
+    class TaskCommandHandler {
+    }
+
+    class ViewCommandHandler {
+    }
+
+    class ParsedCommand {
+    }
+
+    class CommandHelper <<utility>> {
+    }
+
+    class DateValidator <<utility>> {
+    }
+
+    CommandRunner *--> "1" SKUCommandHandler : delegates to
+    CommandRunner *--> "1" TaskCommandHandler : delegates to
+    CommandRunner *--> "1" ViewCommandHandler : delegates to
+
+    CommandRunner ..> ParsedCommand : dispatches
+
+    SKUCommandHandler ..> ParsedCommand : reads
+    TaskCommandHandler ..> ParsedCommand : reads
+    ViewCommandHandler ..> ParsedCommand : reads
+
+    SKUCommandHandler ..> CommandHelper : uses
+    TaskCommandHandler ..> CommandHelper : uses
+    ViewCommandHandler ..> CommandHelper : uses
+
+    TaskCommandHandler ..> DateValidator : uses
+    SKUCommandHandler ..> DateValidator : uses
+
+}
+
+CommandRunner -[hidden]down- SKUCommandHandler
+SKUCommandHandler -[hidden]right- TaskCommandHandler
+TaskCommandHandler -[hidden]right- ViewCommandHandler
+CommandHelper -[hidden]right- DateValidator
+ParsedCommand -[hidden]down- CommandHelper
+
+@enduml

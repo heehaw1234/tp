@@ -1,0 +1,113 @@
+@startuml
+!include ../style.puml
+
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":TaskCommandHandler" as handler LOGIC_COLOR_T2
+Participant ":ParsedCommand" as cmd LOGIC_COLOR_T1
+Participant ":CommandHelper" as helper LOGIC_COLOR_T1
+Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+Participant ":SKUTask" as task MODEL_COLOR_T2
+Participant ":Ui" as ui UI_COLOR
+
+== handleMarkTask ==
+
+runner -> handler ++ : handleMarkTask(cmd)
+
+handler -> cmd ++ : getArg("n"), getArg("i")
+return skuId, indexStr
+
+alt skuId == null or indexStr == null
+    handler -> ui : printError("Usage: marktask n/SKU_ID i/TASK_INDEX")
+    return
+end
+
+handler -> helper ++ : parseIndex(indexStr)
+return index / -1
+
+alt index == -1
+    return
+end
+
+handler -> helper ++ : findSkuOrError(skuList, skuId)
+return targetSku / null
+
+alt targetSku == null
+    return
+end
+
+handler -> taskList ++ : getSize()
+return size
+
+alt index < 1 or index > size
+    handler -> runner : throw InvalidIndexException
+end
+
+handler -> taskList ++ : getSKUTaskList().get(index - 1)
+return task
+
+handler -> task ++ : isDone()
+return isDone
+
+alt isDone == true
+    handler -> ui : printInfo("Task #" + index + " is already marked as done.")
+    return
+end
+
+handler -> taskList ++ : markTask(index)
+return
+
+handler -> ui : printSuccess("Marked task #" + index + " as done ...")
+
+return
+
+== handleUnmarkTask ==
+
+runner -> handler ++ : handleUnmarkTask(cmd)
+
+handler -> cmd ++ : getArg("n"), getArg("i")
+return skuId, indexStr
+
+alt skuId == null or indexStr == null
+    handler -> ui : printError("Usage: unmarktask n/SKU_ID i/TASK_INDEX")
+    return
+end
+
+handler -> helper ++ : parseIndex(indexStr)
+return index / -1
+
+alt index == -1
+    return
+end
+
+handler -> helper ++ : findSkuOrError(skuList, skuId)
+return targetSku / null
+
+alt targetSku == null
+    return
+end
+
+handler -> taskList ++ : getSize()
+return size
+
+alt index < 1 or index > size
+    handler -> runner : throw InvalidIndexException
+end
+
+handler -> taskList ++ : getSKUTaskList().get(index - 1)
+return task
+
+handler -> task ++ : isDone()
+return isDone
+
+alt isDone == false
+    handler -> ui : printInfo("Task #" + index + " is already unmarked.")
+    return
+end
+
+handler -> taskList ++ : unmarkTask(index)
+return
+
+handler -> ui : printSuccess("Unmarked task #" + index + " ...")
+
+return
+@enduml

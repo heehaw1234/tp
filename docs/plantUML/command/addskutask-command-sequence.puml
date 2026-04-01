@@ -1,0 +1,48 @@
+@startuml
+!include ../style.puml
+
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":TaskCommandHandler" as handler LOGIC_COLOR_T2
+Participant ":ParsedCommand" as cmd LOGIC_COLOR_T1
+Participant ":CommandHelper" as helper LOGIC_COLOR_T1
+Participant ":SKUList" as skuList MODEL_COLOR
+Participant ":SKUTaskList" as taskList MODEL_COLOR_T2
+Participant ":Ui" as ui UI_COLOR
+
+== handleAddSkuTask ==
+
+runner -> handler ++ : handleAddSkuTask(cmd)
+
+handler -> cmd ++ : getArg("n"), getArg("d")
+return skuId, dueDate
+
+alt skuId == null or dueDate == null
+    handler -> ui : printError("Usage: addskutask n/SKU_ID d/DUE_DATE ...")
+    return
+end
+
+handler -> skuList ++ : findByID(skuId)
+return targetSku / null
+
+alt targetSku == null
+    handler -> ui : printError("SKU not found: ...")
+    return
+end
+
+handler -> helper ++ : parsePriorityOrDefault(cmd)
+return priority / null
+
+alt priority == null
+    return
+end
+
+handler -> cmd ++ : hasArg("t"), getArg("t")
+return description
+
+handler -> taskList ++ : addSKUTask(skuId, priority, dueDate, description)
+return
+
+handler -> ui : printSuccess("Added task #" + newIndex + " to SKU [" + skuId + "] ...")
+
+return
+@enduml

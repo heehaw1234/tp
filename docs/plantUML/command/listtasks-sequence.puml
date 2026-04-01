@@ -1,0 +1,88 @@
+@startuml
+!include ../style.puml
+
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":ViewCommandHandler" as handler LOGIC_COLOR_T2
+Participant ":ParsedCommand" as cmd LOGIC_COLOR_T1
+Participant ":CommandHelper" as helper LOGIC_COLOR_T1
+Participant ":ViewSKUTask" as viewer LOGIC_COLOR_T1
+Participant ":SKUList" as skuList MODEL_COLOR
+Participant ":Ui" as ui UI_COLOR
+
+== handleListTasks ==
+
+runner -> handler ++ : handleListTasks(cmd)
+
+handler -> cmd ++ : getArg("n"), getArg("p"), getArg("l")
+return skuFilter, priorityFilter, locationFilter
+
+alt skuFilter != null
+    handler -> skuList ++ : findByID(skuFilter)
+    return targetSku
+
+    alt targetSku == null or task list empty
+        handler -> ui : printInfo("No tasks found for SKU: ...")
+    else
+        handler -> viewer ++ : setSkuFilter(skuFilter)
+        return
+
+        handler -> viewer ++ : listTasks(skuList)
+        return results
+
+        handler -> ui : printTasksForSku(skuFilter, results)
+    end
+
+else priorityFilter != null
+    handler -> helper ++ : parsePriority(priorityFilter)
+    return priority / null
+
+    alt priority == null
+        note right : returns early
+    else
+        handler -> viewer ++ : setPriorityFilter(priorityFilter)
+        return
+
+        handler -> viewer ++ : listTasks(skuList)
+        return results
+
+        handler -> ui : printTasksByPriority(priorityFilter, results)
+    end
+
+else locationFilter != null
+    handler -> helper ++ : parseLocation(locationFilter)
+    return location / null
+
+    alt location == null
+        note right : returns early
+    else
+        handler -> viewer ++ : setLocationFilter(locationFilter)
+        return
+
+        handler -> viewer ++ : listTasks(skuList)
+        return results
+
+        handler -> handler ++ : formatDistanceEntries(results, locationFilter)
+
+        loop for each task in results
+            handler -> skuList ++ : findByID(task.getSKUTaskID())
+            return skuObj
+
+            alt skuObj == null
+                note right : skip
+            else
+                handler -> viewer ++ : calculateDistance(task, locationFilter, skuList)
+                return dist
+            end
+        end
+
+        return formattedEntries
+
+        handler -> ui : printTasksByDistance(from, formattedEntries)
+    end
+
+else no filter provided
+    handler -> ui : printAllTasks(skuList)
+end
+
+return
+@enduml

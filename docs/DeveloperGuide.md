@@ -44,8 +44,162 @@ The "*" multiplicity on model relationships denotes one-to-many.*
 - **Encapsulation**: Each `SKU` owns its own `SKUTaskList` — no external maps or redundant data structures
 - **Layered Architecture**: UI → Logic → Model → Storage separation
 
-### Command component - Samuel
-### Exception component - Samuel
+### Command component
+**API** : `CommandRunner.java`, `ParsedCommand.java`, `CommandHelper.java`,
+`DateValidator.java`, `SKUCommandHandler.java`, `TaskCommandHandler.java`, 
+`ViewCommandHandler.java`
+
+The class diagram below illustrates the internal structure of the Command
+component and its relationship with the Model and UI components:
+
+#### Architecture
+
+The class diagram below illustrates the internal structure of the Command component 
+and its relationship with the Model and UI components:
+
+![Diagram](docs/plantUML/command/command-architecture.png)
+
+The `Command` component,
+
+* acts as the central **Logic** layer of the application, bridging raw user input (provided as `ParsedCommand` objects from the **UI** component) and the underlying **Model** (`SKUList`, `SKU`, `SKUTask`).
+* follows the **Single Responsibility Principle** by splitting all executable logic across three dedicated handler classes — `SKUCommandHandler`, `TaskCommandHandler`, and `ViewCommandHandler` — each owning a distinct command category.
+* uses `CommandRunner` as the sole dispatch entry point, which receives every `ParsedCommand` and routes it to the correct handler via a `switch` statement. This means callers in the UI layer interact with exactly one class regardless of which command is being executed.
+* relies on `CommandHelper` as a shared static utility class to avoid duplicating common parsing and lookup operations (e.g., finding a SKU by ID, parsing `Location`/`Priority` enums, parsing integer indices) across the three handler classes.
+* uses `DateValidator` as a dedicated validation utility that enforces the `YYYY-MM-DD` format and calendar correctness on all user-supplied date strings, following the same validate-and-return-null pattern used by `CommandHelper`.
+* uses `ParsedCommand` as an immutable, flag-keyed value object. All command words are normalized to lowercase and all flag keys are stored in a case-insensitive map, so handlers never need to perform their own normalization.
+* depends on the **Model** component (`SKUList`, `SKU`, `SKUTaskList`, `SKUTask`) for all data mutations and reads. It depends on the **UI** component (`Ui`) only for output (success/error/info messages) and never performs any I/O of its own.
+* triggers **Storage** operations exclusively through `CommandRunner`: state is loaded on construction and saved on `bye`/`exit`. The individual handlers are completely unaware of persistence.
+
+---
+
+#### `ParsedCommand`
+
+`ParsedCommand` is an immutable value object produced by `Parser` and consumed by every handler. 
+It exposes three query methods — `getCommandWord()`, `getArg(key)`, and `hasArg(key)` — and a 
+`getAllFlags()` set used by `ViewCommandHandler` for strict flag validation. Both the command 
+word and all flag keys are normalized to lowercase at construction time, so handlers can safely 
+use literal lowercase strings in comparisons.
+
+---
+
+#### `CommandRunner`
+
+`CommandRunner` is instantiated once at application startup. Its constructor takes the shared `SKUList`, creates one instance each of the three handler classes, and immediately calls `Storage.loadState` to hydrate the model from disk. From that point forward, the main loop calls `run(ParsedCommand)` on every user input, and `CommandRunner` delegates to the appropriate handler or handles `bye`/`exit`/`export`/`help`/`viewmap` inline.
+
+The sequence diagram below illustrates the dispatch lifecycle for a representative command:
+
+**Command Dispatch Sequence for `CommandRunner`**
+
+![CommandRunner Sequence Diagram](docs/plantUML/command/commandRunnerSequence.png)
+
+---
+
+#### `SKUCommandHandler`
+
+Handles the three SKU-level mutations: `addsku`, `editsku`, and `deletesku`. Each method validates that mandatory flags (`n/` and, where required, `l/`) are present before delegating to `CommandHelper` for enum parsing and SKU lookup. Duplicate-ID detection on `addsku` and not-found detection on `deletesku` are handled at this layer before any model mutation occurs.
+
+The sequence diagram below illustrates the interactions for the `addsku` command:
+
+**Interactions Inside the Command Component for the `addsku` Command**
+
+![Add SKU Sequence Diagram](docs/plantUML/command/skuCommandHandlerSequence.png)
+
+---
+
+#### `TaskCommandHandler`
+
+Handles the six task-level commands: `addskutask`, `edittask`, `deletetask`, `marktask`, `unmarktask`, and `sorttasks`. All date inputs pass through `DateValidator.validateDateOrError` before reaching the model. Index bounds are checked explicitly after parsing so that a precise `InvalidIndexException` (carrying both the bad index and the SKU ID) is thrown rather than a raw `IndexOutOfBoundsException` escaping to the top level.
+
+The sequence diagrams below illustrate key interactions within `TaskCommandHandler`:
+
+**Interactions Inside the Command Component for the `addskutask` Command**
+
+![SKU Task Command Sequence Diagram](docs/plantUML/command/addskutask-command-sequence.png)
+
+**Interactions Inside the Command Component for the `edittask` Command**
+
+![Edit Task Command Sequence Diagram](docs/plantUML/command/edittask-command-sequence.png)
+
+**Interactions Inside the Command Component for the `marktask` / `unmarktask` Commands**
+
+![Mark/Unmark Task Command Sequence Diagram](docs/plantUML/command/markunmark-command-sequence.png)
+
+---
+
+#### `ViewCommandHandler`
+
+Handles the three read-only commands: `listtasks`, `find`, and `status`. It applies strict flag validation (throwing `InvalidFilterException` for unrecognized flags and `MultipleFilterException` if more than one filter is combined on `listtasks`) before delegating to private sub-methods following the SLAP principle. The `find` command supports combinable filters (`n/`, `t/`, `i/`) and traverses the entire `SKUList`, accumulating formatted result strings before handing them to `Ui` for display in one call.
+
+The sequence diagrams below illustrate key read paths in `ViewCommandHandler`:
+
+**Interactions Inside the Command Component for the `listtasks` Command**
+
+![List Tasks Sequence Diagram](docs/plantUML/command/listtasks-sequence.png)
+
+**Interactions Inside the Command Component for the `find` Command**
+
+![Find Command Sequence Diagram](docs/plantUML/command/find-sequence.png)
+
+---
+
+#### `CommandHelper` and `DateValidator`
+
+These two classes are pure utilities with no state. `CommandHelper` centralises six 
+shared operations used across all three handler classes: SKU lookup with error printing 
+(`findSkuOrError`), `Location` parsing (`parseLocation`), `Priority` parsing (`parsePriority
+` and `parsePriorityOrDefault`), integer index parsing (`parseIndex`), and description-keyword
+matching (`matchesDescription`). `DateValidator` isolates date validation behind a two-step check 
+— regex format match first, then `LocalDate.parse` for calendar correctness — and logs 
+both successful and rejected parses via `java.util.logging`.
+
+---
+
+The key design decisions for the `Command` component are summarised below:
+
+* **Single entry point.** Routing all commands through `CommandRunner.run()` means the UI layer has no dependency on any individual handler, making it straightforward to add or rename commands in one place.
+* **Null-on-failure convention.** `CommandHelper` and `DateValidator` both return `null` (and print an error via `Ui`) rather than throwing checked exceptions for recoverable input errors. Handlers check the return value and return early, keeping each method's happy path linear and readable.
+* **Immutable `ParsedCommand`.** Handlers cannot accidentally mutate the parsed input, and the unmodifiable map prevents aliasing bugs across shared helper calls.
+* **No persistence knowledge in handlers.** The three handler classes call only Model APIs. Storage interactions are confined to `CommandRunner`, so handlers remain independently testable without a file system.
+
+### Exception component
+
+**API** : `ItemTaskerException.java`, `EmptyListException.java`, `InvalidCommandException.java`, `InvalidFilterException.java`, `InvalidIndexException.java`, `MissingArgumentException.java`, `MultipleFilterException.java`, `SKUNotFoundException.java`
+
+#### Architecture
+
+The class diagram below illustrates the inheritance hierarchy of the Exception component:
+
+![Exception Architecture Diagram](docs/plantUML/exception/exception-architecture.png)
+
+The `Exception` component,
+
+* defines a single base class, `ItemTaskerException`, which extends Java's built-in `Exception`. All application-specific exceptions inherit from this class, establishing a unified exception hierarchy that callers can catch at either the specific or base level.
+* is a **pure domain-error layer** with no dependencies on any other component. It does not reference the Model, Logic, UI, or Storage layers, ensuring it can be used freely across the entire codebase without introducing circular dependencies.
+* provides **context-rich error messages** constructed at instantiation time. Each subclass formats its own message using the relevant domain data (e.g., the missing SKU ID, the out-of-range index, the conflicting filter), so callers never need to construct error strings themselves.
+* uses **two constructors on the base class** — one accepting only a message, and one accepting a message and a cause — to support both standalone errors and exception wrapping where an underlying `Throwable` needs to be preserved for logging.
+
+---
+
+#### Exception Hierarchy
+
+All seven concrete exceptions extend `ItemTaskerException` directly. There is intentionally no intermediate layer — each exception represents a distinct, named failure mode in the application:
+
+* **`EmptyListException`** — thrown when an operation (e.g., listing or sorting) is attempted on a list that contains no items. Accepts a `listType` string to identify which list was empty.
+* **`InvalidCommandException`** — thrown when the user enters an unrecognized, malformed, or syntactically incorrect command word.
+* **`InvalidFilterException`** — thrown by `ViewCommandHandler` when an unrecognized flag is detected on `listtasks` or `status`, or when a filter value is syntactically incorrect.
+* **`InvalidIndexException`** — thrown when a task index is either out of bounds for its SKU's task list, or cannot be parsed as a valid integer. Provides two constructors to cover both cases distinctly.
+* **`MissingArgumentException`** — thrown when a required flag (e.g., `n/` or `d/`) is absent from a command. The message always includes the correct usage string for the offending command.
+* **`MultipleFilterException`** — thrown by `ViewCommandHandler` when more than one filter flag (`n/`, `p/`, `l/`) is provided simultaneously on a `listtasks` command, which only supports a single filter at a time.
+* **`SKUNotFoundException`** — thrown when a SKU ID provided by the user does not exist in the warehouse. The message includes the missing ID and directs the user to `listtasks`.
+
+---
+
+#### Design Notes
+
+* **Checked exceptions.** All exceptions in this hierarchy are checked (they extend `Exception`, not `RuntimeException`). This forces callers in the Logic layer to explicitly declare or handle each failure mode, making the contract of each handler method visible at the API level.
+* **Single-responsibility messages.** Because each subclass formats its own message, the handler classes stay clean — they throw with only the relevant domain value (e.g., `throw new SKUNotFoundException(skuId)`) rather than constructing message strings inline.
+* **`InvalidIndexException` dual constructor.** The two constructors address two distinct failure points: an integer that parsed successfully but fell outside the valid range (`int` constructor), and a string that could not be parsed as an integer at all (`String` constructor). This keeps the type consistent while distinguishing the two error sources.
+
 
 ### SKU component
 

@@ -1,0 +1,50 @@
+@startuml
+!include ../style.puml
+skinparam arrowThickness 1.1
+skinparam classAttributeIconSize 0
+hide circle
+
+skinparam classBackgroundColor #9D0012
+skinparam classFontColor #FFFFFF
+skinparam classBorderColor #9D0012
+skinparam ArrowColor #9D0012
+skinparam packageBorderColor transparent
+skinparam shadowing false
+
+package "Exception Component" {
+
+    class ItemTaskerException {
+    }
+
+    class EmptyListException {
+    }
+
+    class InvalidCommandException {
+    }
+
+    class InvalidFilterException {
+    }
+
+    class InvalidIndexException {
+    }
+
+    class MissingArgumentException {
+    }
+
+    class MultipleFilterException {
+    }
+
+    class SKUNotFoundException {
+    }
+
+    ItemTaskerException <|-- EmptyListException
+    ItemTaskerException <|-- InvalidCommandException
+    ItemTaskerException <|-- InvalidFilterException
+    ItemTaskerException <|-- InvalidIndexException
+    ItemTaskerException <|-- MissingArgumentException
+    ItemTaskerException <|-- MultipleFilterException
+    ItemTaskerException <|-- SKUNotFoundException
+
+}
+
+@enduml
