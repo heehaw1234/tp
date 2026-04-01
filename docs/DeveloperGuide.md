@@ -479,39 +479,42 @@ Enterprise systems are often slow and rigid. ItemTracker provides an agile, loca
 Given below are instructions to test the app manually.
 
 ### Launch and shutdown
-1. **Initial launch**
-  1. Download the latest `.jar` file and copy it into an empty folder.
-  2. Open a terminal in that folder and run `java -jar ItemTasker.jar`.
-  3. *Expected:* The welcome logo appears. A new `Data/` folder is generated in the background.
 
-2. **Shutdown**
-  1. Type `bye`.
-  2. *Expected:* The goodbye message is printed, the application closes, and a storage file is populated in the `Data/` folder.
+#### Initial launch
+1. Download the latest `.jar` file and copy it into an empty folder.
+2. Open a terminal in that folder and run `java -jar ItemTasker.jar`.
+3. *Expected:* The welcome logo appears. A new `Data/` folder is generated in the background.
+
+#### Shutdown
+1. Type `bye`.
+2. *Expected:* The goodbye message is printed, the application closes, and a storage file is populated in the `Data/` folder.
 
 ### Adding and Deleting SKUs and Tasks
-1. **Adding tasks with missing/invalid data**
-  1. *Prerequisite:* Add a valid SKU using `addsku n/PALLET-1 l/A1`.
-  2. *Test case:* `addskutask n/PALLET-1 d/2026-02-30 t/Check items` (Impossible calendar date).
-  3. *Expected:* Task is rejected. Error message informs user the date does not exist.
-  4. *Test case:* `addskutask n/GHOST-SKU d/2026-10-10` (Non-existent SKU).
-  5. *Expected:* Task is rejected. Error message states SKU not found.
 
-2. **Deleting out-of-bounds tasks**
-  1. *Prerequisite:* Ensure `PALLET-1` has exactly 1 task.
-  2. *Test case:* `deletetask n/PALLET-1 i/2`
-  3. *Expected:* Task deletion fails. Error message states index 2 is out of range.
-  4. *Test case:* `deletetask n/PALLET-1 i/-1`
-  5. *Expected:* Task deletion fails. Error message explicitly states task index must be a positive integer.
+#### Adding tasks with missing/invalid data
+1. *Prerequisite:* Add a valid SKU using `addsku n/PALLET-1 l/A1`.
+2. *Test case:* `addskutask n/PALLET-1 d/2026-02-30 t/Check items` (Impossible calendar date).
+3. *Expected:* Task is rejected. Error message informs user the date does not exist.
+4. *Test case:* `addskutask n/GHOST-SKU d/2026-10-10` (Non-existent SKU).
+5. *Expected:* Task is rejected. Error message states SKU not found.
+
+#### Deleting out-of-bounds tasks
+1. *Prerequisite:* Ensure `PALLET-1` has exactly 1 task.
+2. *Test case:* `deletetask n/PALLET-1 i/2`
+3. *Expected:* Task deletion fails. Error message states index 2 is out of range.
+4. *Test case:* `deletetask n/PALLET-1 i/-1`
+5. *Expected:* Task deletion fails. Error message explicitly states task index must be a positive integer.
 
 ### Storage and File Integrity
-1. **Dealing with a corrupted JSON file**
-  1. *Prerequisite:* Run the app, add a SKU, type `bye` to save.
-  2. Open `Data/storage.json` in a text editor and randomly delete some quotation marks or brackets to break the JSON syntax. Save the file.
-  3. Launch ItemTasker again.
-  4. *Expected:* The application does not crash. It logs a severe error to the console warning the user about the corrupted JSON and loads an empty warehouse state.
 
-2. **Dealing with an obstructed directory**
-  1. *Prerequisite:* Ensure the application is closed. Delete the `Data` folder if it exists.
-  2. Create a standard text file and name it exactly `Data` (with no file extension).
-  3. Launch ItemTasker and type the `export` command.
-  4. *Expected:* The application attempts to create the `Data/` directory for the export file, realizes a file is blocking it, and safely prints: `[ERROR] Failed to export data: Target path 'Data' exists but is not a directory.` without crashing.
+#### Dealing with a corrupted JSON file
+1. *Prerequisite:* Run the app, add a SKU, type `bye` to save.
+2. Open `Data/storage.json` in a text editor and randomly delete some quotation marks or brackets to break the JSON syntax. Save the file.
+3. Launch ItemTasker again.
+4. *Expected:* The application does not crash. It logs a severe error to the console warning the user about the corrupted JSON and loads an empty warehouse state.
+
+#### Dealing with an obstructed directory
+1. *Prerequisite:* Ensure the application is closed. Delete the `Data` folder if it exists.
+2. Create a standard text file and name it exactly `Data` (with no file extension).
+3. Launch ItemTasker and type the `export` command.
+4. *Expected:* The application attempts to create the `Data/` directory for the export file, realizes a file is blocking it, and safely prints: `[ERROR] Failed to export data: Target path 'Data' exists but is not a directory.` without crashing.
