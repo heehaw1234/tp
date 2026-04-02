@@ -57,7 +57,7 @@ component and its relationship with the Model and UI components:
 The class diagram below illustrates the internal structure of the Command component 
 and its relationship with the Model and UI components:
 
-![Diagram](docs/plantUML/command/command-architecture.png)
+![Diagram](plantUML/command/command-architecture.png)
 
 The `Command` component,
 
@@ -90,7 +90,7 @@ The sequence diagram below illustrates the dispatch lifecycle for a representati
 
 **Command Dispatch Sequence for `CommandRunner`**
 
-![CommandRunner Sequence Diagram](docs/plantUML/command/commandRunnerSequence.png)
+![CommandRunner Sequence Diagram](plantUML/command/commandRunnerSequence.png)
 
 ---
 
@@ -102,7 +102,7 @@ The sequence diagram below illustrates the interactions for the `addsku` command
 
 **Interactions Inside the Command Component for the `addsku` Command**
 
-![Add SKU Sequence Diagram](docs/plantUML/command/skuCommandHandlerSequence.png)
+![Add SKU Sequence Diagram](plantUML/command/skuCommandHandlerSequence.png)
 
 ---
 
@@ -114,15 +114,15 @@ The sequence diagrams below illustrate key interactions within `TaskCommandHandl
 
 **Interactions Inside the Command Component for the `addskutask` Command**
 
-![SKU Task Command Sequence Diagram](docs/plantUML/command/addskutask-command-sequence.png)
+![SKU Task Command Sequence Diagram](plantUML/command/addskutask-command-sequence.png)
 
 **Interactions Inside the Command Component for the `edittask` Command**
 
-![Edit Task Command Sequence Diagram](docs/plantUML/command/edittask-command-sequence.png)
+![Edit Task Command Sequence Diagram](plantUML/command/edittask-command-sequence.png)
 
 **Interactions Inside the Command Component for the `marktask` / `unmarktask` Commands**
 
-![Mark/Unmark Task Command Sequence Diagram](docs/plantUML/command/markunmark-command-sequence.png)
+![Mark/Unmark Task Command Sequence Diagram](plantUML/command/markunmark-command-sequence.png)
 
 ---
 
@@ -134,11 +134,11 @@ The sequence diagrams below illustrate key read paths in `ViewCommandHandler`:
 
 **Interactions Inside the Command Component for the `listtasks` Command**
 
-![List Tasks Sequence Diagram](docs/plantUML/command/listtasks-sequence.png)
+![List Tasks Sequence Diagram](plantUML/command/listtasks-sequence.png)
 
 **Interactions Inside the Command Component for the `find` Command**
 
-![Find Command Sequence Diagram](docs/plantUML/command/find-sequence.png)
+![Find Command Sequence Diagram](plantUML/command/find-sequence.png)
 
 ---
 
@@ -169,7 +169,7 @@ The key design decisions for the `Command` component are summarised below:
 
 The class diagram below illustrates the inheritance hierarchy of the Exception component:
 
-![Exception Architecture Diagram](docs/plantUML/exception/exception-architecture.png)
+![Exception Architecture Diagram](plantUML/exception/exception-architecture.png)
 
 The `Exception` component,
 
