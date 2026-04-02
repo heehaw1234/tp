@@ -626,7 +626,20 @@ Enterprise systems are often slow and rigid. ItemTracker provides an agile, loca
 
 ## Appendix D: Glossary
 
-* *glossary item* - Definition
+* *AB3* - AddressBook-Level3, a sample application created by the SE-EDU initiative, used as a foundational architecture for this project.
+* *CI* - Continuous Integration, the practice of automating the integration of code changes into a shared repository, often using tools like GitHub Actions.
+* *CLI* - Command-Line Interface, a text-based interface used to interact with software by typing commands.
+* *CSV* - Comma-Separated Values, a plain text file format used to store tabular data.
+* *GUI* - Graphical User Interface, a visual way of interacting with a computer using items such as windows, icons, and menus.
+* *I/O* - Input/Output, referring to the communication between the application and the local file system (e.g., reading/writing files).
+* *JSON* - JavaScript Object Notation, a lightweight, text-based, human-readable data interchange format used by the Storage component to save the warehouse state.
+* *OS* - Operating System, the system software that manages computer hardware and software resources (e.g., Windows, Linux, macOS).
+* *Regex* - Regular Expression, a sequence of characters that specifies a search pattern, used in this project for strict input and date validation.
+* *SKU* - Stock Keeping Unit, a unique identifier used to track specific inventory items or pallets within the warehouse.
+* *SLAP* - Single Level of Abstraction Principle, a software engineering principle stating that all statements within a method should operate at the same level of abstraction.
+* *SRP* - Single Responsibility Principle, a software design principle stating that a class or module should have one, and only one, reason to change (e.g., a handler managing only one type of command).
+* *UI* - User Interface, the space where interactions between humans and the application occur.
+* *UML* - Unified Modeling Language, a general-purpose modeling language used to visualize the design and architecture of the system.
 
 ## Appendix E: Instructions for Manual Testing
 

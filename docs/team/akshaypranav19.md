@@ -112,7 +112,6 @@ dates like Feb 30). Reused across the codebase by other handlers as well.
 
 
 ### Contributions to the User Guide
-
 1. **FAQ section**: Wrote 1 question covering multi-field task editing with `edittask`
 2. **Command Summary table**: Full cheat sheet of all 16 commands with format and examples
 
