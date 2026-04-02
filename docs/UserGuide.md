@@ -311,7 +311,7 @@ Example of usage:
 **Q**: Can I edit multiple fields of a task at once?  
 **A**: Yes. The `edittask` command accepts any combination of `d/` (due date), `p/` (priority), and `t/` (description) flags simultaneously. Only the fields you specify will be updated. All other fields are preserved.
 
-## command Summary
+## Command Summary
 
 | Action | Format | Example |
 |--------|--------|---------|
