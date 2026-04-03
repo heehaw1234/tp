@@ -55,10 +55,3 @@ Given below are my contributions to the project.
 
 * **Review/mentoring contributions**:
   * Helped track and resolve a bug related to distance calculation due to case sensitivity ([#92](https://github.com/AY2526S2-CS2113-W09-1/tp/issues/92)).
-  * <!-- TODO: PRs reviewed (with non-trivial review comments): e.g. #12, #32, #19 -->
-  * <!-- TODO: Add any other instances of helping team members -->
-
-* **Contributions beyond the project team**:
-  * <!-- TODO: Add evidence of helping others, e.g. forum responses (examples: 1, 2, 3) -->
-  * <!-- TODO: Add bug reports for other teams during PE, e.g. Reported bugs and suggestions for other teams (examples: 1, 2, 3) -->
-  * <!-- TODO: Remove this section entirely if you have nothing to add -->
