@@ -3,16 +3,17 @@
 skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
 hide circle
+skinparam participantFontColor #FFFFFF
 
 participant ":CommandRunner" as runner LOGIC_COLOR
 participant ":SKUCommandHandler" as skuHandler LOGIC_COLOR
 participant "<<class>>\nCommandHelper" as commandHelper LOGIC_COLOR
 
 participant ":SKUList" as skuList MODEL_COLOR
-participant "newSku:SKU" as sku MODEL_COLOR
+participant "sku:SKU" as sku MODEL_COLOR
 participant "skuTaskList:SKUTaskList" as taskList MODEL_COLOR
 
-participant "<<class>>\nUi" as ui UI_COLOR
+participant "Ui" as ui UI_COLOR
 
 [-> runner : run(cmd)
 activate runner LOGIC_COLOR
@@ -20,7 +21,6 @@ activate runner LOGIC_COLOR
 runner -> skuHandler : handleAddSku(cmd)
 activate skuHandler LOGIC_COLOR
 
-' 1. Missing Location Parsing
 skuHandler -> commandHelper : parseLocation("A1")
 activate commandHelper LOGIC_COLOR
 commandHelper --> skuHandler : Location.A1
@@ -34,19 +34,17 @@ deactivate skuList
 skuHandler -> skuList : addSKU("PALLET-A", Location.A1)
 activate skuList MODEL_COLOR
 
-' 2. Missing Defensive Self-Call inside SKUList
 skuList -> skuList : findByID("PALLET-A")
 activate skuList MODEL_COLOR
 skuList --> skuList : null
 deactivate skuList
 
 create sku
-skuList -> sku : new SKU("PALLET-A", Location.A1)
+skuList -> sku
 activate sku MODEL_COLOR
 
-' 3. Missing TaskList Initialization
 create taskList
-sku -> taskList : new SKUTaskList()
+sku -> taskList
 activate taskList MODEL_COLOR
 taskList --> sku
 deactivate taskList
@@ -57,7 +55,6 @@ deactivate sku
 skuList --> skuHandler
 deactivate skuList
 
-' 4. Missing UI Output
 skuHandler -> ui : printSuccess(...)
 activate ui UI_COLOR
 ui --> skuHandler

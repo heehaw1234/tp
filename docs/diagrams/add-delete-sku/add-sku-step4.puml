@@ -12,7 +12,7 @@ title System Memory State (Step 4)
 
 class "skuList:SKUList" as skuList
 
-class "newSku:SKU" as sku {
+class "sku:SKU" as sku {
     skuID = "PALLET-A"
     skuLocation = Location.A1
 }

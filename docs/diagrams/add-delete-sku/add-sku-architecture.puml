@@ -2,6 +2,7 @@
 !include ../style.puml
 skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
+skinparam classFontColor LOGIC_COLOR_TEXT
 hide circle
 
 package Command {

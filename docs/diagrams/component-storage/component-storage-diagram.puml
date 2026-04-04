@@ -12,22 +12,13 @@ skinparam packageBorderColor transparent
 skinparam shadowing false
 
 package "Storage Component" {
-
-    class Storage {
-
-    }
-
-    class Export {
-
-    }
-
+    class Storage {}
+    class Export {}
 }
 
-class SKUList <<external>> {
-}
+class SKUList <<external>> {}
 
-class Gson <<external>> {
-}
+class Gson <<external>> {}
 
 Storage ..> SKUList : uses
 Export ..> SKUList : uses
