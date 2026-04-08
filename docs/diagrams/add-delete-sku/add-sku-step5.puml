@@ -10,18 +10,16 @@ skinparam ClassBackgroundColor #FFFFAA
 
 title System Memory State (Step 5)
 
-class "skuList:SKUList" as skuList
+class "<u>skuList:SKUList</u>" as skuList
 
-class "sku:SKU" as sku {
+class "<u>sku:SKU</u>" as sku {
     skuID = "PALLET-A"
     skuLocation = Location.A1
 }
 
-class "skuTaskList:SKUTaskList" as taskList {
-    skuTaskList = []
-}
+class "<u>skuTaskList:SKUTaskList</u>" as taskList
 
-skuList o-- sku : contains >
-sku *-- taskList : owns and encapsulates >
+skuList --> sku : contains >
+sku --> taskList : owns and encapsulates >
 
 @enduml

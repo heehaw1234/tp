@@ -13,7 +13,7 @@ participant ":SKUList" as skuList MODEL_COLOR
 participant "sku:SKU" as sku MODEL_COLOR
 participant "skuTaskList:SKUTaskList" as taskList MODEL_COLOR
 
-participant "Ui" as ui UI_COLOR
+participant ":Ui" as ui UI_COLOR
 
 [-> runner : run(cmd)
 activate runner LOGIC_COLOR

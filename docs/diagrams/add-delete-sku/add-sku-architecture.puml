@@ -20,8 +20,10 @@ package Sku {
 CommandRunner *--> "1" SKUCommandHandler : routes to >
 SKUCommandHandler --> "1" SKUList : modifies >
 
-SKUList *--> "*" SKU : contains >
-SKU *--> "1" SKUTaskList : encapsulates >
+SKUList --> "*" SKU : contains >
+
+SKU --> "1" SKUTaskList : encapsulates >
+
 SKU --> "1" Location : located at >
 
 @enduml

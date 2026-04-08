@@ -92,25 +92,25 @@ Given below is an example usage scenario demonstrating how the Add SKU mechanism
 
 **Step 3.** `handleAddSku()` performs validations, checking for missing or empty arguments. It calls `CommandHelper.parseLocation("A1")` to resolve the `Location` enum. It then calls `skuList.findByID("PALLET-A")` to iterate through the `SKUList`. If no duplicates are found, it proceeds with the insertion.
 
-![Steps 1 to 3](plantUML/add-delete-sku/add-sku-step1-3.png)
+![Steps 1 to 3](../diagrams/add-delete-sku/add-sku-step1-3.png)
 
 **Step 4.** The `SKUList#addSKU()` method is invoked. This method acts as a secondary defensive barrier, checking inputs before calling the `SKU` constructor. During instantiation, the `SKU` normalizes its ID (trimming whitespace and forcing uppercase) and automatically generates an empty `SKUTaskList` for itself. The `SKU` is then appended to the internal `ArrayList`.
 
-![Step 4](plantUML/add-delete-sku/add-sku-step4.png)
+![Step 4](../diagrams/add-delete-sku/add-sku-step4.png)
 
 **Step 5.** Back in `handleAddSku()`, execution completes successfully. Control returns to the `Ui` to print the success message. The system's memory state now contains the new `SKU`, fully equipped to accept tasks without requiring any external mapping.
 
-![Step 5](plantUML/add-delete-sku/add-sku-step5.png)
+![Step 5](../diagrams/add-delete-sku/add-sku-step5.png)
 
 *Note: The `deletesku` command operates by routing to `SKUCommandHandler#handleDeleteSku()`, which validates the input and throws a `SKUNotFoundException` if the target does not exist. It then calls `SKUList#deleteSKU()` to perform a case-insensitive removal from the array. Due to encapsulation, dropping the `SKU` object automatically garbage-collects its associated `SKUTaskList`, preventing memory leaks.*
 
 The following sequence diagram shows the flow of adding a SKU:
 
-![Step 5](plantUML/add-delete-sku/add-sku-sequence.png)
+![Step 5](../diagrams/add-delete-sku/add-sku-sequence.png)
 
 The following class diagram shows the architecture:
 
-![Step 5](plantUML/add-delete-sku/add-sku-architecture.png)
+![Step 5](../diagrams/add-delete-sku/add-sku-architecture.png)
 
 #### Design Considerations
 
