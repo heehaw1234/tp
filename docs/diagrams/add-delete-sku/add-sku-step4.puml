@@ -4,22 +4,16 @@ skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
 hide circle
 
-skinparam ClassFontColor #000000
-skinparam ClassBorderColor #000000
-skinparam ClassBackgroundColor #FFFFAA
-
 title System Memory State (Step 4)
 
-class "skuList:SKUList" as skuList
+class "<u>skuList:SKUList</u>" as skuList
 
-class "sku:SKU" as sku {
+class "<u>sku:SKU</u>" as sku {
     skuID = "PALLET-A"
     skuLocation = Location.A1
 }
 
-class "skuTaskList:SKUTaskList" as taskList {
-    skuTaskList = []
-}
+class "<u>skuTaskList:SKUTaskList</u>" as taskList
 
 skuList .right.> sku : instantiates & adds >
 sku *-- taskList : auto-initializes >

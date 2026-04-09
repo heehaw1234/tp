@@ -3,7 +3,6 @@
 skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
 hide circle
-skinparam participantFontColor #FFFFFF
 
 participant ":CommandRunner" as runner LOGIC_COLOR
 participant ":SKUCommandHandler" as skuHandler LOGIC_COLOR
@@ -13,7 +12,7 @@ participant ":SKUList" as skuList MODEL_COLOR
 participant "sku:SKU" as sku MODEL_COLOR
 participant "skuTaskList:SKUTaskList" as taskList MODEL_COLOR
 
-participant "Ui" as ui UI_COLOR
+participant ":Ui" as ui UI_COLOR
 
 [-> runner : run(cmd)
 activate runner LOGIC_COLOR

@@ -1,31 +1,61 @@
-' UI Component (Greens)
-!define UI_COLOR #1D8900
-!define UI_COLOR_T1 #83E769
-!define UI_COLOR_T2 #3FC71B
-!define UI_COLOR_T3 #166800
-!define UI_COLOR_T4 #0E4100
+' =============================================================================
+' ItemTasker Diagram Style — flowcli-inspired monochrome (white/black) look
+' =============================================================================
+' Single source of truth. All diagrams !include this file.
+' `monochrome true` forces every diagram to render in white/black/grayscale,
+' regardless of any color macro values used in individual diagrams.
+' =============================================================================
 
-' Logic Component (Blues)
-!define LOGIC_COLOR #3333C4
-!define LOGIC_COLOR_T1 #C8C8FA
-!define LOGIC_COLOR_T2 #8A8AFA
-!define LOGIC_COLOR_T3 #2121BD
-!define LOGIC_COLOR_T4 #101086
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam monochrome true
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam arrowThickness 1.2
+skinparam roundCorner 4
+hide circle
 
-' Model Component (Reds)
-!define MODEL_COLOR #9D0012
-!define MODEL_COLOR_T1 #FFA6A6
-!define MODEL_COLOR_T2 #FF5959
-!define MODEL_COLOR_T3 #8B0010
-!define MODEL_COLOR_T4 #72000D
+' --- Color macros stubbed as no-ops -----------------------------------------
+' Existing diagrams use syntax like `class Foo UI_COLOR` and
+' `participant ":X" as x LOGIC_COLOR`. If these macros were undefined,
+' PlantUML would treat the token as a stereotype label and render an ugly
+' <<UI_COLOR>> tag above each box. Defining them as #FFFFFF keeps the syntax
+' valid; `monochrome true` ensures the actual rendered color is always B/W.
+' =============================================================================
 
-' Storage Component (Yellows/Browns)
-!define STORAGE_COLOR #A38300
-!define STORAGE_COLOR_T1 #FFE26B
-!define STORAGE_COLOR_T2 #FFD521
-!define STORAGE_COLOR_T3 #806600
-!define STORAGE_COLOR_T4 #5C4A00
+' UI Component
+!define UI_COLOR         #FFFFFF
+!define UI_COLOR_T1      #FFFFFF
+!define UI_COLOR_T2      #FFFFFF
+!define UI_COLOR_T3      #FFFFFF
+!define UI_COLOR_T4      #FFFFFF
+!define UI_COLOR_TEXT    #000000
 
-' Common/Utility Classes (Grays)
-!define USER_COLOR #000000
-!define COMMON_COLOR #808080
+' Logic / Command Component
+!define LOGIC_COLOR      #FFFFFF
+!define LOGIC_COLOR_T1   #FFFFFF
+!define LOGIC_COLOR_T2   #FFFFFF
+!define LOGIC_COLOR_T3   #FFFFFF
+!define LOGIC_COLOR_T4   #FFFFFF
+!define LOGIC_COLOR_TEXT #000000
+
+' Model / SKU Component
+!define MODEL_COLOR      #FFFFFF
+!define MODEL_COLOR_T1   #FFFFFF
+!define MODEL_COLOR_T2   #FFFFFF
+!define MODEL_COLOR_T3   #FFFFFF
+!define MODEL_COLOR_T4   #FFFFFF
+!define MODEL_COLOR_TEXT #000000
+
+' Storage Component
+!define STORAGE_COLOR      #FFFFFF
+!define STORAGE_COLOR_T1   #FFFFFF
+!define STORAGE_COLOR_T2   #FFFFFF
+!define STORAGE_COLOR_T3   #FFFFFF
+!define STORAGE_COLOR_T4   #FFFFFF
+!define STORAGE_COLOR_TEXT #000000
+
+' Common / Utility
+!define USER_COLOR       #FFFFFF
+!define COMMON_COLOR     #FFFFFF

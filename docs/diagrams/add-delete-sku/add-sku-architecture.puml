@@ -2,7 +2,6 @@
 !include ../style.puml
 skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
-skinparam classFontColor LOGIC_COLOR_TEXT
 hide circle
 
 package Command {
@@ -20,8 +19,10 @@ package Sku {
 CommandRunner *--> "1" SKUCommandHandler : routes to >
 SKUCommandHandler --> "1" SKUList : modifies >
 
-SKUList *--> "*" SKU : contains >
-SKU *--> "1" SKUTaskList : encapsulates >
+SKUList --> "*" SKU : contains >
+
+SKU --> "1" SKUTaskList : encapsulates >
+
 SKU --> "1" Location : located at >
 
 @enduml

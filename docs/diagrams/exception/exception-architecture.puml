@@ -4,13 +4,6 @@ skinparam arrowThickness 1.1
 skinparam classAttributeIconSize 0
 hide circle
 
-skinparam classBackgroundColor #9D0012
-skinparam classFontColor #FFFFFF
-skinparam classBorderColor #9D0012
-skinparam ArrowColor #9D0012
-skinparam packageBorderColor transparent
-skinparam shadowing false
-
 package "Exception Component" {
 
     class ItemTaskerException {
