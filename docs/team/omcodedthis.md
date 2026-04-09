@@ -3,54 +3,54 @@
 ## Overview
 ItemTasker is a CLI-based Stock Keeping Unit (SKU) Ticketing System. A localized command-line tool designed to handle inventory specific actions required for individual item SKUs such as damage checks, expiry reviews & quality control. Unlike standard commercial inventory software that tracks quantity, ItemTracker tracks accountability & actions, allowing managers to attach specific tasks with priorities to individual SKUs.
 
-### Summary of Contributions
+## Summary of Contributions
 
-#### Code Contributed
+### Code Contributed
 [RepoSense link of my profile.](https://nus-cs2113-ay2526-s2.github.io/tp-dashboard/?search=omcodedthis&breakdown=true)
 
-#### Enhancements Implemented
+### Enhancements Implemented
 
-##### Add / Delete SKU
+#### Add / Delete SKU
 * **Objective of Enhancement:** To establish the core inventory management capability by allowing users to add master Stock Keeping Unit (SKU) records bound to physical warehouse locations, and to securely delete them along with their nested task data.
 * **Complexity:** This feature required designing the `SKUList` class and enforcing strict domain invariants. Adding an SKU involved validating `Location` enums and preventing duplicate SKU IDs. Deleting an SKU was complex because removing the parent SKU inherently drops its encapsulated `SKUTaskList` from the system.
 * **Completeness:** The implementation is robust. It utilizes case-insensitive ID matching (`equalsIgnoreCase`) to prevent duplicate entry bugs. Comprehensive unit testing ensures boundary conditions and invalid inputs (null/empty IDs) are rejected appropriately.
 * **Implementation Difficulty:** Moderate. The primary challenge was safely modifying the underlying `ArrayList` during deletion. This is to safely target and remove specific objects, ensuring memory-safe list management.
 
-##### Export
+#### Export
 * **Objective of Enhancement:** To provide a data extraction feature that compiles the warehouse state into a formatted, human-readable text file for external auditing and reporting.
 * **Complexity:** This enhancement required traversing a complex object hierarchy (`SKUList` → `SKU` → `SKUTaskList` → `SKUTask`) and safely interacting with the local file system. It involved dynamic string formatting to sequentially number tasks and visually divide SKUs.
 * **Completeness:** The feature is self-sufficient. It includes autonomous directory generation (`mkdirs()`) if the `Data/` folder is missing. It guards against empty warehouse states by printing a specific empty report, and utilizes a `try-with-resources` block (`FileWriter`) to guarantee that system I/O streams are safely closed even if an error occurs during the write process.
 * **Implementation Difficulty:** High. The most difficult aspect was handling edge-case file system states and ensuring it was OS-agnostic. For instance, I had to implement defensive logic to check if "Data" already existed (without an extension) and was blocking the creation of the required directory. Handling this via an `IOException` rather than allowing the app to crash required careful foresight.
 
-##### Command Object Instantiation
+#### Command Object Instantiation
 * **Objective of Enhancement:** To decouple raw user string input from application logic by parsing commands into a structured, immutable, and easily queryable `ParsedCommand` object.
 * **Complexity:** CLI inputs can be highly unpredictable. The parser had to reliably isolate the main command word from an arbitrary number of optional flag-value pairs (e.g., `n/`, `p/`, `d/`), package them into a `HashMap`, and normalize keys for case-insensitive querying.
 * **Completeness:** The parser safely handles leading/trailing whitespace, missing arguments, and empty strings, while the resulting `ParsedCommand` object returns an `Collections.unmodifiableMap` to ensure the command parameters cannot be altered downstream, strictly adhering to functional programming principles.
 * **Implementation Difficulty:** Moderate. The primary challenge was ensuring strict data integrity and immutability once the raw string was converted into an object. I engineered the `ParsedCommand` class to aggressively sanitize, trimming and lowercasing all command words and flag keys upon instantiation. Furthermore, I wrapped the internal arguments map in a `Collections.unmodifiableMap`. This defensive design guarantees that downstream execution handlers cannot accidentally mutate the above, strictly enforcing a safe, read-only data flow across the application.
 
-##### Entry-Loop, Exceptions & Testing
+#### Entry-Loop, Exceptions & Testing
 * **Objective of Enhancement:** To design the main application lifecycle, prevent fatal crashes via a custom exception hierarchy, and ensure system reliability through foundational unit testing.
 * **Complexity:** Required setting up the continuous `while (runner.isRunning())` loop in `ItemTasker.java` and routing inputs through the parser and execution layers. Furthermore, I created an xception hierarchy inheriting from `ItemTaskerException` (e.g., `MissingArgumentException`, `SKUNotFoundException`, `InvalidCommandException`).
 * **Completeness:** By catching `ItemTaskerException` at the highest level of the application loop, the system translates deeply nested errors into user-friendly UI messages. This prevents raw Java stack traces from leaking to the user and guarantees the app remains functional.
 * **Implementation Difficulty:** Moderate. The challenge lay in software architecture design rather than algorithm complexity. Building the custom exception classes required ensuring that the Controller layer (`CommandRunner`) only threw domain-specific exceptions, enforcing a clean separation of concerns and making the codebase highly testable (as evidenced by the extensive `CommandHanlderTest`, `ExportTest`, `SKUTest`, `SKUListTest`. An average of 68.6% of line coverage was achieved.
 
-#### Contributions to the User Guide (UG)
+### Contributions to the User Guide (UG)
 
-##### FAQ Section
+#### FAQ Section
 Authored FAQ section Q&A segments on saving, data-transfer and on implementation, translating into actionable steps for both technical and non-technical users alike.
 
-#### Contributions to the Developer Guide (DG)
+### Contributions to the Developer Guide (DG)
 
-##### SKU Component
+#### SKU Component
 Created all the UML diagrams and explanation for the SKU component, under Design.
 
-##### Storage Component
+#### Storage Component
 Created all the UML diagrams and explanation for the Storage component, under Design.
 
-##### Add / Delete SKU Enhancement
+#### Add / Delete SKU Enhancement
 Created all the UML diagrams and explanation for the Add / Delete enhancement, under Implementation.
 
-##### Appendix
+#### Appendix
 Wrote the:
 1. **Appendix A: Product Scope**
 2. **Appendix D: Glossary**
@@ -58,17 +58,17 @@ Wrote the:
 
 sections to cater to both technical and non-technical audiences alike.
 
-#### Contributions to Team-Based Tasks
+### Contributions to Team-Based Tasks
 1. **Repository Setup & Organization:** I established the initial GitHub organization and repository infrastructure for the team, configuring access controls, branch protection rules, and team onboarding to ensure a secure and collaborative development environment.
 2. **Release Management:** Tagged, and deployed major application versions of v1.0 and v2.0 milestone releases.
 3. **Workflow Standardization & Issue Tracking:** Standardized our GitHub workflow. This included a custom issue template, adding labels to tag statuses of Tasks and Bugs correctly.
 4. **Documentation Coordination:** Coordinated and drafted the non-feature-specific sections of our project documentation via Google Docs, inclusive of setting up the user stores page. This also included tracking of target user profile, outlining the product scope, and ensuring a consistent tone across the manuals.
 5. **Project Management & Task Delegation:** Facilitated feature discussions, guiding the team toward consensus on the final product scope. Furthermore, this involved managing project timelines, incorporating buffer periods to mitigate the impact of unforeseen isses.
 
-#### Review and Mentoring Contributions
+### Review and Mentoring Contributions
 Faciliated and provided suggestions for better, more cohesive architecture, and the delegation of tasks to match member's strengths and preferences, through the use of a [central Google Docs](https://docs.google.com/document/d/e/2PACX-1vQohHhSMz69R5UO6f5hfYUJkco6Apk47ItuhdlcX0ttFVttmwhCqM7oTatOpOYOT16jKZL-DuIsKyZv/pub) file to keep track of tasks and scope.
 
-#### Contributions Beyond the Project Team
+### Contributions Beyond the Project Team
 To be added.
 
 ### Contributions to the Developer Guide (Extracts)
