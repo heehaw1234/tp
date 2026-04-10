@@ -22,11 +22,11 @@ Implemented data extraction in `ExportCommand.java` to compile the warehouse sta
 
 #### Command Object Instantiation
 
-Designed `ParsedCommand.java` and restructured `Parser.java` to decouple raw CLI input from application logic into a structured, queryable object (Moderate Difficulty). Normalizes unpredictable inputs and utilizes `Collections.unmodifiableMap` to strictly enforce a safe, read-only data flow.
+Designed `ParsedCommand.java` and restructured `Parser.java` to decouple raw CLI input from application logic into a structured, queryable object (Moderate Difficulty). Normalizes inputs and utilizes `Collections.unmodifiableMap` to strictly enforce a read-only data flow.
 
 #### Entry-Loop, Exceptions & Testing
 
-Designed the `while (runner.isRunning())` lifecycle in `ItemTasker.java` and established the `ItemTaskerException.java` hierarchy (including `MissingArgumentException.java`, `SKUNotFoundException.java`, and `InvalidCommandException.java`) (Moderate Difficulty). Enforced clean separation of concerns in `CommandRunner.java` by translating nested domain errors into user-friendly UI messages without leaking stack traces, supported by extensive tests like `CommandHandlerTest.java`, enabling 68.6% test coverage.
+Designed the `while (runner.isRunning())` lifecycle in `ItemTasker.java` and established the `ItemTaskerException.java` hierarchy (Moderate Difficulty). Enforced clean separation of concerns in `CommandRunner.java` by translating nested domain errors into user-friendly UI messages without leaking stack traces, supported by extensive tests like `CommandHandlerTest.java`, enabling 68.6% test coverage.
 
 ### Contributions to the User Guide (UG)
 
