@@ -122,7 +122,11 @@ public class CommandHelper {
             }
             return index;
         } catch (NumberFormatException e) {
-            throw new InvalidIndexException(indexStr);
+            String trimmed = indexStr.trim();
+            // If it consists entirely of digits but throws NumberFormatException, it
+            // overflowed
+            boolean isOverflow = trimmed.matches("\\d+");
+            throw new InvalidIndexException(trimmed, isOverflow);
         }
     }
 

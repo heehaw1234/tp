@@ -369,4 +369,12 @@ class CommandHandlerTest {
         ParsedCommand cmd = new ParsedCommand("listtasks", Map.of("n", "GHOST-SKU"));
         assertThrows(SKUNotFoundException.class, () -> viewHandler.handleListTasks(cmd));
     }
+
+    @Test
+    public void parseIndex_overflowLargeIndex_throwsInvalidIndexException() {
+        // Technically testing through marktask handle
+        ParsedCommand cmd = new ParsedCommand("marktask", Map.of("n", "PALLET-A", "i", "2147483648"));
+        InvalidIndexException thrown = assertThrows(InvalidIndexException.class, () -> taskHandler.handleMarkTask(cmd));
+        assertTrue(thrown.getMessage().contains("Task index is too large"));
+    }
 }

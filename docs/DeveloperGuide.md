@@ -188,7 +188,7 @@ All seven concrete exceptions extend `ItemTaskerException` directly. There is in
 * **`EmptyListException`** — thrown when an operation (e.g., listing or sorting) is attempted on a list that contains no items. Accepts a `listType` string to identify which list was empty.
 * **`InvalidCommandException`** — thrown when the user enters an unrecognized, malformed, or syntactically incorrect command word.
 * **`InvalidFilterException`** — thrown by all command handlers (via `CommandHelper.validateFlags()`) when an unrecognized flag is detected, or when a filter value is syntactically incorrect.
-* **`InvalidIndexException`** — thrown when a task index is either out of bounds for its SKU's task list, or cannot be parsed as a valid integer. Provides two constructors to cover both cases distinctly.
+* **`InvalidIndexException`** — thrown when a task index is either out of bounds for its SKU's task list, cannot be parsed as a valid integer, or overflows integer limits. Provides three constructors to cover all these cases distinctly.
 * **`MissingArgumentException`** — thrown when a required flag (e.g., `n/` or `d/`) is absent from a command. The message always includes the correct usage string for the offending command.
 * **`MultipleFilterException`** — thrown by `ViewCommandHandler` when more than one filter flag (`n/`, `p/`, `l/`) is provided simultaneously on a `listtasks` command, which only supports a single filter at a time.
 * **`SKUNotFoundException`** — thrown when a SKU ID provided by the user does not exist in the warehouse. The message includes the missing ID and directs the user to `listtasks`.

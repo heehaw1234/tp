@@ -32,6 +32,7 @@ unmarktask n/PALLET-A i/1
 marktask n/PALLET-A i/99
 marktask n/GHOST-SKU i/1
 marktask n/PALLET-A i/abc
+marktask n/PALLET-A i/2147483648
 
 listtasks
 listtasks n/PALLET-A

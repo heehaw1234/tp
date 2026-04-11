@@ -18,11 +18,26 @@ public class InvalidIndexException extends ItemTaskerException {
     }
 
     /**
-     * Constructs an InvalidIndexException when a provided index string is not a valid integer.
+     * Constructs an InvalidIndexException when a provided index string is not a
+     * valid integer.
      *
-     * @param invalidIndexStr The string that could not be parsed into a valid index.
+     * @param invalidIndexStr The string that could not be parsed into a valid
+     *                        index.
      */
     public InvalidIndexException(String invalidIndexStr) {
         super("Invalid task index provided: " + invalidIndexStr + ". Please provide a valid positive integer.");
+    }
+
+    /**
+     * Constructs an InvalidIndexException handling explicit Java integer overflow
+     * scenarios.
+     *
+     * @param invalidIndexStr The string that was provided.
+     * @param isOverflow      True if the error was caused by integer bounds
+     *                        overflow.
+     */
+    public InvalidIndexException(String invalidIndexStr, boolean isOverflow) {
+        super(isOverflow ? "Task index is too large. Please enter a valid positive integer under 2147483648."
+                : "Invalid task index provided: " + invalidIndexStr + ". Please provide a valid positive integer.");
     }
 }

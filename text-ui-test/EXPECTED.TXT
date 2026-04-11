@@ -69,6 +69,7 @@ __________________________________________________________________________
 > >  [ERROR] Task index 99 is out of range for SKU: PALLET-A
 >  [ERROR] SKU not found: GHOST-SKU
 >  [ERROR] Invalid task index provided: abc. Please provide a valid positive integer.
+>  [ERROR] Task index is too large. Please enter a valid positive integer under 2147483648.
 > >  All tasks:
 __________________________________________________________________________
  SKU [PALLET-A]:
