@@ -110,7 +110,7 @@ __________________________________________________________________________
 __________________________________________________________________________
 > >  [ERROR] Invalid priority 'CRITICAL'. Use HIGH, MEDIUM, or LOW.
 >  [ERROR] Invalid location 'Z9'. Must be one of: A1 A2 A3 B1 B2 B3 C1 C2 C3
->  [INFO] No tasks found for SKU: GHOST-SKU
+>  [ERROR] SKU 'GHOST-SKU' not found. Use 'listtasks' to see available SKUs.
 > >  Search results:
 __________________________________________________________________________
   [SKU: PALLET-A] #1. [ ] ID: PALLET-A | Priority: MEDIUM | Due: 2026-05-01 | Desc: updated desc

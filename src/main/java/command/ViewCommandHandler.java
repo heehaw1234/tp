@@ -46,8 +46,10 @@ public class ViewCommandHandler {
      *                                 (e.g., n/ and p/).
      * @throws InvalidFilterException  If an unrecognized flag is detected (e.g.,
      *                                 h/).
+     * @throws SKUNotFoundException    If the specified SKU does not exist.
      */
-    public void handleListTasks(ParsedCommand cmd) throws MultipleFilterException, InvalidFilterException {
+    public void handleListTasks(ParsedCommand cmd) throws MultipleFilterException, InvalidFilterException,
+            SKUNotFoundException {
         assert cmd != null : "ParsedCommand should not be null";
 
         CommandHelper.validateFlags(cmd, "n", "p", "l");
@@ -79,6 +81,9 @@ public class ViewCommandHandler {
         logger.log(Level.INFO, "Listing tasks. Filters -> SKU: {0}, Priority: {1}, Location: {2}",
                 new Object[] { skuFilter, priorityFilter, locationFilter });
         if (skuFilter != null) {
+            if (skuList.findByID(skuFilter) == null) {
+                throw new SKUNotFoundException(skuFilter);
+            }
             listTasksForSku(skuFilter);
         } else if (priorityFilter != null) {
             listTasksByPriority(priorityFilter);

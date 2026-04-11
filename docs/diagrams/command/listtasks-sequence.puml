@@ -20,7 +20,9 @@ alt skuFilter != null
     handler -> skuList ++ : findByID(skuFilter)
     return targetSku
 
-    alt targetSku == null or task list empty
+    alt targetSku == null
+        <-- handler : throws SKUNotFoundException
+    else task list empty
         handler -> ui : printInfo("No tasks found for SKU: ...")
     else
         handler -> viewer ++ : setSkuFilter(skuFilter)

@@ -88,14 +88,6 @@ class ViewSKUTaskTest {
     }
 
     @Test
-    public void listTasks_nonExistentSkuFilter_returnsEmptyList() {
-        viewer.setSkuFilter("GHOST-SKU");
-        List<SKUTask> results = viewer.listTasks(skuList);
-
-        assertTrue(results.isEmpty());
-    }
-
-    @Test
     public void listTasks_emptySkuList_returnsEmptyList() {
         SKUList emptyList = new SKUList();
         List<SKUTask> results = viewer.listTasks(emptyList);
@@ -121,6 +113,7 @@ class ViewSKUTaskTest {
         assertEquals(1, results.size());
         assertEquals("PALLET-B", results.get(0).getSKUTaskID());
     }
+
     @Test
     public void listTasks_locationFilterFromFarEnd_sortsCorrectly() {
         // Origin C3 (2,2).

@@ -342,4 +342,31 @@ class CommandHandlerTest {
         ParsedCommand cmd = new ParsedCommand("find", Map.of("n", "FIND-FLAG", "x", "BAD"));
         assertThrows(InvalidFilterException.class, () -> viewHandler.handleFind(cmd));
     }
+
+    @Test
+    public void handleEditSku_unknownFlag_throwsInvalidFilterException() throws Exception {
+        skuList.addSKU("EDITS-FLAG", Location.A1);
+        ParsedCommand cmd = new ParsedCommand("editsku", Map.of("n", "EDITS-FLAG", "l", "B2", "x", "BAD"));
+        assertThrows(InvalidFilterException.class, () -> skuHandler.handleEditSku(cmd));
+    }
+
+    @Test
+    public void handleDeleteSku_unknownFlag_throwsInvalidFilterException() throws Exception {
+        skuList.addSKU("DELSKU-FLAG", Location.A1);
+        ParsedCommand cmd = new ParsedCommand("deletesku", Map.of("n", "DELSKU-FLAG", "x", "BAD"));
+        assertThrows(InvalidFilterException.class, () -> skuHandler.handleDeleteSku(cmd));
+    }
+
+    @Test
+    public void handleSortTask_unknownFlag_throwsInvalidFilterException() throws Exception {
+        skuList.addSKU("SORT-FLAG", Location.A1);
+        ParsedCommand cmd = new ParsedCommand("sorttasks", Map.of("n", "SORT-FLAG", "x", "BAD"));
+        assertThrows(InvalidFilterException.class, () -> taskHandler.handleSortTask(cmd));
+    }
+
+    @Test
+    public void handleListTasks_nonExistentSku_throwsSKUNotFoundException() {
+        ParsedCommand cmd = new ParsedCommand("listtasks", Map.of("n", "GHOST-SKU"));
+        assertThrows(SKUNotFoundException.class, () -> viewHandler.handleListTasks(cmd));
+    }
 }
