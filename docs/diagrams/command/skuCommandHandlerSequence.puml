@@ -16,7 +16,7 @@ runner -> handler ++ : handleAddSku(cmd)
 handler -> cmd ++ : getArg("n"), getArg("l")
 return skuId, locationStr
 
-alt skuId == null or locationStr == null
+opt skuId == null or locationStr == null
     handler -> ui : printError("Usage: addsku n/SKU_ID l/LOCATION ...")
     return
 end
@@ -24,14 +24,14 @@ end
 handler -> helper ++ : parseLocation(locationStr)
 return location / null
 
-alt location == null
+opt location == null
     return
 end
 
 handler -> skuList ++ : findByID(skuId)
 return existing / null
 
-alt SKU already exists
+opt existing != null
     handler -> ui : printError("SKU already exists: " + skuId)
     return
 end
@@ -50,7 +50,7 @@ runner -> handler ++ : handleEditSku(cmd)
 handler -> cmd ++ : getArg("n"), getArg("l")
 return skuId, locationStr
 
-alt skuId == null or locationStr == null
+opt skuId == null or locationStr == null
     handler -> ui : printError("Usage: editsku n/SKU_ID l/NEW_LOCATION")
     return
 end
@@ -58,14 +58,14 @@ end
 handler -> helper ++ : findSkuOrError(skuList, skuId)
 return targetSku / null
 
-alt targetSku == null
+opt targetSku == null
     return
 end
 
 handler -> helper ++ : parseLocation(locationStr)
 return newLocation / null
 
-alt newLocation == null
+opt newLocation == null
     return
 end
 
@@ -83,7 +83,7 @@ runner -> handler ++ : handleDeleteSku(cmd)
 handler -> cmd ++ : getArg("n")
 return skuId
 
-alt skuId == null
+opt skuId == null
     handler -> ui : printError("Usage: deletesku n/SKU_ID")
     return
 end
@@ -91,7 +91,7 @@ end
 handler -> helper ++ : findSkuOrError(skuList, skuId)
 return targetSku / null
 
-alt targetSku == null
+opt targetSku == null
     return
 end
 

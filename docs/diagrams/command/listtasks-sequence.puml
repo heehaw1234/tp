@@ -13,15 +13,16 @@ Participant ":Ui" as ui UI_COLOR
 
 runner -> handler ++ : handleListTasks(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("p"), getArg("l")
+handler -> cmd ++ : getArg()
+note right : called 3 times — getArg("n"), getArg("p"), getArg("l")\nn/SKU filter, p/priority filter, l/location filter — all optional
 return skuFilter, priorityFilter, locationFilter
 
 alt skuFilter != null
     handler -> skuList ++ : findByID(skuFilter)
-    return targetSku
+    return targetSku / null
 
     alt targetSku == null
-        <-- handler : throws SKUNotFoundException
+        note right : throws SKUNotFoundException
     else task list empty
         handler -> ui : printInfo("No tasks found for SKU: ...")
     else
@@ -38,51 +39,51 @@ else priorityFilter != null
     handler -> helper ++ : parsePriority(priorityFilter)
     return priority / null
 
-    alt priority == null
+    opt priority == null
         note right : returns early
-    else
-        handler -> viewer ++ : setPriorityFilter(priorityFilter)
-        return
-
-        handler -> viewer ++ : listTasks(skuList)
-        return results
-
-        handler -> ui : printTasksByPriority(priorityFilter, results)
     end
+
+    handler -> viewer ++ : setPriorityFilter(priorityFilter)
+    return
+
+    handler -> viewer ++ : listTasks(skuList)
+    return results
+
+    handler -> ui : printTasksByPriority(priorityFilter, results)
 
 else locationFilter != null
     handler -> helper ++ : parseLocation(locationFilter)
     return location / null
 
-    alt location == null
+    opt location == null
         note right : returns early
-    else
-        handler -> viewer ++ : setLocationFilter(locationFilter)
-        return
-
-        handler -> viewer ++ : listTasks(skuList)
-        return results
-
-        handler -> handler ++ : formatDistanceEntries(results, locationFilter)
-
-        loop for each task in results
-            handler -> skuList ++ : findByID(task.getSKUTaskID())
-            return skuObj
-
-            alt skuObj == null
-                note right : skip
-            else
-                handler -> viewer ++ : calculateDistance(task, locationFilter, skuList)
-                return dist
-            end
-        end
-
-        return formattedEntries
-
-        handler -> ui : printTasksByDistance(from, formattedEntries)
     end
 
-else no filter provided
+    handler -> viewer ++ : setLocationFilter(locationFilter)
+    return
+
+    handler -> viewer ++ : listTasks(skuList)
+    return results
+
+    handler -> handler ++ : formatDistanceEntries(results, locationFilter)
+
+    loop for each task in results
+        handler -> skuList ++ : findByID(task.getSKUTaskID())
+        return skuObj
+
+        alt skuObj == null
+            note right : skip
+        else
+            handler -> viewer ++ : calculateDistance(task, locationFilter, skuList)
+            return dist
+        end
+    end
+
+    return formattedEntries
+
+    handler -> ui : printTasksByDistance(from, formattedEntries)
+
+else
     handler -> ui : printAllTasks(skuList)
 end
 

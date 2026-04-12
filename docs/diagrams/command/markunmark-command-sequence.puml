@@ -16,30 +16,30 @@ runner -> handler ++ : handleMarkTask(cmd)
 handler -> cmd ++ : getArg("n"), getArg("i")
 return skuId, indexStr
 
-alt skuId == null or indexStr == null
+opt skuId == null or indexStr == null
     handler -> ui : printError("Usage: marktask n/SKU_ID i/TASK_INDEX")
     return
 end
 
 handler -> helper ++ : parseIndex(indexStr)
-return index / -1
+return index
 
-alt index == -1
+opt index == -1
     return
 end
 
 handler -> helper ++ : findSkuOrError(skuList, skuId)
 return targetSku / null
 
-alt targetSku == null
+opt targetSku == null
     return
 end
 
 handler -> taskList ++ : getSize()
 return size
 
-alt index < 1 or index > size
-    handler -> runner : throw InvalidIndexException
+opt index < 1 or index > size
+    return throw InvalidIndexException
 end
 
 handler -> taskList ++ : getSKUTaskList().get(index - 1)
@@ -48,7 +48,7 @@ return task
 handler -> task ++ : isDone()
 return isDone
 
-alt isDone == true
+opt isDone == true
     handler -> ui : printInfo("Task #" + index + " is already marked as done.")
     return
 end
@@ -67,30 +67,30 @@ runner -> handler ++ : handleUnmarkTask(cmd)
 handler -> cmd ++ : getArg("n"), getArg("i")
 return skuId, indexStr
 
-alt skuId == null or indexStr == null
+opt skuId == null or indexStr == null
     handler -> ui : printError("Usage: unmarktask n/SKU_ID i/TASK_INDEX")
     return
 end
 
 handler -> helper ++ : parseIndex(indexStr)
-return index / -1
+return index
 
-alt index == -1
+opt index == -1
     return
 end
 
 handler -> helper ++ : findSkuOrError(skuList, skuId)
 return targetSku / null
 
-alt targetSku == null
+opt targetSku == null
     return
 end
 
 handler -> taskList ++ : getSize()
 return size
 
-alt index < 1 or index > size
-    handler -> runner : throw InvalidIndexException
+opt index < 1 or index > size
+    return throw InvalidIndexException
 end
 
 handler -> taskList ++ : getSKUTaskList().get(index - 1)
@@ -99,7 +99,7 @@ return task
 handler -> task ++ : isDone()
 return isDone
 
-alt isDone == false
+opt isDone == false
     handler -> ui : printInfo("Task #" + index + " is already unmarked.")
     return
 end

@@ -15,9 +15,12 @@ Participant ":Ui" as ui UI_COLOR
 
 main -> runner ++ : new CommandRunner(skuList)
 
-runner -> runner : new SKUCommandHandler(skuList)
-runner -> runner : new TaskCommandHandler(skuList)
-runner -> runner : new ViewCommandHandler(skuList)
+runner -> runner ++ : new SKUCommandHandler(skuList)
+return
+runner -> runner ++ : new TaskCommandHandler(skuList)
+return
+runner -> runner ++ : new ViewCommandHandler(skuList)
+return
 
 runner -> storage ++ : loadState(skuList)
 return
@@ -40,6 +43,7 @@ else commandWord = "editsku"
 else commandWord = "deletesku"
     runner -> skuHandler ++ : handleDeleteSku(cmd)
     return
+else
 end
 
 return
@@ -69,6 +73,7 @@ else commandWord = "unmarktask"
 else commandWord = "sorttasks"
     runner -> taskHandler ++ : handleSortTask(cmd)
     return
+else
 end
 
 return
@@ -104,7 +109,7 @@ else commandWord = "bye" / "exit"
     runner -> runner : isRunning = false
 else commandWord = ""
     note right : no-op
-else unknown
+else
     runner -> ui : printUnknownCommand(commandWord)
 end
 

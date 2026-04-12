@@ -16,6 +16,7 @@ class TaskCommandHandler LOGIC_COLOR_T1 {
   + handleEditTask(cmd: ParsedCommand): void
   + handleMarkTask(cmd: ParsedCommand): void
   + handleUnmarkTask(cmd: ParsedCommand): void
+  + handleSortTask(cmd: ParsedCommand): void
 }
 
 class SKUList MODEL_COLOR {
@@ -32,6 +33,7 @@ class SKUTaskList MODEL_COLOR_T2 {
   + addSKUTask(skuID: String, priority: Priority, dueDate: String, desc: String): void
   + deleteSKUTaskByIndex(index: int): void
   + editSKUTask(index: int, newDate: String, newPriority: Priority, newDesc: String): void
+  + getSize(): int
   + getSKUTaskList(): ArrayList<SKUTask>
   + markTask(taskIndex: int): void
   + unmarkTask(taskIndex: int): void

@@ -6,50 +6,46 @@ Participant ":ViewCommandHandler" as handler LOGIC_COLOR_T2
 Participant ":ParsedCommand" as cmd LOGIC_COLOR_T1
 Participant ":CommandHelper" as helper LOGIC_COLOR_T1
 Participant ":SKUList" as skuList MODEL_COLOR
-Participant ":SKUTask" as task MODEL_COLOR_T2
 Participant ":Ui" as ui UI_COLOR
 
 == handleFind — validation ==
 
 runner -> handler ++ : handleFind(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("t"), getArg("i")
+handler -> cmd ++ : getArg()
+note right : called 3 times — getArg("n"), getArg("t"), getArg("i")\nn/SKU filter, t/description filter, i/index filter — all optional
 return skuFilter, descFilter, indexStr
+
+handler -> ui : printSearchHeader()
 
 handler -> handler ++ : validateFindArgs(skuFilter, descFilter, indexStr)
 
-alt all three filters null
-    handler -> runner : throw MissingArgumentException
+opt skuFilter == null and descFilter == null and indexStr == null
+    note right : throws MissingArgumentException
 end
 
-alt skuFilter != null
+opt skuFilter != null
     handler -> skuList ++ : findByID(skuFilter)
     return sku / null
 
-    alt sku == null
-        handler -> runner : throw SKUNotFoundException
+    opt sku == null
+        note right : throws SKUNotFoundException
     end
 end
 
 return
 
-alt indexStr != null
+opt indexStr != null
     handler -> helper ++ : parseIndex(indexStr)
-    return taskIndex / -1
-
-    alt taskIndex == -1
-        note right : returns early
-    end
+    return taskIndex
 end
-
-handler -> ui : printSearchHeader()
 
 == handleFind — search ==
 
 handler -> handler ++ : searchTasks(skuFilter, descFilter, taskIndex)
 
 loop for each SKU in skuList.getSKUList()
-    alt skuFilter != null and sku.getSKUID() does not match
+    opt skuFilter != null and sku.getSKUID() does not match
         note right : skip this SKU
     end
 
@@ -60,32 +56,32 @@ loop for each SKU in skuList.getSKUList()
 
         alt taskIndex > tasks.size()
             alt hasSkuFilter == true
-                handler -> runner : throw InvalidIndexException
+                note right : throws InvalidIndexException
             else
                 note right : skip silently
             end
         else
-            handler -> task ++ : (tasks.get(taskIndex - 1))
-            return task
+            note over handler : task = tasks.get(taskIndex - 1)
 
             handler -> helper ++ : matchesDescription(task, descFilter)
-            return boolean
+            return matches
 
-            alt matches
+            opt matches
                 handler -> handler ++ : formatSearchResult(skuId, taskIndex, task)
                 return formatted entry
             end
         end
 
         return
+
     else taskIndex <= 0
         handler -> handler ++ : searchAllTasks(sku, tasks, descFilter, results)
 
         loop for each task in tasks
             handler -> helper ++ : matchesDescription(task, descFilter)
-            return boolean
+            return matches
 
-            alt matches
+            opt matches
                 handler -> handler ++ : formatSearchResult(skuId, i+1, task)
                 return formatted entry
             end

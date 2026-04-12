@@ -16,7 +16,7 @@ runner -> handler ++ : handleAddSkuTask(cmd)
 handler -> cmd ++ : getArg("n"), getArg("d")
 return skuId, dueDate
 
-alt skuId == null or dueDate == null
+opt skuId == null or dueDate == null
     handler -> ui : printError("Usage: addskutask n/SKU_ID d/DUE_DATE ...")
     return
 end
@@ -24,19 +24,21 @@ end
 handler -> skuList ++ : findByID(skuId)
 return targetSku / null
 
-alt targetSku == null
+opt targetSku == null
     handler -> ui : printError("SKU not found: ...")
     return
 end
 
 handler -> helper ++ : parsePriorityOrDefault(cmd)
+note right : optional p/PRIORITY arg;\ndefaults to HIGH if absent
 return priority / null
 
-alt priority == null
+opt priority == null
     return
 end
 
-handler -> cmd ++ : hasArg("t"), getArg("t")
+handler -> cmd ++ : getArg("t")
+note right : optional t/DESCRIPTION arg;\ndefaults to "" if absent
 return description
 
 handler -> taskList ++ : addSKUTask(skuId, priority, dueDate, description)

@@ -15,44 +15,45 @@ runner -> handler ++ : handleEditTask(cmd)
 handler -> cmd ++ : getArg("n"), getArg("i")
 return skuId, indexStr
 
-alt skuId == null or indexStr == null
+opt skuId == null or indexStr == null
     handler -> ui : printError("Usage: edittask n/SKU_ID i/TASK_INDEX ...")
     return
 end
 
 handler -> cmd ++ : getArg("d"), getArg("p"), getArg("t")
+note right : all three are optional;\nat least one must be provided
 return newDate, newPriorityStr, newDesc
 
-alt all three fields null
+opt newDate == null and newPriorityStr == null and newDesc == null
     handler -> ui : printError("Provide at least one field to update ...")
     return
 end
 
 handler -> helper ++ : parseIndex(indexStr)
-return index / -1
+return index
 
-alt index == -1
+opt index == -1
     return
 end
 
 handler -> helper ++ : findSkuOrError(skuList, skuId)
 return targetSku / null
 
-alt targetSku == null
+opt targetSku == null
     return
 end
 
 handler -> taskList ++ : getSize()
 return size
 
-alt index < 1 or index > size
-    handler -> runner : throw InvalidIndexException
+opt index < 1 or index > size
+    return throw InvalidIndexException
 end
 
 handler -> helper ++ : parsePriority(newPriorityStr)
 return newPriority / null
 
-alt newPriorityStr != null and newPriority == null
+opt newPriorityStr != null and newPriority == null
     return
 end
 
@@ -60,7 +61,7 @@ handler -> taskList ++ : editSKUTask(index, newDate, newPriority, newDesc)
 return
 
 handler -> taskList ++ : getSKUTaskList().get(index - 1)
-return updated task
+return updated
 
 handler -> ui : printSuccess("Updated task #" + index + " ...")
 
