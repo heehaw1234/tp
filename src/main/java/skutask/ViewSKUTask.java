@@ -101,10 +101,11 @@ public class ViewSKUTask {
             return 0;
         }
         String targetName = parentSku.getSKULocation().name();
+        String currentPosUpper = currentPos.toUpperCase();
         int targetX = targetName.charAt(0) - 'A';
         int targetY = Character.getNumericValue(targetName.charAt(1)) - 1;
-        int currentX = currentPos.toUpperCase().charAt(0) - 'A';
-        int currentY = Character.getNumericValue(currentPos.charAt(1)) - 1;
+        int currentX = currentPosUpper.charAt(0) - 'A';
+        int currentY = Character.getNumericValue(currentPosUpper.charAt(1)) - 1;
         return Math.abs(targetX - currentX) + Math.abs(targetY - currentY);
     }
 }

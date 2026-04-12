@@ -223,19 +223,13 @@ Here's a class diagram of the SKUTask component:
 
 ![SKUTask Architecture Diagram](diagrams/skutask-operations/skutask-architecture.png)
 
-The sequence diagram below illustrates the interactions within the SKUTask component, taking the `addSKUTask` API call as an example.
+The `SKUTask` component operates on a principle of **Strict Delegation**. The `SKUTaskList` acts as a facade for the `SKUTask` objects it contains, ensuring that higher-level components (like `TaskCommandHandler`) never mutate a task directly.
 
-**Interactions Inside the SKUTask Component for the `addskutask` Command**
+* **Encapsulation:** All task properties (Date, Priority, Description) are modified via wrapper methods in `SKUTaskList`.
+* **State Mutation:** Interactions permanently mutate the memory model, which is then handled by the `Storage` component upon exit.
 
-![Add SKU Task Sequence Diagram](diagrams/skutask-operations/addTaskSequence.png)
-
-How the SKUTask component works:
-
-When the `SKUTaskList` is called upon to execute a task-level operation, it receives the extracted task properties (e.g., date, priority, description) from the parent `SKU` that delegates it.
-This results in a `SKUTask` object being instantiated (or an existing one being modified or deleted) which is managed entirely within the `SKUTaskList`.
-The `SKUTaskList` communicates internally with the individual `SKUTask` items, enforcing controlled access through wrapper methods.
-Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the list and the individual task fields) to update specific parameters like the `Priority` enum or completion status.
-The result of the task execution permanently mutates the system's memory model, which is ultimately fetched back by higher-level components for confirmation.
+> [!NOTE]
+> For the detailed end-to-end sequence of how a task is added from a user command down to this component, please refer to the [Implementation: Add SKU Task](#add--delete-sku-task-feature) section.
 
 Here are the other interactions in the SKUTask component (omitted from the sequence diagram above) that are used for property reading and modifications:
 

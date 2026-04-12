@@ -207,6 +207,13 @@ Example of usage:
 
 `listtasks l/B2`
 
+#### Handling Multiple Filters:
+
+If more than one filter is entered, the system returns an error message to indicate the command is invalid.
+
+* **Example Command:** `listtasks n/PALLET-A p/HIGH`
+* **Expected Output:** `[ERROR] Conflict: You can only use ONE filter (n/, p/, or l/) at a time.`
+
 ---
 
 ### Finding tasks: `find`
@@ -230,9 +237,11 @@ Example of usage:
 ---
 
 ### Viewing warehouse map: `viewmap`
-Displays a visual representation of the 3×3 warehouse grid showing which locations are occupied.
+Displays a visual representation of the 3×3 warehouse grid.
 
-Format: `viewmap`
+**Map Logic:**
+* **What the numbers mean:** Each cell (e.g., `[B2: 05]`) displays the **total number of tasks** (both completed and incomplete) assigned to all SKUs at that location.
+* **Why a location might show `00`:** If a location shows `00`, it means there are no tasks created for the SKUs at that spot. It does **not** mean the location is empty of SKUs.
 
 Example of usage:
 
@@ -316,6 +325,9 @@ Example of usage:
 
 **Q**: Can I edit multiple fields of a task at once?  
 **A**: Yes. The `edittask` command accepts any combination of `d/` (due date), `p/` (priority), and `t/` (description) flags simultaneously. Only the fields you specify will be updated. All other fields are preserved.
+
+**Q**: Can I have more than one SKU in the same grid square (e.g., A1)?  
+**A**: Yes. ItemTasker treats grid locations as "sectors." You can store multiple different SKUs in the same sector. The `viewmap` will show the sum of all tasks for all SKUs in that specific sector.
 
 ## Command Summary
 

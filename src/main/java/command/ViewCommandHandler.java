@@ -233,6 +233,10 @@ public class ViewCommandHandler {
         String descFilter = cmd.getArg("t");
         String indexStr = cmd.getArg("i");
 
+        if (skuFilter != null && skuFilter.trim().isEmpty()) {
+            throw new InvalidFilterException("The SKU keyword after n/ cannot be empty.");
+        }
+
         if (descFilter != null && descFilter.trim().isEmpty()) {
             throw new InvalidFilterException("The description keyword after t/ cannot be empty.");
         }

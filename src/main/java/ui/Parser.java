@@ -56,15 +56,20 @@ public class Parser {
 
         for (String token : tokens) {
             int slashIdx = token.indexOf('/');
-            if (slashIdx > 0) {
-                String key = token.substring(0, slashIdx).trim().toLowerCase();
-                String value = token.substring(slashIdx + 1).trim();
-                if (args.containsKey(key)) {
-                    throw new InvalidCommandException(
-                            "Duplicate flag '" + key + "/' is not allowed.");
-                }
-                args.put(key, value);
+
+            if (slashIdx <= 0) {
+                throw new InvalidCommandException(
+                        "Invalid argument format: '" + token + "'. " +
+                                "Make sure to use a prefix (e.g., n/, p/, l/)."
+                );
             }
+            String key = token.substring(0, slashIdx).trim().toLowerCase();
+            String value = token.substring(slashIdx + 1).trim();
+            if (args.containsKey(key)) {
+                throw new InvalidCommandException(
+                        "Duplicate flag '" + key + "/' is not allowed.");
+            }
+            args.put(key, value);
         }
 
         return args;
