@@ -40,6 +40,8 @@ If the setup is correct, you should see the welcome message appear in a few seco
 
 6. Refer to the Features section below for the full details of each command.
 
+<div style="page-break-after: always;"></div>
+
 ## Features
 
 ### Adding a SKU: `addsku`
@@ -328,6 +330,7 @@ Example of usage:
 
 **Q**: Can I have more than one SKU in the same grid square (e.g., A1)?  
 **A**: Yes. ItemTasker treats grid locations as "sectors." You can store multiple different SKUs in the same sector. The `viewmap` will show the sum of all tasks for all SKUs in that specific sector.
+<div style="page-break-after: always;"></div>
 
 ## Command Summary
 

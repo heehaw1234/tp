@@ -44,6 +44,8 @@ The "*" multiplicity on model relationships denotes one-to-many.*
 - **Encapsulation**: Each `SKU` owns its own `SKUTaskList` — no external maps or redundant data structures
 - **Layered Architecture**: UI → Logic → Model → Storage separation
 
+<div style="page-break-after: always;"></div>
+
 ### Command component
 **API** : `CommandRunner.java`, `ParsedCommand.java`, `CommandHelper.java`,
 `DateValidator.java`, `SKUCommandHandler.java`, `TaskCommandHandler.java`, 
@@ -320,6 +322,8 @@ When `viewmap` is called, the **ViewMap** class iterates through the `SKUList`, 
 **Status Analysis Display**
 The **Ui** component works with the Model's analysis tools to display completion percentages and pending task counts through `printSkuStatus` and `printWarehouseStatus`.
 
+<div style="page-break-after: always;"></div>
+
 ## Implementation
 
 ### Add / Delete SKU Feature
@@ -580,6 +584,8 @@ The following class diagram shows how the logic components are structured to sup
   * **Pros:** Sorting and filtering are faster ($O(1)$ to retrieve the base list).
   * **Cons:** Higher risk of data inconsistency. Deleting an SKU would require purging its specific tasks from the master list, increasing complexity in the `Delete SKU` feature.
 
+<div style="page-break-after: always;"></div>
+
 ## Appendix A: Product Scope
 
 ### Target user profile
@@ -587,6 +593,8 @@ This product is targeted at Inventory Managers of Warehouse Distribution Centers
 
 ### Value proposition
 Enterprise systems are often slow and rigid. ItemTracker provides an agile, local layer for managing immediate warehouse tasks. Managers can log and view "action items" on specific stock items without the latency of connecting the servers of enterprise systems. It ensures that critical tasks, (e.g product inspections) are tracked accordingly.
+
+<div style="page-break-after: always;"></div>
 
 ## Appendix B: User Stories
 
@@ -618,6 +626,8 @@ Enterprise systems are often slow and rigid. ItemTracker provides an agile, loca
 | v2.0    | Inventory Manager | edit the description of an existing task                                         | update information efficiently                                                                   |
 | v2.0    | Inventory Manager | conduct an analysis on a SKU                                                     | for reporting and analytics to colleagues                                                        |
 
+<div style="page-break-after: always;"></div>
+
 ## Appendix C: Non-Functional Requirements
 
 1. **Environment Requirements:** The system should work on any mainstream OS (Windows, Linux, macOS) as long as it has Java `17` or above installed.
@@ -627,6 +637,8 @@ Enterprise systems are often slow and rigid. ItemTracker provides an agile, loca
 5. **Quality (Robustness) Requirements:** The application should be able to handle invalid user input gracefully without crashing.
 6. **Process Requirements:** The project should follow the milestones set for CS2113 and utilize GitHub Actions for Continuous Integration (CI) and automated testing.
 7. **Maintainability Requirements:** Code should be structured in a modular fashion using Object-Oriented principles to ensure extensibility for future features. Strict Checkstyle rule configurations must be adhered to.
+
+<div style="page-break-after: always;"></div>
 
 ## Appendix D: Glossary
 
@@ -644,6 +656,8 @@ Enterprise systems are often slow and rigid. ItemTracker provides an agile, loca
 * *SRP* - Single Responsibility Principle, a software design principle stating that a class or module should have one, and only one, reason to change (e.g., a handler managing only one type of command).
 * *UI* - User Interface, the space where interactions between humans and the application occur.
 * *UML* - Unified Modeling Language, a general-purpose modeling language used to visualize the design and architecture of the system.
+
+<div style="page-break-after: always;"></div>
 
 ## Appendix E: Instructions for Manual Testing
 
