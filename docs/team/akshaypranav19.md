@@ -128,15 +128,11 @@ Note that only a small portion is made available here due to page limits.
 
 #### Edit SKU
 
-![Edit SKU Sequence Diagram](../diagrams/edit-sku/edit-sku-sequence.png)
-
 ![Edit SKU Architecture Class Diagram](../diagrams/edit-sku/edit-sku-architecture.png)
 
 <div style="page-break-after: always;"></div>
 
 #### Edit Task
-
-![Edit Task Sequence Diagram](../diagrams/edit-task/edit-task-sequence.png)
 
 ![Edit Task Architecture Class Diagram](../diagrams/edit-task/edit-task-architecture.png)
 
