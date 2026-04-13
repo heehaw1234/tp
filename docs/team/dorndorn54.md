@@ -48,9 +48,11 @@ persistent storage.
 
 #### 3. Shared command helpers (`CommandHelper.java`)
 
-- Extracted six reusable static parsing/validation methods (`findSkuOrError`, `parseLocation`,
-  `parsePriority`, `parsePriorityOrDefault`, `parseIndex`, `matchesDescription`) that are called
-  across all three handler classes.
+- Extracted seven reusable static parsing/validation methods (`validateFlags`, `findSkuOrError`,
+  `parseLocation`, `parsePriority`, `parsePriorityOrDefault`, `parseIndex`, `matchesDescription`)
+  that are called across all three handler classes.
+- `validateFlags` enforces strict flag checking against an allowlist at the entry point of every
+  handler, throwing `InvalidFilterException` for any unrecognised flag before any parsing begins.
 - Standardised the validate-and-return-null pattern so that every handler has a consistent, DRY
   way to handle bad input and print errors via `Ui`.
 - **Highlights:** Without this class, the same `try/catch IllegalArgumentException` blocks and
@@ -58,7 +60,19 @@ persistent storage.
   it much easier to update the error messages for `parseLocation` and `parsePriority`
   consistently.
 
-#### 4. Console UI layer (`Ui.java`)
+#### 4. Input parser (`Parser.java`)
+
+- Implemented the static `parse(String input)` method that splits raw user input into a command
+  word and a flag-to-value map, returning a `ParsedCommand` value object consumed by every handler.
+- Used a regex split (`(?<=\\S)\\s+(?=[a-zA-Z]/)`) to tokenise flag-prefixed arguments (e.g.
+  `n/`, `d/`, `p/`) without requiring a rigid token ordering.
+- Detects duplicate flags and invalid format (missing `/` separator) and throws typed exceptions
+  (`InvalidCommandException`, `MissingArgumentException`) with actionable messages.
+- **Highlights:** The split regex is subtle — it only breaks at whitespace that is immediately
+  followed by a `letter/` pattern, so values containing spaces (e.g. `t/repaint shelves`) are
+  captured whole rather than fragmented.
+
+#### 5. Console UI layer (`Ui.java`)
 
 - Designed and implemented the full console I/O interface: welcome banner (with ASCII logo),
   goodbye message, `printSuccess` / `printError` / `printInfo` / `printUnknownCommand` prefix
@@ -68,6 +82,15 @@ persistent storage.
   `printDivider`.
 - All output is routed through static `Ui` methods, meaning formatting can be changed in one
   place without touching any handler or domain class.
+
+---
+
+### Tests Written
+
+- **`ParsedCommandTest.java`** — 15 JUnit 5 unit tests covering `getCommandWord`, `getArg`, and
+  `hasArg` across normal, edge-case (empty string, absent key, null stored value), and
+  case-insensitivity scenarios, verifying that `ParsedCommand` behaves correctly as an immutable
+  value object.
 
 ---
 
