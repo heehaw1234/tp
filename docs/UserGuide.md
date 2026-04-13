@@ -100,6 +100,7 @@ Format: `addskutask n/SKU_ID d/DUE_DATE [p/PRIORITY] [t/DESCRIPTION]`
 * Dates before today are accepted (for record-keeping of overdue work) but will print a `[WARNING]` reminder.
 * `PRIORITY` is optional and must be `HIGH`, `MEDIUM`, or `LOW`. Defaults to `HIGH` if not provided.
 * `DESCRIPTION` is optional. Leave it out to create a task with no description.
+* **Note:** Tasks with the exact same priority, due date, and description (case-insensitive) cannot be created. The app will reject identical operations to prevent duplicate tracking.
 
 Example of usage:
 
