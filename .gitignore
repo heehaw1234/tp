@@ -20,3 +20,6 @@ Data/storage.json
 # Log files and lock files
 *.log
 *.lck
+
+# Python files
+*.py
