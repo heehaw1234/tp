@@ -13,7 +13,8 @@ Participant ":Ui" as ui UI_COLOR
 
 runner -> handler ++ : handleAddSkuTask(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("d")
+handler -> cmd ++ : getArg()
+    note right : retrieved 2 parameters
 return skuId, dueDate
 
 opt skuId == null or dueDate == null

@@ -14,7 +14,8 @@ Participant ":Ui" as ui UI_COLOR
 
 runner -> handler ++ : handleListTasks(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("p"), getArg("l")
+handler -> cmd ++ : getArg()
+    note right : retrieved 3 parameters
 return skuFilter, priorityFilter, locationFilter
 
 alt skuFilter != null
@@ -91,31 +92,32 @@ return
 
 runner -> handler ++ : handleFind(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("t"), getArg("i")
+handler -> cmd ++ : getArg()
+    note right : retrieved 3 parameters
 return skuFilter, descFilter, indexStr
 
 handler -> handler ++ : validateFindArgs(skuFilter, descFilter, indexStr)
 
-alt all three filters null
+opt all three filters null
     handler -> runner : throw MissingArgumentException
 end
 
-alt skuFilter != null
+opt skuFilter != null
     handler -> skuList ++ : findByID(skuFilter)
     return sku / null
 
-    alt sku == null
+    opt sku == null
         handler -> runner : throw SKUNotFoundException
     end
 end
 
 return
 
-alt indexStr != null
+opt indexStr != null
     handler -> helper ++ : parseIndex(indexStr)
     return taskIndex / -1
 
-    alt taskIndex == -1
+    opt taskIndex == -1
         note right : returns early
     end
 end
@@ -127,7 +129,7 @@ handler -> ui : printSearchHeader()
 handler -> handler ++ : searchTasks(skuFilter, descFilter, taskIndex)
 
 loop for each SKU in skuList.getSKUList()
-    alt skuFilter != null and sku.getSKUID() does not match
+    opt skuFilter != null and sku.getSKUID() does not match
         note right : skip this SKU
     end
 
@@ -149,7 +151,7 @@ loop for each SKU in skuList.getSKUList()
             handler -> helper ++ : matchesDescription(task, descFilter)
             return boolean
 
-            alt matches
+            opt matches
                 handler -> handler ++ : formatSearchResult(skuId, taskIndex, task)
                 return formatted entry
             end
@@ -163,7 +165,7 @@ loop for each SKU in skuList.getSKUList()
             handler -> helper ++ : matchesDescription(task, descFilter)
             return boolean
 
-            alt matches
+            opt matches
                 handler -> handler ++ : formatSearchResult(skuId, i+1, task)
                 return formatted entry
             end

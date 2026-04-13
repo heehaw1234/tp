@@ -15,7 +15,7 @@ caller -> helper ++ : findSkuOrError(skuList, skuId)
 helper -> skuList ++ : findByID(skuId)
 return sku / null
 
-alt sku == null
+opt sku == null
     helper -> ui : printError("SKU not found: " + skuId)
 end
 
@@ -106,7 +106,7 @@ caller -> helper ++ : validateFlags(cmd, allowedFlags)
 helper -> cmd ++ : getAllFlags()
 return flagSet
 
-alt unrecognized flag found
+opt unrecognized flag found
     helper -> caller : throw InvalidFilterException
 end
 

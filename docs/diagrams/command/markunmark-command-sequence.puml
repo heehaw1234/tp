@@ -13,7 +13,8 @@ Participant ":Ui" as ui UI_COLOR
 
 runner -> handler ++ : handleMarkTask(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("i")
+handler -> cmd ++ : getArg()
+    note right : retrieved 2 parameters
 return skuId, indexStr
 
 opt skuId == null or indexStr == null
@@ -64,7 +65,8 @@ return
 
 runner -> handler ++ : handleUnmarkTask(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("i")
+handler -> cmd ++ : getArg()
+    note right : retrieved 2 parameters
 return skuId, indexStr
 
 opt skuId == null or indexStr == null

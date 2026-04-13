@@ -16,14 +16,14 @@ enum Location <<enumeration>> {}
 
 enum Priority <<enumeration>> {}
 
-SKUList --> "*" SKU : contains
+SKUList "1" --> "*" SKU : contains
 
-SKU --> "1" SKUTaskList : encapsulates
-SKU --> "1" Location : located at
+SKU "1" --> "1" SKUTaskList : encapsulates
+SKU "1" --> "1" Location : located at
 
-SKUTaskList --> "*" SKUTask : contains
+SKUTaskList "1" --> "*" SKUTask : contains
 
-SKUTask --> "1" Priority : priority level
+SKUTask "1" --> "1" Priority : priority level
 
 SKUList -[hidden]down- SKU
 SKU -[hidden]down- SKUTaskList

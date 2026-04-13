@@ -12,7 +12,8 @@ Participant ":Ui" as ui UI_COLOR
 
 runner -> handler ++ : handleEditTask(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("i")
+handler -> cmd ++ : getArg()
+    note right : retrieved 2 parameters
 return skuId, indexStr
 
 opt skuId == null or indexStr == null
@@ -20,7 +21,8 @@ opt skuId == null or indexStr == null
     return
 end
 
-handler -> cmd ++ : getArg("d"), getArg("p"), getArg("t")
+handler -> cmd ++ : getArg()
+    note right : retrieved 3 parameters
 note right : all three are optional;\nat least one must be provided
 return newDate, newPriorityStr, newDesc
 

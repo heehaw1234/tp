@@ -13,7 +13,7 @@ note right : assert input != null
 
 parser -> parser : trimmed = input.trim()
 
-alt trimmed.isEmpty()
+opt trimmed.isEmpty()
     parser -> cmd ++ : new ParsedCommand("", new HashMap<>())
     return
     return empty ParsedCommand

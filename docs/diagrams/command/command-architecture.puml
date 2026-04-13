@@ -27,9 +27,9 @@ package "Command Component" {
     class DateValidator <<utility>> {
     }
 
-    CommandRunner *--> "1" SKUCommandHandler : delegates to
-    CommandRunner *--> "1" TaskCommandHandler : delegates to
-    CommandRunner *--> "1" ViewCommandHandler : delegates to
+    CommandRunner "1" *--> "1" SKUCommandHandler : delegates to
+    CommandRunner "1" *--> "1" TaskCommandHandler : delegates to
+    CommandRunner "1" *--> "1" ViewCommandHandler : delegates to
 
     CommandRunner ..> ParsedCommand : dispatches
 

@@ -40,7 +40,7 @@ else priorityFilter != null
     return priority / null
 
     opt priority == null
-        note right : returns early
+        return
     end
 
     handler -> viewer ++ : setPriorityFilter(priorityFilter)
@@ -56,7 +56,7 @@ else locationFilter != null
     return location / null
 
     opt location == null
-        note right : returns early
+        return
     end
 
     handler -> viewer ++ : setLocationFilter(locationFilter)

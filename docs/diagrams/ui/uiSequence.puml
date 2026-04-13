@@ -50,7 +50,7 @@ ui -> ui : printDivider()
 ui -> skuList ++ : isEmpty()
 return isEmpty
 
-alt skuList is empty
+opt skuList is empty
     ui -> ui : printInfo("No SKUs registered yet.")
 end
 
@@ -74,7 +74,7 @@ loop for each SKU in skuList
     end
 end
 
-alt no tasks found across all SKUs
+opt no tasks found across all SKUs
     ui -> ui : printInfo("No tasks in the system yet.")
 end
 

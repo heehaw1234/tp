@@ -98,19 +98,22 @@ else commandWord = "export"
     runner -> runner ++ : handleExport()
     return
 else commandWord = "help"
-    runner -> ui : printHelp()
+    runner -> ui ++ : printHelp()
+    return
 else commandWord = "viewmap"
     runner -> viewMap ++ : printTaskMap(skuList)
     return
 else commandWord = "bye" / "exit"
     runner -> storage ++ : saveState(skuList)
     return
-    runner -> ui : printGoodbye()
+    runner -> ui ++ : printGoodbye()
+    return
     runner -> runner : isRunning = false
 else commandWord = ""
     note right : no-op
 else
-    runner -> ui : printUnknownCommand(commandWord)
+    runner -> ui ++ : printUnknownCommand(commandWord)
+    return
 end
 
 return

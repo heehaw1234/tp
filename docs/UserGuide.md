@@ -47,7 +47,7 @@ Adds a new SKU to the warehouse at the specified grid location.
 
 Format: `addsku n/SKU_ID l/LOCATION`
 
-* `SKU_ID` is case-insensitive and will be stored in uppercase.
+* `SKU_ID` is case-insensitive and will be stored in uppercase. It must only contain English letters, numbers, and hyphens (`-`).
 * `LOCATION` must be a valid warehouse grid cell: `A1`, `A2`, `A3`, `B1`, `B2`, `B3`, `C1`, `C2`, or `C3`.
 * Duplicate SKU IDs are not allowed.
 

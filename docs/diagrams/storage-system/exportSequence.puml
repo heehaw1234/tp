@@ -15,7 +15,7 @@ runner -> export ++ : exportToTextFile(skuList)
 
 export -> export : dataDir = new File("Data")
 
-alt Data/ directory does not exist
+opt Data/ directory does not exist
     export -> export : dataDir.mkdirs()
 end
 
@@ -27,7 +27,7 @@ export -> file : write header banner
 export -> skuList ++ : isEmpty()
 return isEmpty
 
-alt skuList is empty
+opt skuList is empty
     export -> file : write "The warehouse is currently empty..."
     return
 end

@@ -1,0 +1,38 @@
+@startuml
+!include ../style.puml
+
+Participant "Main" as main LOGIC_COLOR
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":ParsedCommand" as cmd LOGIC_COLOR_T1
+Participant ":TaskCommandHandler" as taskHandler LOGIC_COLOR_T2
+
+== run - Task commands ==
+
+main -> runner ++ : run(cmd)
+
+runner -> cmd ++ : getCommandWord()
+return commandWord
+
+alt commandWord = "addskutask"
+    runner -> taskHandler ++ : handleAddSkuTask(cmd)
+    return
+else commandWord = "edittask"
+    runner -> taskHandler ++ : handleEditTask(cmd)
+    return
+else commandWord = "deletetask"
+    runner -> taskHandler ++ : handleDeleteTask(cmd)
+    return
+else commandWord = "marktask"
+    runner -> taskHandler ++ : handleMarkTask(cmd)
+    return
+else commandWord = "unmarktask"
+    runner -> taskHandler ++ : handleUnmarkTask(cmd)
+    return
+else commandWord = "sorttasks"
+    runner -> taskHandler ++ : handleSortTask(cmd)
+    return
+else
+end
+
+return
+@enduml

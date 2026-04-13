@@ -1,0 +1,29 @@
+@startuml
+!include ../style.puml
+
+Participant "Main" as main LOGIC_COLOR
+Participant ":CommandRunner" as runner LOGIC_COLOR
+Participant ":ParsedCommand" as cmd LOGIC_COLOR_T1
+Participant ":SKUCommandHandler" as skuHandler LOGIC_COLOR_T2
+
+== run - SKU commands ==
+
+main -> runner ++ : run(cmd)
+
+runner -> cmd ++ : getCommandWord()
+return commandWord
+
+alt commandWord = "addsku"
+    runner -> skuHandler ++ : handleAddSku(cmd)
+    return
+else commandWord = "editsku"
+    runner -> skuHandler ++ : handleEditSku(cmd)
+    return
+else commandWord = "deletesku"
+    runner -> skuHandler ++ : handleDeleteSku(cmd)
+    return
+else
+end
+
+return
+@enduml

@@ -13,7 +13,8 @@ Participant ":Ui" as ui UI_COLOR
 
 runner -> handler ++ : handleAddSku(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("l")
+handler -> cmd ++ : getArg()
+    note right : retrieved 2 parameters
 return skuId, locationStr
 
 opt skuId == null or locationStr == null
@@ -47,7 +48,8 @@ return
 
 runner -> handler ++ : handleEditSku(cmd)
 
-handler -> cmd ++ : getArg("n"), getArg("l")
+handler -> cmd ++ : getArg()
+    note right : retrieved 2 parameters
 return skuId, locationStr
 
 opt skuId == null or locationStr == null

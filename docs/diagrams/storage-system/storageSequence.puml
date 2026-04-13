@@ -14,7 +14,7 @@ runner -> storage ++ : saveState(skuList)
 
 storage -> storage : dataDir = new File("Data")
 
-alt Data/ directory does not exist
+opt Data/ directory does not exist
     storage -> storage : dataDir.mkdirs()
 end
 
@@ -29,7 +29,7 @@ return
 
 storage -> file : close writer (try-with-resources)
 
-alt IOException
+opt IOException
     storage -> storage : println("Error saving: " + e.getMessage())
 end
 
@@ -55,7 +55,7 @@ else file exists
     storage -> gson ++ : fromJson(reader, SKUList.class)
     return loadedSkus
 
-    alt loadedSkus != null
+    opt loadedSkus != null
         storage -> skuList ++ : getSKUList().addAll(loadedSkus.getSKUList())
         return
     end
