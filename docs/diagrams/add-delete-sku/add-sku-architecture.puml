@@ -16,13 +16,13 @@ package Sku {
     enum Location MODEL_COLOR
 }
 
-CommandRunner "1" *--> "1" SKUCommandHandler : routes to >
-SKUCommandHandler "1" --> "1" SKUList : modifies >
+CommandRunner *--> "1" SKUCommandHandler : routes to >
+SKUCommandHandler --> "1" SKUList : modifies >
 
-SKUList "1" --> "*" SKU : contains >
+SKUList --> "*" SKU : contains >
 
-SKU "1" --> "1" SKUTaskList : encapsulates >
+SKU --> "1" SKUTaskList : encapsulates >
 
-SKU "*" --> "1" Location : located at >
+SKU --> "1" Location : located at >
 
 @enduml

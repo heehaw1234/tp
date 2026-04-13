@@ -86,11 +86,19 @@ use literal lowercase strings in comparisons.
 
 `CommandRunner` is instantiated once at application startup. Its constructor takes the shared `SKUList`, creates one instance each of the three handler classes, and immediately calls `Storage.loadState` to hydrate the model from disk. From that point forward, the main loop calls `run(ParsedCommand)` on every user input, and `CommandRunner` delegates to the appropriate handler or handles `bye`/`exit`/`export`/`help`/`viewmap` inline.
 
-The sequence diagram below illustrates the dispatch lifecycle for a representative command:
+The sequence diagrams below illustrate the dispatch lifecycles for the different categories of commands:
 
-**Command Dispatch Sequence for `CommandRunner`**
+**Command Dispatch Sequence for SKU commands**
 
-![CommandRunner Sequence Diagram](diagrams/command/commandRunnerSequence.png)
+![CommandRunner Sequence Diagram — SKU commands](diagrams/command/commandRunnerSequence-runSku.png)
+
+**Command Dispatch Sequence for Task commands**
+
+![CommandRunner Sequence Diagram — Task commands](diagrams/command/commandRunnerSequence-runTask.png)
+
+**Command Dispatch Sequence for View / Utility commands**
+
+![CommandRunner Sequence Diagram — View commands](diagrams/command/commandRunnerSequence-runView.png)
 
 ---
 
