@@ -118,6 +118,11 @@ The sequence diagram below illustrates the interactions for the `addsku` command
 
 Handles the six task-level commands: `addskutask`, `edittask`, `deletetask`, `marktask`, `unmarktask`, and `sorttasks`. All date inputs pass through `DateValidator.validateDateOrError` before reaching the model. Index bounds are checked explicitly after parsing so that a precise `InvalidIndexException` (carrying both the bad index and the SKU ID) is thrown rather than a raw `IndexOutOfBoundsException` escaping to the top level.
 
+**Design Consideration: Empty Descriptions (`t/`)**
+The `TaskCommandHandler` intentionally treats empty `t/` arguments differently between creation and modification:
+* `handleAddSkuTask`: Accepts an empty `t/` tag (or a missing one) and passes a blank string to the task creation logic, allowing users to quickly initialize empty-description tasks.
+* `handleEditTask`: Explicitly blocks empty `t/` tags (`if (newDesc != null && newDesc.isEmpty())`). This prevents users from accidentally erasing existing task descriptions whilst trying to update only the date or priority fields.
+
 The sequence diagrams below illustrate key interactions within `TaskCommandHandler`:
 
 **Interactions Inside the Command Component for the `addskutask` Command**
@@ -207,7 +212,7 @@ All seven concrete exceptions extend `ItemTaskerException` directly. There is in
 
 * **Checked exceptions.** All exceptions in this hierarchy are checked (they extend `Exception`, not `RuntimeException`). This forces callers in the Logic layer to explicitly declare or handle each failure mode, making the contract of each handler method visible at the API level.
 * **Single-responsibility messages.** Because each subclass formats its own message, the handler classes stay clean — they throw with only the relevant domain value (e.g., `throw new SKUNotFoundException(skuId)`) rather than constructing message strings inline.
-* **`InvalidIndexException` dual constructor.** The two constructors address two distinct failure points: an integer that parsed successfully but fell outside the valid range (`int` constructor), and a string that could not be parsed as an integer at all (`String` constructor). This keeps the type consistent while distinguishing the two error sources.
+* **`InvalidIndexException` three constructors.** The three constructors address three distinct failure points: an integer that parsed successfully but fell outside the valid range (`(int, String)` constructor), a string that could not be parsed as an integer at all (`(String)` constructor), and a string that caused an integer overflow during parsing (`(String, boolean)` constructor). This keeps the type consistent while distinguishing the three error sources.
 
 
 ### SKU component
@@ -392,7 +397,7 @@ Given below is an example usage scenario demonstrating how the Add SKU Task mech
 
 **Step 3.** `handleAddSkuTask()` processes the properties (parsing `HIGH` into the `Priority` enum). It calls `skuList.findByID("P-A")` to locate the target `SKU`. Upon finding it, it retrieves the SKU's internal `SKUTaskList`.
 
-**Step 4.** The `SKUTaskList#addSKUTask()` method is invoked. This method instantiates a new `SKUTask` object with the extracted properties (including the `Priority` enum state). The task is appended to the internal `ArrayList`.
+**Step 4.** The `SKUTaskList#addSKUTask()` method is invoked. This method verifies that an identical task (same priority, date, and case-insensitive description) does not already exist. It then instantiates a new `SKUTask` object with the extracted properties (including the `Priority` enum state) and appends it to the internal `ArrayList`.
 
 **Step 5.** Execution completes successfully, and control returns to the `Ui` to print the success message.
 
@@ -590,7 +595,7 @@ The following class diagram shows how the logic components are structured to sup
 This product is targeted at Inventory Managers of Warehouse Distribution Centers who prefer a CLI UI for fast access and easy tracking.
 
 ### Value proposition
-Enterprise systems are often slow and rigid. ItemTracker provides an agile, local layer for managing immediate warehouse tasks. Managers can log and view "action items" on specific stock items without the latency of connecting the servers of enterprise systems. It ensures that critical tasks, (e.g product inspections) are tracked accordingly.
+Enterprise systems are often slow and rigid. ItemTasker provides an agile, local layer for managing immediate warehouse tasks. Managers can log and view "action items" on specific stock items without the latency of connecting the servers of enterprise systems. It ensures that critical tasks, (e.g product inspections) are tracked accordingly.
 
 <div style="page-break-after: always;"></div>
 

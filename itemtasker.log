@@ -1,0 +1,170 @@
+Apr 11, 2026 2:40:20 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 2:40:21 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 2:40:31 PM command.ViewCommandHandler handleListTasks
+INFO: Listing tasks. Filters -> SKU: n, Priority: null, Location: null
+Apr 11, 2026 2:40:55 PM command.ViewCommandHandler handleFind
+INFO: Find command invoked. SKU=n, Desc=null, Index=null
+Apr 11, 2026 2:40:55 PM command.ViewCommandHandler validateFindArgs
+FINE: Validating find arguments
+Apr 11, 2026 2:40:55 PM command.ViewCommandHandler validateFindArgs
+WARNING: Find called with non-existent SKU: n
+Apr 11, 2026 2:41:25 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-A] at A1
+Apr 11, 2026 2:41:25 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-A] at Location: A1
+Apr 11, 2026 2:41:25 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-B] at B2
+Apr 11, 2026 2:41:25 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-B] at Location: B2
+Apr 11, 2026 2:41:25 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-C] at C3
+Apr 11, 2026 2:41:25 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-C] at Location: C3
+Apr 11, 2026 2:41:25 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [PALLET-D] at A2
+Apr 11, 2026 2:41:25 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [PALLET-D] at Location: A2
+Apr 11, 2026 2:41:25 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-04-01
+Apr 11, 2026 2:41:25 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=PALLET-A, priority=HIGH, due=2026-04-01
+Apr 11, 2026 2:41:25 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU PALLET-A (size now 1)
+Apr 11, 2026 2:41:25 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #1 to SKU [PALLET-A]
+Apr 11, 2026 2:41:25 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-04-05
+Apr 11, 2026 2:41:25 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=PALLET-A, priority=MEDIUM, due=2026-04-05
+Apr 11, 2026 2:41:25 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU PALLET-A (size now 2)
+Apr 11, 2026 2:41:25 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #2 to SKU [PALLET-A]
+Apr 11, 2026 2:41:25 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-04-10
+Apr 11, 2026 2:41:25 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=PALLET-B, priority=HIGH, due=2026-04-10
+Apr 11, 2026 2:41:25 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU PALLET-B (size now 1)
+Apr 11, 2026 2:41:25 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #1 to SKU [PALLET-B]
+Apr 11, 2026 2:41:26 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-04-15
+Apr 11, 2026 2:41:26 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=PALLET-C, priority=LOW, due=2026-04-15
+Apr 11, 2026 2:41:26 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU PALLET-C (size now 1)
+Apr 11, 2026 2:41:26 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #1 to SKU [PALLET-C]
+Apr 11, 2026 7:50:19 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 7:50:19 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 7:50:25 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [OVER-TEST] at A1
+Apr 11, 2026 7:50:25 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [OVER-TEST] at Location: A1
+Apr 11, 2026 7:50:30 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-06-15
+Apr 11, 2026 7:50:30 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=OVER-TEST, priority=HIGH, due=2026-06-15
+Apr 11, 2026 7:50:30 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU OVER-TEST (size now 1)
+Apr 11, 2026 7:50:30 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #1 to SKU [OVER-TEST]
+Apr 11, 2026 7:50:33 PM command.ViewCommandHandler handleListTasks
+INFO: Listing tasks. Filters -> SKU: null, Priority: null, Location: null
+Apr 11, 2026 7:50:33 PM command.ViewCommandHandler handleListTasks
+FINE: No filters provided, listing all tasks.
+Apr 11, 2026 7:51:09 PM command.TaskCommandHandler handleDeleteTask
+WARNING: Failed to delete task: Index 2 out of bounds for SKU [OVER-TEST]
+Apr 11, 2026 7:51:22 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 7:51:22 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 7:52:34 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [FIND-A] at A1
+Apr 11, 2026 7:52:34 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [FIND-A] at Location: A1
+Apr 11, 2026 7:52:40 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-06-15
+Apr 11, 2026 7:52:40 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=FIND-A, priority=HIGH, due=2026-06-15
+Apr 11, 2026 7:52:40 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU FIND-A (size now 1)
+Apr 11, 2026 7:52:40 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #1 to SKU [FIND-A]
+Apr 11, 2026 9:31:06 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 9:31:06 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 9:31:27 PM command.ViewCommandHandler handleListTasks
+INFO: Listing tasks. Filters -> SKU: null, Priority: null, Location: null
+Apr 11, 2026 9:31:27 PM command.ViewCommandHandler handleListTasks
+FINE: No filters provided, listing all tasks.
+Apr 11, 2026 9:34:14 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 9:34:14 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 11, 2026 9:34:23 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [FIND-B] at A1
+Apr 11, 2026 9:34:23 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [FIND-B] at Location: A1
+Apr 11, 2026 9:34:29 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-05-01
+Apr 11, 2026 9:34:29 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=FIND-B, priority=HIGH, due=2026-05-01
+Apr 11, 2026 9:34:29 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU FIND-B (size now 1)
+Apr 11, 2026 9:34:29 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #1 to SKU [FIND-B]
+Apr 11, 2026 9:34:34 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-06-16
+Apr 11, 2026 9:34:34 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=FIND-B, priority=LOW, due=2026-06-16
+Apr 11, 2026 9:34:34 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU FIND-B (size now 2)
+Apr 11, 2026 9:34:34 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #2 to SKU [FIND-B]
+Apr 11, 2026 9:34:39 PM command.ViewCommandHandler handleListTasks
+INFO: Listing tasks. Filters -> SKU: null, Priority: null, Location: null
+Apr 11, 2026 9:34:39 PM command.ViewCommandHandler handleListTasks
+FINE: No filters provided, listing all tasks.
+Apr 13, 2026 12:36:31 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 13, 2026 12:36:31 PM sku.SKUList <init>
+INFO: Initialized new empty SKUList.
+Apr 13, 2026 12:36:36 PM sku.SKU <init>
+INFO: Instantiated new SKU object: [A] at A1
+Apr 13, 2026 12:36:36 PM sku.SKUList addSKU
+INFO: Successfully added SKU: [A] at Location: A1
+Apr 13, 2026 12:36:42 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-06-15
+Apr 13, 2026 12:36:42 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=A, priority=HIGH, due=2026-06-15
+Apr 13, 2026 12:36:42 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU A (size now 1)
+Apr 13, 2026 12:36:42 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #1 to SKU [A]
+Apr 13, 2026 1:03:44 PM command.DateValidator validateDateOrError
+INFO: Past due date accepted with warning: 2026-01-01
+Apr 13, 2026 1:03:44 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-01-01
+Apr 13, 2026 1:03:44 PM skutask.SKUTask <init>
+INFO: SKUTask created: ID=A, priority=HIGH, due=2026-01-01
+Apr 13, 2026 1:03:44 PM skutask.SKUTaskList addSKUTask
+INFO: Task added for SKU A (size now 2)
+Apr 13, 2026 1:03:44 PM command.TaskCommandHandler handleAddSkuTask
+INFO: Added task #2 to SKU [A]
+Apr 13, 2026 1:04:01 PM command.DateValidator validateDateOrError
+FINE: Date validated successfully: 2026-06-15
+Apr 13, 2026 1:04:01 PM command.TaskCommandHandler handleAddSkuTask
+WARNING: Domain validation rejected task addition
+java.lang.IllegalArgumentException: An identical task already exists for this SKU.
+	at skutask.SKUTaskList.addSKUTask(SKUTaskList.java:60)
+	at command.TaskCommandHandler.handleAddSkuTask(TaskCommandHandler.java:89)
+	at command.CommandRunner.run(CommandRunner.java:70)
+	at ui.ItemTasker.main(ItemTasker.java:47)
+

@@ -18,8 +18,13 @@ text-ui-test/EXPECTED-UNIX.TXT
 Data/storage.json
 
 # Log files and lock files
-*.log
+*.log.*
 *.lck
 
 # Python files
 *.py
+# Generated temp reports and PDFs
+verified_bugs.md
+verified_bugs.pdf
+
+

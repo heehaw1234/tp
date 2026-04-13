@@ -46,6 +46,7 @@ public class SKUTaskList {
      * @param priority    The priority level of the task.
      * @param dueDate     The due date of the task.
      * @param description A text description of what this task involves.
+     * @throws IllegalArgumentException If a task with same priority, date & case-insensitive description exists.
      */
     public void addSKUTask(String skuID, Priority priority, String dueDate, String description) {
         assert skuID != null && !skuID.trim().isEmpty() : "SKU ID cannot be null or empty";
