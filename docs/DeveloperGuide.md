@@ -118,6 +118,11 @@ The sequence diagram below illustrates the interactions for the `addsku` command
 
 Handles the six task-level commands: `addskutask`, `edittask`, `deletetask`, `marktask`, `unmarktask`, and `sorttasks`. All date inputs pass through `DateValidator.validateDateOrError` before reaching the model. Index bounds are checked explicitly after parsing so that a precise `InvalidIndexException` (carrying both the bad index and the SKU ID) is thrown rather than a raw `IndexOutOfBoundsException` escaping to the top level.
 
+**Design Consideration: Empty Descriptions (`t/`)**
+The `TaskCommandHandler` intentionally treats empty `t/` arguments differently between creation and modification:
+* `handleAddSkuTask`: Accepts an empty `t/` tag (or a missing one) and passes a blank string to the task creation logic, allowing users to quickly initialize empty-description tasks.
+* `handleEditTask`: Explicitly blocks empty `t/` tags (`if (newDesc != null && newDesc.isEmpty())`). This prevents users from accidentally erasing existing task descriptions whilst trying to update only the date or priority fields.
+
 The sequence diagrams below illustrate key interactions within `TaskCommandHandler`:
 
 **Interactions Inside the Command Component for the `addskutask` Command**

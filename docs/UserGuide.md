@@ -99,7 +99,7 @@ Format: `addskutask n/SKU_ID d/DUE_DATE [p/PRIORITY] [t/DESCRIPTION]`
 * `DUE_DATE` must be in `YYYY-MM-DD` format, e.g. `2026-06-15`. The year must be between `1970` and `2100`.
 * Dates before today are accepted (for record-keeping of overdue work) but will print a `[WARNING]` reminder.
 * `PRIORITY` is optional and must be `HIGH`, `MEDIUM`, or `LOW`. Defaults to `HIGH` if not provided.
-* `DESCRIPTION` is optional. Leave it out to create a task with no description.
+* `DESCRIPTION` is optional. Leave it out or use an empty `t/` tag to create a task with no description.
 * **Note:** Tasks with the exact same priority, due date, and description (case-insensitive) cannot be created. The app will reject identical operations to prevent duplicate tracking.
 
 Example of usage:
@@ -116,6 +116,7 @@ Updates one or more fields of an existing task.
 Format: `edittask n/SKU_ID i/TASK_INDEX [d/DUE_DATE] [p/PRIORITY] [t/DESCRIPTION]`
 
 * At least one of `d/`, `p/`, or `t/` must be provided.
+* Unlike `addskutask`, if the `t/` flag is provided, its value cannot be blank.
 * `TASK_INDEX` refers to the task's position in the SKU's task list (starting from 1).
 * `DUE_DATE` must be in `YYYY-MM-DD` format if provided.
 * `PRIORITY` must be `HIGH`, `MEDIUM`, or `LOW` if provided.
