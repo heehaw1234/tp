@@ -302,6 +302,8 @@ Example of usage:
 
 `exit`
 
+<div style="page-break-after: always;"></div>
+
 ## FAQ
 **Q**: How do I transfer my warehouse data to another computer?  
 **A**: Install the application on the other computer and run it once to generate the default folders. Then, simply overwrite the `Data/storage.json` file it creates with the `storage.json` file from your previous computer.
